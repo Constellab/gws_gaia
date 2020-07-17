@@ -16,6 +16,6 @@
             "/static/pub-gaia/index.js"
         ],
         "styles": [],
-        "left_buttons":[]
+        "buttons":{}
     }
 }

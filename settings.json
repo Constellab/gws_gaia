@@ -1,19 +1,19 @@
 {
-    "name": "gaia",
-    "db_dir"        : "./",
-    "db_name"       : "db.sqlite3",
-    "biota_test_data_dir": "./tests/data",
+    "name"                  : "gaia",
+    "db_dir"                : "./data/",
+    "db_name"               : "db.sqlite3",
+    "gaia_test_data_dir"    : "./tests/data",
     "dependencies"  : {
         "gws"           : "../gws-py"
     },
     "statics"       : {
-        "/static/pub-gaia"   : "./public/static"
+        "/static/gaia"   : "./public/static"
     },
     "app":{
         "title": "Gaia",
         "scripts": [],
         "modules": [
-            "/static/pub-gaia/index.js"
+            "/static/gaia/index.js"
         ],
         "styles": [],
         "buttons":{}

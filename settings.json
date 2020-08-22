@@ -2,15 +2,20 @@
     "name"                  : "gaia",
     "db_dir"                : "./data/",
     "db_name"               : "db.sqlite3",
-    "gaia_test_data_dir"    : "./tests/data",
+    
+    "dirs"     : {
+        "gaia:testdata_dir"  : "./tests/testdata"
+    },
+
     "dependencies"  : {
         "gws"           : "../gws-py"
     },
-    "statics"       : {
-        "/static/gaia"   : "./public/static"
-    },
+    
     "app":{
         "title": "Gaia",
+        "statics"       : {
+            "/static/gaia"   : "./public/static"
+        },
         "scripts": [],
         "modules": [
             "/static/gaia/index.js"

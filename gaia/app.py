@@ -17,11 +17,25 @@ templates = Jinja2Templates(directory=template_dir)
 async def homepage(request):
     return templates.TemplateResponse('home.html', {'request': request, 'settings': settings})
 
-class App(GWSApp):
+class App:
+    """
+    App class of gaia application
+
+    This App class will dynamically inherits the App classes this application depends on.
+    Method on_init() must be overloaded to add new routes.
+    """
+
+    routes = []
 
     @classmethod
     def on_init(cls):
+        """
+        Initializes the application. 
+        
+        This method is automatically called after by the constructor.
+        """
+        # loads base applications' routes
         super().on_init()
 
-        #biota routes
+        # adds new routes
         cls.routes.append(Route('/gaia/home/', homepage) )

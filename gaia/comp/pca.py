@@ -24,7 +24,7 @@ class Trainer(Process):
         'nb_components': {"type": 'int', "default": 2, "min": 0}
     }
 
-    async def task(self):
+    def task(self):
         dataset = self.input['dataset']
         pca = PCA(n_components=self.get_param("nb_components"))
         pca.fit(dataset.features.values)

@@ -164,7 +164,7 @@ class Importer(Process):
         'index' : {"type": 'int', "default": None, "description": "Column number to use as the row names. Use None to prevent parsing row names. Only for parsing CSV files"},
         'targets': {"type": 'list', "default": '', "description": "List of integers or strings (eg. ['name', 6, '7'])"},
     }
-    async def task(self):
+    def task(self):
         file_path = self.get_param("file_path")
         _, file_extension = os.path.splitext(file_path)
 
@@ -203,5 +203,5 @@ class Exporter(Process):
         'header': {"type": 'int', "default": 0, "description": "Row number(s) to use as the column names, and the start of the data. Only for parsing CSV files"},
     }
 
-    async def task(self):
+    def task(self):
         pass

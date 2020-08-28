@@ -10,6 +10,7 @@ from pandas import DataFrame
 from gws.prism.model import Process, Config
 from gws.prism.model import Resource
 from gws.prism.controller import Controller
+from gws.logger import Logger
 
 class Dataset(Resource):
     _features: DataFrame = None
@@ -178,7 +179,7 @@ class Importer(Process):
                 index_col = self.get_param("index")
             )
         else:
-            raise Exception("Importer", "Cannot detect file type using file extension. Valid file extensions are [.xls, .xlsx, .csv, .tsv, .txt, .tab].")
+            Logger.error(Exception("Importer", "task", "Cannot detect the file type using file extension. Valid file extensions are [.xls, .xlsx, .csv, .tsv, .txt, .tab]."))
         
         if self.get_param('targets') == "":
             ds = Dataset(features=df)
@@ -187,7 +188,8 @@ class Importer(Process):
             try:
                 t_df = df.loc[:,t]
             except:
-                raise Exception(f"The targets {t} are no found in column names. Please check targets names or set parameter 'header' to read column names.")
+                Logger.error(Exception("Importer", "task", f"The targets {t} are no found in column names. Please check targets names or set parameter 'header' to read column names."))
+            
             df.drop(columns = t, inplace = True)
             ds = Dataset(features = df, targets = t_df)
 

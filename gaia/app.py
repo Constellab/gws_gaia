@@ -11,31 +11,31 @@ from starlette.endpoints import HTTPEndpoint
 from starlette.templating import Jinja2Templates
 
 settings = Settings.retrieve()
-template_dir = settings.get_template_dir("gaia")
+template_dir = settings.get_public_dir("gaia")
 templates = Jinja2Templates(directory=template_dir)
 
 async def homepage(request):
-    return templates.TemplateResponse('home.html', {'request': request, 'settings': settings})
+    return templates.TemplateResponse('index.html', {'request': request, 'settings': settings})
 
 class App:
     """
-    App class of gaia application
-
-    This App class will dynamically inherits the App classes this application depends on.
-    Method on_init() must be overloaded to add new routes.
+    App class of Gaia.
     """
 
     routes = []
 
     @classmethod
-    def on_init(cls):
+    def init_routes(cls):
         """
-        Initializes the application. 
-        
-        This method is automatically called after by the constructor.
-        """
-        # loads base applications' routes
-        super().on_init()
+        Defines current web application routes.
 
+        Routing coventions: 
+        
+        To prevent route collisions, it is highly recommended to 
+        prefix route names of the name of the current brick.
+        e.g.: 
+            * /<brick name>/home/       -> home page route
+            * /<brick name>/settings/   -> setting page route
+        """
         # adds new routes
-        cls.routes.append(Route('/gaia/home/', homepage) )
+        cls.routes.append(Route('/gaia/', homepage) )

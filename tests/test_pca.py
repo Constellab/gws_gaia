@@ -3,8 +3,8 @@ import os
 import asyncio
 import unittest
 
-from gaia.data.dataset import Dataset, Importer
-from gaia.comp.pca import Trainer
+from gaia.dataset import Dataset, Importer
+from gaia.pca import Trainer
 from gws.settings import Settings
 
 class TestTrainer(unittest.TestCase):

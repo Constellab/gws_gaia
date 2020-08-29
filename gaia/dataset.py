@@ -36,6 +36,9 @@ class Dataset(Resource):
         except:
             return None
 
+    def feature_exists(self, name) -> bool:
+        return name in self.feature_names
+
     @property
     def target_names(self) -> list:
         """ 
@@ -47,6 +50,9 @@ class Dataset(Resource):
             return self._targets.columns.values.tolist()
         except:
             return None
+
+    def target_exists(self, name) -> bool:
+        return name in self.target_exists
 
     # -- D --
 

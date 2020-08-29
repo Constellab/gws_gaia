@@ -3,7 +3,7 @@
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
-from gaia.data.dataset import Dataset
+from gaia.dataset import Dataset
 
 from gws.prism.model import Config
 from gws.prism.controller import Controller

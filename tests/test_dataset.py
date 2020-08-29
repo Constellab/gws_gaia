@@ -3,10 +3,10 @@ import os
 import asyncio
 import unittest
 
-from gaia.data.dataset import Dataset, Importer as DatasetImporter
+from gaia.dataset import Dataset, Importer as DatasetImporter
 from gws.settings import Settings
 
-class TestTrainer(unittest.TestCase):
+class TestImporter(unittest.TestCase):
     
     @classmethod
     def setUpClass(cls):

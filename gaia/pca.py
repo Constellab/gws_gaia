@@ -28,5 +28,7 @@ class Trainer(Process):
         dataset = self.input['dataset']
         pca = PCA(n_components=self.get_param("nb_components"))
         pca.fit(dataset.features.values)
-        result = Result(pca=pca)
+
+        t = self.output_specs["result"]
+        result = t(pca=pca)
         self.output['result'] = result

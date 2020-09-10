@@ -26,6 +26,7 @@ class Datatable(Resource):
     def column_names(self) -> list:
         """ 
         Returns the column names of the Datatable.
+
         :return: The list of column names or `None` is no column names exist
         :rtype: list or None
         """
@@ -43,6 +44,7 @@ class Datatable(Resource):
     def table(self) -> DataFrame:
         """ 
         Returns the inner DataFrame.Alias of :property:`Datatable.table`.
+
         :return: The inner DataFrame
         :rtype: pandas.DataFrame
         """
@@ -52,7 +54,8 @@ class Datatable(Resource):
 
     def head(self, n=5) -> DataFrame:
         """ 
-        Returns the first n rows for the columns ant targets
+        Returns the first n rows for the columns ant targets.
+
         :param n: Number of rows
         :param n: int
         :return: The `panda.DataFrame` objects representing the n first rows of the `table`
@@ -67,6 +70,7 @@ class Datatable(Resource):
     def row_names(self) -> list:
         """ 
         Returns the row names.
+
         :return: The list of row names
         :rtype: list
         """
@@ -77,7 +81,8 @@ class Datatable(Resource):
     @property
     def nb_columns(self) -> int:
         """ 
-        Returns the number of columns 
+        Returns the number of columns.
+
         :return: The number of columns 
         :rtype: int
         """
@@ -86,7 +91,8 @@ class Datatable(Resource):
     @property
     def nb_rows(self) -> int:
         """ 
-        Returns the number of rows 
+        Returns the number of rows.
+
         :return: The number of rows 
         :rtype: int
         """
@@ -95,7 +101,8 @@ class Datatable(Resource):
     @property
     def nb_targets(self) -> int:
         """ 
-        Returns the number of targets 
+        Returns the number of targets.
+
         :return: The number of targets (0 is no targets exist)
         :rtype: int
         """
@@ -124,6 +131,7 @@ class Importer(Process):
         'header': {"type": 'int', "default": None, "description": "Row number to use as the column names. Use None to prevent parsing column names. Only for parsing CSV files"},
         'index' : {"type": 'int', "default": None, "description": "Column number to use as the row names. Use None to prevent parsing row names. Only for parsing CSV files"},
     }
+    
     def task(self):
         file_path = self.get_param("file_path")
         _, file_extension = os.path.splitext(file_path)
@@ -140,7 +148,8 @@ class Importer(Process):
         else:
             Logger.error(Exception("Importer", "task", "Cannot detect the file type using file extension. Valid file extensions are [.xls, .xlsx, .csv, .tsv, .txt, .tab]."))
         
-        self.output['datatable'] = Datatable(table=df)
+        t = self.output_specs["datatable"]
+        self.output['datatable'] = t(table=df)
 
 
 class Exporter(Process):

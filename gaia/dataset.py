@@ -28,6 +28,7 @@ class Dataset(Resource):
     def feature_names(self) -> list:
         """ 
         Returns the feaures names of the Dataset.
+
         :return: The list of feature names or `None` is no feature names exist
         :rtype: list or None
         """
@@ -43,6 +44,7 @@ class Dataset(Resource):
     def target_names(self) -> list:
         """ 
         Returns the target names.
+
         :return: The list of target names or `None` is no target names exist
         :rtype: list or None
         """
@@ -60,6 +62,7 @@ class Dataset(Resource):
     def features(self) -> DataFrame:
         """ 
         Returns the inner DataFrame.Alias of :property:`Dataset.features`.
+
         :return: The inner DataFrame
         :rtype: pandas.DataFrame
         """
@@ -69,6 +72,7 @@ class Dataset(Resource):
     def targets(self) -> DataFrame:
         """ 
         Returns the inner DataFrame.Alias of :property:`Dataset.targets`.
+
         :return: The inner DataFrame
         :rtype: pandas.DataFrame
         """
@@ -78,7 +82,8 @@ class Dataset(Resource):
 
     def head(self, n=5) -> (DataFrame, DataFrame):
         """ 
-        Returns the first n rows for the features ant targets
+        Returns the first n rows for the features ant targets.
+
         :param n: Number of rows
         :param n: int
         :return: Two `panda.DataFrame` objects representing the n first rows of the `features` and `targets`
@@ -100,6 +105,7 @@ class Dataset(Resource):
     def instance_names(self) -> list:
         """ 
         Returns the instance names.
+
         :return: The list of instance names
         :rtype: list
         """
@@ -110,7 +116,8 @@ class Dataset(Resource):
     @property
     def nb_features(self) -> int:
         """ 
-        Returns the number of features 
+        Returns the number of features.
+
         :return: The number of features 
         :rtype: int
         """
@@ -119,7 +126,8 @@ class Dataset(Resource):
     @property
     def nb_instances(self) -> int:
         """ 
-        Returns the number of instances 
+        Returns the number of instances.
+
         :return: The number of instances 
         :rtype: int
         """
@@ -128,7 +136,8 @@ class Dataset(Resource):
     @property
     def nb_targets(self) -> int:
         """ 
-        Returns the number of targets 
+        Returns the number of targets.
+        
         :return: The number of targets (0 is no targets exist)
         :rtype: int
         """
@@ -169,7 +178,7 @@ class Importer(Process):
         'delimiter': {"type": 'str', "default": '\t', "description": "Delimiter character. Only for parsing CSV files"},
         'header': {"type": 'int', "default": None, "description": "Row number to use as the column names. Use None to prevent parsing column names. Only for parsing CSV files"},
         'index' : {"type": 'int', "default": None, "description": "Column number to use as the row names. Use None to prevent parsing row names. Only for parsing CSV files"},
-        'targets': {"type": 'list', "default": '', "description": "List of integers or strings (eg. ['name', 6, '7'])"},
+        'targets': {"type": 'list', "default": '[]', "description": "List of integers or strings (eg. ['name', 6, '7'])"},
     }
     def task(self):
         file_path = self.get_param("file_path")
@@ -187,17 +196,19 @@ class Importer(Process):
         else:
             Logger.error(Exception("Importer", "task", "Cannot detect the file type using file extension. Valid file extensions are [.xls, .xlsx, .csv, .tsv, .txt, .tab]."))
         
+        out_type = self.output_specs["dataset"]
+
         if self.get_param('targets') == "":
-            ds = Dataset(features=df)
+            ds = out_type(features=df)
         else:
-            t = self.get_param('targets')
+            targets = self.get_param('targets')
             try:
-                t_df = df.loc[:,t]
+                t_df = df.loc[:,targets]
             except:
-                Logger.error(Exception("Importer", "task", f"The targets {t} are no found in column names. Please check targets names or set parameter 'header' to read column names."))
+                Logger.error(Exception("Importer", "task", f"The targets {targets} are no found in column names. Please check targets names or set parameter 'header' to read column names."))
             
-            df.drop(columns = t, inplace = True)
-            ds = Dataset(features = df, targets = t_df)
+            df.drop(columns = targets, inplace = True)
+            ds = out_type(features = df, targets = t_df)
 
         self.output['dataset'] = ds
 

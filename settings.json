@@ -2,13 +2,13 @@
     "name"                  : "gaia",
     "db_dir"                : "./data/",
     "db_name"               : "db.sqlite3",
-    
+
     "dirs"     : {
         "gaia:testdata_dir"  : "./tests/testdata"
     },
 
     "dependencies"  : {
-        "gview"           : "../gview-py"
+        "gws"           : "../gws-py"
     },
     
     "app":{

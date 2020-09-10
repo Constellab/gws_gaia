@@ -5,9 +5,9 @@
 
 from gaia.dataset import Dataset
 
-from gws.prism.model import Config
-from gws.prism.controller import Controller
-from gws.prism.model import Process, Config, Resource
+from gws.model import Config
+from gws.controller import Controller
+from gws.model import Process, Config, Resource
 
 from sklearn.decomposition import PCA
 

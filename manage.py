@@ -6,7 +6,7 @@
 import sys
 import os
 
-sys.path.append(os.path.join("../gws-py"))
+sys.path.append(os.path.join("../gws"))
 from gws import runner
 from gws.manage import load_settings
 

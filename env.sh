@@ -13,5 +13,5 @@ python3 -m virtualenv .venv --python=python3
 source .venv/bin/activate
 
 # install dependencies
-python3 -m pip install -r ../gws-py/requirements.txt
+python3 -m pip install -r ../gws/requirements.txt
 python3 -m pip install -r requirements.txt

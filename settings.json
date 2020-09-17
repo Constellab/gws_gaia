@@ -1,7 +1,9 @@
 {
-    "name"                  : "gaia",
-    "db_dir"                : "./data/",
-    "db_name"               : "db.sqlite3",
+    "type"          : "brick",
+    "name"          : "gaia",
+    "log_dir"       : "../../logs",
+    "db_dir"        : "../../data/db/",
+    "db_name"       : "db.sqlite3",
 
     "dirs"     : {
         "gaia:testdata_dir"  : "./tests/testdata"

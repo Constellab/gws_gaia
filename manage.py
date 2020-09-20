@@ -6,7 +6,15 @@
 import sys
 import os
 
-sys.path.append(os.path.join("../gws"))
+gws_path = "./gws/bricks/gws"
+is_loaded  = False
+for k in range(0,10):
+    gws_path = os.path.join("../", gws_path)
+    if os.path.exists(gws_path):
+        sys.path.append(gws_path)
+        is_loaded  = True
+        break
+    
 from gws import runner
 from gws.manage import load_settings
 

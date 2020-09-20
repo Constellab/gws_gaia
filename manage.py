@@ -14,6 +14,9 @@ for k in range(0,10):
         sys.path.append(gws_path)
         is_loaded  = True
         break
+
+if not is_loaded:
+    raise Exception("Cannot find the base gws brick")
     
 from gws import runner
 from gws.manage import load_settings

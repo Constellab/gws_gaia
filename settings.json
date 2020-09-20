@@ -9,9 +9,10 @@
         "gaia:testdata_dir"  : "./tests/testdata"
     },
 
-    "dependencies"  : {
-        "gws"           : "../gws"
-    },
+    "externs" : [],
+    "dependencies"  : [
+        "gws"
+    ],
     
     "app":{
         "title"         : "Gaia - GWS Artificial Intelligence and Analytics",

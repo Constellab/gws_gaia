@@ -3,8 +3,8 @@
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
+from gws.app import BaseApp
 from gws.settings import Settings
-from gws.app import App as GWSApp
 
 from starlette.routing import Route, Mount
 from starlette.endpoints import HTTPEndpoint
@@ -17,15 +17,13 @@ templates = Jinja2Templates(directory=template_dir)
 async def homepage(request):
     return templates.TemplateResponse('index.html', {'request': request, 'settings': settings})
 
-class App:
+class App(BaseApp):
     """
     App class of Gaia.
     """
-
-    routes = []
-
+    
     @classmethod
-    def init_routes(cls):
+    def init(cls):
         """
         Defines current web application routes.
 

@@ -18,6 +18,12 @@ class Dataset(Resource):
     _store_file_name = 'data.pkl'
 
     def __init__(self, features: DataFrame = None, targets: DataFrame = None, *args, **kwargs):
+        if features is None:
+            features = DataFrame()
+        
+        if targets is None:
+            targets = DataFrame()
+
         self._features = features
         self._targets = targets
         super().__init__(*args, **kwargs)

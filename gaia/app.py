@@ -3,35 +3,10 @@
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
-from starlette.routing import Route
-from starlette.authentication import requires
-from starlette.responses import RedirectResponse
-
-from gws.app import BaseApp
+from fastapi import FastAPI
 
 brick = "gaia"
+app = FastAPI()
 
-@requires("authenticated")
-async def home_page(request):
-    return RedirectResponse(url=f'/page/{brick}')
-
-class App(BaseApp):
-    """
-    App class of Gaia.
-    """
-    
-    @classmethod
-    def init(cls):
-        """
-        Defines current web application routes.
-
-        Routing coventions: 
-        
-        To prevent route collisions, it is highly recommended to 
-        prefix route names of the name of the current brick.
-        e.g.: 
-            * /<brick name>/home/       -> home page route
-            * /<brick name>/settings/   -> setting page route
-        """
-        # adds new routes
-        cls.routes.append(Route(f'/{brick}/', home_page) )
+async def index(request):
+    return None

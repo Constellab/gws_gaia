@@ -9,7 +9,17 @@
         "gaia:testdata_dir"  : "./tests/testdata"
     },
 
-    "externs" : [],
+    "externs"  : [
+        "gaia-cpp",
+        "dlib-cpp",
+        "gaia-cpp",
+        "gflags-cpp",
+        "glog-cpp",
+        "googletest-cpp",
+        "json-cpp",
+        "odeint-v2-cpp"
+    ],
+
     "dependencies"  : [
         "gws"
     ],

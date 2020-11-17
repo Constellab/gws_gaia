@@ -60,7 +60,7 @@ class Dataset(Resource):
             return None
 
     def target_exists(self, name) -> bool:
-        return name in self.target_exists
+        return name in self.target_names
 
     # -- D --
 

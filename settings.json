@@ -1,5 +1,4 @@
 {
-    "type"          : "brick",
     "name"          : "gaia",
     "log_dir"       : "../../logs",
     "db_dir"        : "../../data/db/",

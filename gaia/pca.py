@@ -13,7 +13,7 @@ from sklearn.decomposition import PCA
 
 
 class Result(Resource):
-    def __init__(self, pca: PCA = None, *args, **kwargs):
+    def __init__(self, *args, pca: PCA = None, **kwargs):
         super().__init__(*args, **kwargs)
         #self.store['pca'] = pca
 

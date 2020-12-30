@@ -16,7 +16,7 @@ class Datatable(Resource):
     _table: DataFrame = None
     _store_file_name = 'data.pkl'
 
-    def __init__(self, table: DataFrame = None, *args, **kwargs):
+    def __init__(self, *args, table: DataFrame = None, **kwargs):
         self._table = table
         super().__init__(*args, **kwargs)
 

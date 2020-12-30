@@ -17,7 +17,7 @@ class Dataset(Resource):
     _targets: DataFrame = None
     _store_file_name = 'data.pkl'
 
-    def __init__(self, features: DataFrame = None, targets: DataFrame = None, *args, **kwargs):
+    def __init__(self, *args, features: DataFrame = None, targets: DataFrame = None, **kwargs):
         if features is None:
             features = DataFrame()
         
@@ -157,20 +157,30 @@ class Dataset(Resource):
     # -- S --
 
     def __str__(self):
-        n = self.nb_instances
-        if n > 10:
-            t1 = pandas.concat( [ self._features.iloc[:5,:], self._targets.iloc[:5,:] ], axis=1 )
-            
-            t_i = pandas.concat( [ self._features.iloc[[5],:], self._targets.iloc[[5],:] ], axis=1 )
-            t_i.iloc[:,:] = '...'
-            t_i.index = pandas.Index(['..'])
-
-            t2 = pandas.concat( [ self._features.iloc[n-5:n,:], self._targets.iloc[n-5:n,:] ], axis=1 )
-            t = pandas.concat([t1,t_i,t2], axis=0)
-        else:
-            t = pandas.concat([self._features,self._targets], axis=1)
         
-        return t.__str__()
+        return f"Features: \n{self._features.__str__()} \n\nTargets: \n{self._targets.__str__()} "
+    
+        #n = self.nb_instances
+        #if n > 10:
+        #    
+        #    x = self._features.iloc[:5,:]
+        #    y = self._targets if self._targets.empty else self._targets.iloc[:5,:]
+        #    t1 = pandas.concat( [x, y], axis=1 )
+ 
+        #    x = self._features.iloc[5,:]
+        #    y = self._targets if self._targets.empty else self._targets.iloc[5,:]
+        #    t_i = pandas.concat( [x, y], axis=1 )
+        #    t_i.iloc[:,:] = '...'
+        #    t_i.index = pandas.Index(['..'])
+            
+        #    x = self._features.iloc[n-5:n,:]
+        #    y = self._targets if self._targets.empty else self._targets.iloc[n-5:n,:]
+        #    t2 = pandas.concat( [x,y], axis=1 )
+        #    t = pandas.concat([t1,t_i,t2], axis=0)
+        #else:
+        #    t = pandas.concat([self._features,self._targets], axis=1)
+        #
+        #return t.__str__()
 
     # -- V --
 

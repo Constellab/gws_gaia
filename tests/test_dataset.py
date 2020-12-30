@@ -19,7 +19,9 @@ class TestImporter(unittest.TestCase):
     def test_importer(self):
         
         async def _import_iris(self):
-            p0 = DatasetImporter()
+            p0 = DatasetImporter(title="p0")
+            e = p0.create_experiment()
+            
             settings = Settings.retrieve()
 
             test_dir = settings.get_dir("gaia:testdata_dir")
@@ -27,7 +29,9 @@ class TestImporter(unittest.TestCase):
             p0.set_param("delimiter", ",")
             p0.set_param("header", 0)
             p0.set_param("targets", ["variety"])
-            await p0.run()
+            
+            
+            await e.run()
 
             ds = p0.output['dataset']
             self.assertEquals(ds.nb_features, 4)
@@ -45,14 +49,17 @@ class TestImporter(unittest.TestCase):
     def test_importer_no_head(self):
 
         async def _import_iris_no_head(self):
-            p0 = DatasetImporter()
+            p0 = DatasetImporter(title="p0")
+            e = p0.create_experiment()
+            
             settings = Settings.retrieve()
 
             test_dir = settings.get_dir("gaia:testdata_dir")
             p0.set_param("file_path", os.path.join(test_dir, "./iris_no_head.csv"))
             p0.set_param("delimiter", ",")
             p0.set_param("targets", [4])
-            await p0.run()
+            
+            await e.run()
 
             ds = p0.output['dataset']
 

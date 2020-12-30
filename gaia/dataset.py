@@ -10,7 +10,7 @@ from pandas import DataFrame
 from gws.model import Process, Config
 from gws.model import Resource
 from gws.controller import Controller
-from gws.logger import Logger
+from gws.logger import Error
 
 class Dataset(Resource):
     _features: DataFrame = None
@@ -186,7 +186,8 @@ class Importer(Process):
         'index' : {"type": 'int', "default": None, "description": "Column number to use as the row names. Use None to prevent parsing row names. Only for parsing CSV files"},
         'targets': {"type": 'list', "default": '[]', "description": "List of integers or strings (eg. ['name', 6, '7'])"},
     }
-    def task(self):
+    
+    async def task(self):
         file_path = self.get_param("file_path")
         _, file_extension = os.path.splitext(file_path)
 
@@ -200,7 +201,7 @@ class Importer(Process):
                 index_col = self.get_param("index")
             )
         else:
-            Logger.error(Exception("Importer", "task", "Cannot detect the file type using file extension. Valid file extensions are [.xls, .xlsx, .csv, .tsv, .txt, .tab]."))
+            raise Error("Importer", "task", "Cannot detect the file type using file extension. Valid file extensions are [.xls, .xlsx, .csv, .tsv, .txt, .tab].")
         
         out_type = self.output_specs["dataset"]
 
@@ -211,7 +212,7 @@ class Importer(Process):
             try:
                 t_df = df.loc[:,targets]
             except:
-                Logger.error(Exception("Importer", "task", f"The targets {targets} are no found in column names. Please check targets names or set parameter 'header' to read column names."))
+                raise Error("Importer", "task", f"The targets {targets} are no found in column names. Please check targets names or set parameter 'header' to read column names.")
             
             df.drop(columns = targets, inplace = True)
             ds = out_type(features = df, targets = t_df)
@@ -228,5 +229,5 @@ class Exporter(Process):
         'header': {"type": 'int', "default": 0, "description": "Row number(s) to use as the column names, and the start of the data. Only for parsing CSV files"},
     }
 
-    def task(self):
+    async def task(self):
         pass

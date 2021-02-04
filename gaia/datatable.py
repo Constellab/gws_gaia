@@ -14,7 +14,6 @@ from gws.logger import Logger
 
 class Datatable(Resource):
     _table: DataFrame = None
-    _store_file_name = 'data.pkl'
 
     def __init__(self, *args, table: DataFrame = None, **kwargs):
         self._table = table
@@ -49,7 +48,7 @@ class Datatable(Resource):
         :rtype: pandas.DataFrame
         """
         return self._table
-
+    
     # -- H --
 
     def head(self, n=5) -> DataFrame:
@@ -97,19 +96,6 @@ class Datatable(Resource):
         :rtype: int
         """
         return self._table.shape[0]
-
-    @property
-    def nb_targets(self) -> int:
-        """ 
-        Returns the number of targets.
-
-        :return: The number of targets (0 is no targets exist)
-        :rtype: int
-        """
-        if self._targets is None:
-            return 0
-        else:
-            return self._targets.shape[1]
 
     # -- R --
 

@@ -26,14 +26,13 @@ class TestTrainer(unittest.TestCase):
         settings = Settings.retrieve()
         test_dir = settings.get_dir("gaia:testdata_dir")
         
-        p0 = Importer(title="p0")
-        p0.set_param("delimiter", ",")
+        p0 = Importer(instance_name="p0")
         p0.set_param("delimiter", ",")
         p0.set_param("header", 0)
         p0.set_param('targets', ['variety'])
         p0.set_param("file_path", os.path.join(test_dir, "./iris.csv"))
         
-        p1 = Trainer(title="p1")
+        p1 = Trainer(instance_name="p1")
         p1.set_param('nb_components', 2)
         
         proto = Protocol(

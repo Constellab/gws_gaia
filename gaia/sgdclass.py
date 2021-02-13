@@ -10,39 +10,42 @@ from gws.model import Config
 from gws.controller import Controller
 from gws.model import Process, Config, Resource
 
-from sklearn.cross_decomposition import PLSRegression
+from sklearn.linear_model import SGDClassifier
 from gaia.data import Tuple
+from numpy import ravel
 
 #==============================================================================
 #==============================================================================
 
 class Result(Resource):
-    def __init__(self, pls: PLSRegression = None, *args, **kwargs):
+    def __init__(self, sgdc: SGDClassifier = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.kv_store['pls'] = pls
+        self.kv_store['sgdc'] = sgdc
 
 #==============================================================================
 #==============================================================================
 
 class Trainer(Process):
     """
-    Trainer of a Partial Least Squares (PLS) regression model. Fit a PLS regression model to a training dataset.
+    Trainer of a linear classifier with stochastic gradient descent (SGD). Fit a SGD linear classifier with a training dataset.
 
-    See https://scikit-learn.org/stable/modules/generated/sklearn.cross_decomposition.PLSRegression.html for more details.
+    See https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.SGDClassifier.html for more details.
     """
     input_specs = {'dataset' : Dataset}
     output_specs = {'result' : Result}
     config_specs = {
-        'nb_components': {"type": 'int', "default": 2, "min": 0}
+        'loss': {"type": 'str', "default": 'hinge'},
+        'alpha': {"type": 'float', "default": 0.0001, "min": 0},
+        'max_iter': {"type": 'int', "default": 1000, "min": 0}
     }
 
     async def task(self):
         dataset = self.input['dataset']
-        pls = PLSRegression(n_components=self.get_param("nb_components"))
-        pls.fit(dataset.features.values, dataset.targets.values)
+        sgdc = SGDClassifier(max_iter=self.get_param("max_iter"),alpha=self.get_param("alpha"),loss=self.get_param("loss"))
+        sgdc.fit(dataset.features.values, ravel(dataset.targets.values))
         
         t = self.output_specs["result"]
-        result = t(pls=pls)
+        result = t(sgdc=sgdc)
         self.output['result'] = result
 
 #==============================================================================
@@ -50,9 +53,9 @@ class Trainer(Process):
 
 class Tester(Process):
     """
-    Tester of a trained Partial Least Squares (PLS) regression model. Return the coefficient of determination R^2 of the prediction on a given dataset for a trained Partial Least Squares (PLS) regression model.
+    Tester of a trained linear classifier with stochastic gradient descent (SGD). Return the mean accuracy on a given dataset for a trained linear classifier with stochastic gradient descent (SGD).
     
-    See https://scikit-learn.org/stable/modules/generated/sklearn.cross_decomposition.PLSRegression.html for more details
+    See https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.SGDClassifier.html for more details
     """
     input_specs = {'dataset' : Dataset, 'learned_model': Result}
     output_specs = {'result' : Tuple}
@@ -62,8 +65,8 @@ class Tester(Process):
     async def task(self):
         dataset = self.input['dataset']
         learned_model = self.input['learned_model']
-        pls = learned_model.kv_store['pls']
-        y = pls.score(dataset.features.values, dataset.targets.values)
+        sgdc = learned_model.kv_store['sgdc']
+        y = sgdc.score(dataset.features.values, dataset.targets.values)
         z = tuple([y])
         
         t = self.output_specs["result"]
@@ -75,10 +78,10 @@ class Tester(Process):
 
 class Predictor(Process):
     """
-    Predictor of a Partial Least Squares (PLS) regression model. Predict targets of a dataset with a trained PLS regression model.
+    Predictor of a linear classifier with stochastic gradient descent (SGD). Predict class labels of a dataset with a trained SGD linear classifier.
 
-    See https://scikit-learn.org/stable/modules/generated/sklearn.cross_decomposition.PLSRegression.html for more details.
-    """
+    See https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.SGDClassifier.html for more details.
+    """    
     input_specs = {'dataset' : Dataset, 'learned_model': Result}
     output_specs = {'result' : Dataset}
     config_specs = {   
@@ -87,8 +90,8 @@ class Predictor(Process):
     async def task(self):
         dataset = self.input['dataset']
         learned_model = self.input['learned_model']
-        pls = learned_model.kv_store['pls']
-        y = pls.predict(dataset.features.values)
+        sgdc = learned_model.kv_store['sgdc']
+        y = sgdc.predict(dataset.features.values)
 
         t = self.output_specs["result"]
         result_dataset = t(targets = DataFrame(y))

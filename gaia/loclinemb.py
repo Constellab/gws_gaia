@@ -9,22 +9,24 @@ from gws.model import Config
 from gws.controller import Controller
 from gws.model import Process, Config, Resource
 
-from sklearn.decomposition import PCA
+from sklearn.manifold import LocallyLinearEmbedding
 
 #==============================================================================
 #==============================================================================
 
 class Result(Resource):
-    def __init__(self, pca: PCA = None, *args, **kwargs):
+    def __init__(self, lle: LocallyLinearEmbedding = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.kv_store['pca'] = pca
+        self.kv_store['lle'] = lle
 
 #==============================================================================
 #==============================================================================
 
 class Trainer(Process):
     """
-    Trainer of a Principal Component Analysis (PCA) model. Fit a PCA model with a training dataset.
+    Trainer of a locally linear embedding model. Compute the embedding vectors for a dataset.
+
+    See https://scikit-learn.org/stable/modules/generated/sklearn.manifold.LocallyLinearEmbedding.html for more details.
     """
     input_specs = {'dataset' : Dataset}
     output_specs = {'result' : Result}
@@ -34,10 +36,9 @@ class Trainer(Process):
 
     async def task(self):
         dataset = self.input['dataset']
-        pca = PCA(n_components=self.get_param("nb_components"))
-        pca.fit(dataset.features.values)
+        lle = LocallyLinearEmbedding(n_components=self.get_param("nb_components"))
+        lle.fit(dataset.features.values)
 
         t = self.output_specs["result"]
-        result = t(pca=pca)
-        #a = result.kv_store['pca']
+        result = t(lle=lle)
         self.output['result'] = result

@@ -10,39 +10,40 @@ from gws.model import Config
 from gws.controller import Controller
 from gws.model import Process, Config, Resource
 
-from sklearn.cross_decomposition import PLSRegression
+from sklearn.linear_model import ElasticNet
 from gaia.data import Tuple
+from numpy import ravel
 
 #==============================================================================
 #==============================================================================
 
 class Result(Resource):
-    def __init__(self, pls: PLSRegression = None, *args, **kwargs):
+    def __init__(self, *args, eln: ElasticNet = None, **kwargs):
         super().__init__(*args, **kwargs)
-        self.kv_store['pls'] = pls
+        self.kv_store['eln'] = eln
 
 #==============================================================================
 #==============================================================================
 
 class Trainer(Process):
-    """
-    Trainer of a Partial Least Squares (PLS) regression model. Fit a PLS regression model to a training dataset.
+    """ 
+    Trainer of an elastic net model. Fit model with coordinate descent.
 
-    See https://scikit-learn.org/stable/modules/generated/sklearn.cross_decomposition.PLSRegression.html for more details.
+    See https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.ElasticNet.html for more details
     """
     input_specs = {'dataset' : Dataset}
     output_specs = {'result' : Result}
     config_specs = {
-        'nb_components': {"type": 'int', "default": 2, "min": 0}
+        'alpha':{"type": 'float', "default": 1, "min": 0}
     }
 
     async def task(self):
         dataset = self.input['dataset']
-        pls = PLSRegression(n_components=self.get_param("nb_components"))
-        pls.fit(dataset.features.values, dataset.targets.values)
+        eln = ElasticNet(alpha=self.get_param("alpha"))
+        eln.fit(dataset.features.values, dataset.targets.values)
         
         t = self.output_specs["result"]
-        result = t(pls=pls)
+        result = t(eln=eln)
         self.output['result'] = result
 
 #==============================================================================
@@ -50,9 +51,9 @@ class Trainer(Process):
 
 class Tester(Process):
     """
-    Tester of a trained Partial Least Squares (PLS) regression model. Return the coefficient of determination R^2 of the prediction on a given dataset for a trained Partial Least Squares (PLS) regression model.
+    Tester of a trained elastic net model. Return the coefficient of determination R^2 of the prediction on a given dataset for a trained elastic net model.
     
-    See https://scikit-learn.org/stable/modules/generated/sklearn.cross_decomposition.PLSRegression.html for more details
+    See https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.ElasticNet.html for more details
     """
     input_specs = {'dataset' : Dataset, 'learned_model': Result}
     output_specs = {'result' : Tuple}
@@ -62,10 +63,10 @@ class Tester(Process):
     async def task(self):
         dataset = self.input['dataset']
         learned_model = self.input['learned_model']
-        pls = learned_model.kv_store['pls']
-        y = pls.score(dataset.features.values, dataset.targets.values)
+        eln = learned_model.kv_store['eln']
+        y = eln.score(dataset.features.values, dataset.targets.values)
         z = tuple([y])
-        
+
         t = self.output_specs["result"]
         result_dataset = t(tuple = z)
         self.output['result'] = result_dataset
@@ -75,9 +76,9 @@ class Tester(Process):
 
 class Predictor(Process):
     """
-    Predictor of a Partial Least Squares (PLS) regression model. Predict targets of a dataset with a trained PLS regression model.
+    Predictor of a trained elastic net model. Predict from a dataset using the trained model.
 
-    See https://scikit-learn.org/stable/modules/generated/sklearn.cross_decomposition.PLSRegression.html for more details.
+    See https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.ElasticNet.html for more details
     """
     input_specs = {'dataset' : Dataset, 'learned_model': Result}
     output_specs = {'result' : Dataset}
@@ -87,8 +88,8 @@ class Predictor(Process):
     async def task(self):
         dataset = self.input['dataset']
         learned_model = self.input['learned_model']
-        pls = learned_model.kv_store['pls']
-        y = pls.predict(dataset.features.values)
+        eln = learned_model.kv_store['eln']
+        y = eln.predict(dataset.features.values)
 
         t = self.output_specs["result"]
         result_dataset = t(targets = DataFrame(y))

@@ -10,39 +10,41 @@ from gws.model import Config
 from gws.controller import Controller
 from gws.model import Process, Config, Resource
 
-from sklearn.cross_decomposition import PLSRegression
+from sklearn.kernel_ridge import KernelRidge
 from gaia.data import Tuple
+from numpy import ravel
 
 #==============================================================================
 #==============================================================================
 
 class Result(Resource):
-    def __init__(self, pls: PLSRegression = None, *args, **kwargs):
+    def __init__(self, krr: KernelRidge = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.kv_store['pls'] = pls
+        self.kv_store['krr'] = krr
 
 #==============================================================================
 #==============================================================================
 
 class Trainer(Process):
     """
-    Trainer of a Partial Least Squares (PLS) regression model. Fit a PLS regression model to a training dataset.
+    Trainer of a kernel ridge regression model. Fit a kernel ridge regression model with a training dataset. 
 
-    See https://scikit-learn.org/stable/modules/generated/sklearn.cross_decomposition.PLSRegression.html for more details.
+    See https://scikit-learn.org/stable/modules/generated/sklearn.kernel_ridge.KernelRidge.html for more details.
     """
     input_specs = {'dataset' : Dataset}
     output_specs = {'result' : Result}
     config_specs = {
-        'nb_components': {"type": 'int', "default": 2, "min": 0}
+        'gamma': {"type": 'float', "default": None},
+        'kernel': {"type": 'str', "default": 'linear'}
     }
 
     async def task(self):
         dataset = self.input['dataset']
-        pls = PLSRegression(n_components=self.get_param("nb_components"))
-        pls.fit(dataset.features.values, dataset.targets.values)
+        krr = KernelRidge(gamma=self.get_param("gamma"),kernel=self.get_param("kernel"))
+        krr.fit(dataset.features.values, ravel(dataset.targets.values))
         
         t = self.output_specs["result"]
-        result = t(pls=pls)
+        result = t(krr=krr)
         self.output['result'] = result
 
 #==============================================================================
@@ -50,9 +52,9 @@ class Trainer(Process):
 
 class Tester(Process):
     """
-    Tester of a trained Partial Least Squares (PLS) regression model. Return the coefficient of determination R^2 of the prediction on a given dataset for a trained Partial Least Squares (PLS) regression model.
+    Tester of a trained kernel ridge regression model. Return the coefficient of determination R^2 of the prediction on a given dataset for a kernel ridge regression model.
     
-    See https://scikit-learn.org/stable/modules/generated/sklearn.cross_decomposition.PLSRegression.html for more details
+    See https://scikit-learn.org/stable/modules/generated/sklearn.kernel_ridge.KernelRidge.html for more details
     """
     input_specs = {'dataset' : Dataset, 'learned_model': Result}
     output_specs = {'result' : Tuple}
@@ -62,10 +64,10 @@ class Tester(Process):
     async def task(self):
         dataset = self.input['dataset']
         learned_model = self.input['learned_model']
-        pls = learned_model.kv_store['pls']
-        y = pls.score(dataset.features.values, dataset.targets.values)
+        krr = learned_model.kv_store['krr']
+        y = krr.score(dataset.features.values, dataset.targets.values)
         z = tuple([y])
-        
+
         t = self.output_specs["result"]
         result_dataset = t(tuple = z)
         self.output['result'] = result_dataset
@@ -75,9 +77,9 @@ class Tester(Process):
 
 class Predictor(Process):
     """
-    Predictor of a Partial Least Squares (PLS) regression model. Predict targets of a dataset with a trained PLS regression model.
+    Predictor of a kernel ridge regression model. Predict a regression target from a dataset with a trained kernel ridge regression model. 
 
-    See https://scikit-learn.org/stable/modules/generated/sklearn.cross_decomposition.PLSRegression.html for more details.
+    See https://scikit-learn.org/stable/modules/generated/sklearn.kernel_ridge.KernelRidge.html for more details.
     """
     input_specs = {'dataset' : Dataset, 'learned_model': Result}
     output_specs = {'result' : Dataset}
@@ -87,9 +89,9 @@ class Predictor(Process):
     async def task(self):
         dataset = self.input['dataset']
         learned_model = self.input['learned_model']
-        pls = learned_model.kv_store['pls']
-        y = pls.predict(dataset.features.values)
-
+        krr = learned_model.kv_store['krr']
+        y = krr.predict(dataset.features.values)
+        
         t = self.output_specs["result"]
         result_dataset = t(targets = DataFrame(y))
         self.output['result'] = result_dataset

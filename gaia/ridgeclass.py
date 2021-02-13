@@ -10,39 +10,40 @@ from gws.model import Config
 from gws.controller import Controller
 from gws.model import Process, Config, Resource
 
-from sklearn.cross_decomposition import PLSRegression
+from sklearn.linear_model import RidgeClassifier
 from gaia.data import Tuple
+from numpy import ravel
 
 #==============================================================================
 #==============================================================================
 
 class Result(Resource):
-    def __init__(self, pls: PLSRegression = None, *args, **kwargs):
+    def __init__(self, ric: RidgeClassifier = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.kv_store['pls'] = pls
+        self.kv_store['ric'] = ric
 
 #==============================================================================
 #==============================================================================
 
 class Trainer(Process):
     """
-    Trainer of a Partial Least Squares (PLS) regression model. Fit a PLS regression model to a training dataset.
+    Trainer of a Ridge regression classifier. Fit a Ridge classifier model with a training dataset.
 
-    See https://scikit-learn.org/stable/modules/generated/sklearn.cross_decomposition.PLSRegression.html for more details.
+    See https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.RidgeClassifier.html for more details.
     """
     input_specs = {'dataset' : Dataset}
     output_specs = {'result' : Result}
     config_specs = {
-        'nb_components': {"type": 'int', "default": 2, "min": 0}
+        'alpha':{"type": 'float', "default": 1, "min": 0}
     }
 
     async def task(self):
         dataset = self.input['dataset']
-        pls = PLSRegression(n_components=self.get_param("nb_components"))
-        pls.fit(dataset.features.values, dataset.targets.values)
+        ric = RidgeClassifier(alpha=self.get_param("alpha"))
+        ric.fit(dataset.features.values, ravel(dataset.targets.values))
         
         t = self.output_specs["result"]
-        result = t(pls=pls)
+        result = t(ric=ric)
         self.output['result'] = result
 
 #==============================================================================
@@ -50,9 +51,9 @@ class Trainer(Process):
 
 class Tester(Process):
     """
-    Tester of a trained Partial Least Squares (PLS) regression model. Return the coefficient of determination R^2 of the prediction on a given dataset for a trained Partial Least Squares (PLS) regression model.
+    Tester of a trained Ridge regression classifier. Return the mean accuracy on a given dataset for a trained Ridge regression classifier.
     
-    See https://scikit-learn.org/stable/modules/generated/sklearn.cross_decomposition.PLSRegression.html for more details
+    See https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.RidgeClassifier.html for more details
     """
     input_specs = {'dataset' : Dataset, 'learned_model': Result}
     output_specs = {'result' : Tuple}
@@ -62,8 +63,8 @@ class Tester(Process):
     async def task(self):
         dataset = self.input['dataset']
         learned_model = self.input['learned_model']
-        pls = learned_model.kv_store['pls']
-        y = pls.score(dataset.features.values, dataset.targets.values)
+        ric = learned_model.kv_store['ric']
+        y = ric.score(dataset.features.values, dataset.targets.values)
         z = tuple([y])
         
         t = self.output_specs["result"]
@@ -75,10 +76,10 @@ class Tester(Process):
 
 class Predictor(Process):
     """
-    Predictor of a Partial Least Squares (PLS) regression model. Predict targets of a dataset with a trained PLS regression model.
+    Predictor of a Ridge regression classifier. Predict class labels for samples in a datatset with a trained Ridge classifier.
 
-    See https://scikit-learn.org/stable/modules/generated/sklearn.cross_decomposition.PLSRegression.html for more details.
-    """
+    See https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.RidgeClassifier.html for more details.
+    """    
     input_specs = {'dataset' : Dataset, 'learned_model': Result}
     output_specs = {'result' : Dataset}
     config_specs = {   
@@ -87,8 +88,8 @@ class Predictor(Process):
     async def task(self):
         dataset = self.input['dataset']
         learned_model = self.input['learned_model']
-        pls = learned_model.kv_store['pls']
-        y = pls.predict(dataset.features.values)
+        ric = learned_model.kv_store['ric']
+        y = ric.predict(dataset.features.values)
 
         t = self.output_specs["result"]
         result_dataset = t(targets = DataFrame(y))

@@ -10,39 +10,40 @@ from gws.model import Config
 from gws.controller import Controller
 from gws.model import Process, Config, Resource
 
-from sklearn.cross_decomposition import PLSRegression
+from sklearn.ensemble import RandomForestRegressor
 from gaia.data import Tuple
+from numpy import ravel
 
 #==============================================================================
 #==============================================================================
 
 class Result(Resource):
-    def __init__(self, pls: PLSRegression = None, *args, **kwargs):
+    def __init__(self, rfr: RandomForestRegressor = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.kv_store['pls'] = pls
+        self.kv_store['rfr'] = rfr
 
 #==============================================================================
 #==============================================================================
 
 class Trainer(Process):
     """
-    Trainer of a Partial Least Squares (PLS) regression model. Fit a PLS regression model to a training dataset.
+    Trainer of a random forest regressor. Build a forest of trees from a training dataset.
 
-    See https://scikit-learn.org/stable/modules/generated/sklearn.cross_decomposition.PLSRegression.html for more details.
+    See https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestRegressor.html for more details.
     """
     input_specs = {'dataset' : Dataset}
     output_specs = {'result' : Result}
     config_specs = {
-        'nb_components': {"type": 'int', "default": 2, "min": 0}
+        'nb_estimators': {"type": 'int', "default": 100, "min": 0}
     }
 
     async def task(self):
         dataset = self.input['dataset']
-        pls = PLSRegression(n_components=self.get_param("nb_components"))
-        pls.fit(dataset.features.values, dataset.targets.values)
+        rfr = RandomForestRegressor(n_estimators=self.get_param("nb_estimators"))
+        rfr.fit(dataset.features.values, ravel(dataset.targets.values))
         
         t = self.output_specs["result"]
-        result = t(pls=pls)
+        result = t(rfr=rfr)
         self.output['result'] = result
 
 #==============================================================================
@@ -50,9 +51,9 @@ class Trainer(Process):
 
 class Tester(Process):
     """
-    Tester of a trained Partial Least Squares (PLS) regression model. Return the coefficient of determination R^2 of the prediction on a given dataset for a trained Partial Least Squares (PLS) regression model.
+    Tester of a trained random forest regressor. Return the coefficient of determination R^2 of the prediction on a given dataset for a trained random forest regressor.
     
-    See https://scikit-learn.org/stable/modules/generated/sklearn.cross_decomposition.PLSRegression.html for more details
+    See https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestRegressor.html for more details
     """
     input_specs = {'dataset' : Dataset, 'learned_model': Result}
     output_specs = {'result' : Tuple}
@@ -62,8 +63,8 @@ class Tester(Process):
     async def task(self):
         dataset = self.input['dataset']
         learned_model = self.input['learned_model']
-        pls = learned_model.kv_store['pls']
-        y = pls.score(dataset.features.values, dataset.targets.values)
+        rfr = learned_model.kv_store['rfr']
+        y = rfr.score(dataset.features.values, dataset.targets.values)
         z = tuple([y])
         
         t = self.output_specs["result"]
@@ -75,9 +76,9 @@ class Tester(Process):
 
 class Predictor(Process):
     """
-    Predictor of a Partial Least Squares (PLS) regression model. Predict targets of a dataset with a trained PLS regression model.
+    Predictor of a random forest regressor. Predict regression target of a dataset with a trained random forest regressor.
 
-    See https://scikit-learn.org/stable/modules/generated/sklearn.cross_decomposition.PLSRegression.html for more details.
+    See https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestRegressor.html for more details.
     """
     input_specs = {'dataset' : Dataset, 'learned_model': Result}
     output_specs = {'result' : Dataset}
@@ -87,8 +88,8 @@ class Predictor(Process):
     async def task(self):
         dataset = self.input['dataset']
         learned_model = self.input['learned_model']
-        pls = learned_model.kv_store['pls']
-        y = pls.predict(dataset.features.values)
+        rfr = learned_model.kv_store['rfr']
+        y = rfr.predict(dataset.features.values)
 
         t = self.output_specs["result"]
         result_dataset = t(targets = DataFrame(y))

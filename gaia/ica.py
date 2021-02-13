@@ -9,22 +9,24 @@ from gws.model import Config
 from gws.controller import Controller
 from gws.model import Process, Config, Resource
 
-from sklearn.decomposition import PCA
+from sklearn.decomposition import FastICA
 
 #==============================================================================
 #==============================================================================
 
 class Result(Resource):
-    def __init__(self, pca: PCA = None, *args, **kwargs):
+    def __init__(self, ica: FastICA = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.kv_store['pca'] = pca
+        self.kv_store['ica'] = ica
 
 #==============================================================================
 #==============================================================================
 
 class Trainer(Process):
     """
-    Trainer of a Principal Component Analysis (PCA) model. Fit a PCA model with a training dataset.
+    Trainer of an Independant Component Analysis (ICA). Fit a model of ICA to a training dataset.
+
+    See https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.FastICA.html#sklearn.decomposition.FastICA.fit for more details.
     """
     input_specs = {'dataset' : Dataset}
     output_specs = {'result' : Result}
@@ -34,10 +36,9 @@ class Trainer(Process):
 
     async def task(self):
         dataset = self.input['dataset']
-        pca = PCA(n_components=self.get_param("nb_components"))
-        pca.fit(dataset.features.values)
+        ica = FastICA(n_components=self.get_param("nb_components"))
+        ica.fit(dataset.features.values)
 
         t = self.output_specs["result"]
-        result = t(pca=pca)
-        #a = result.kv_store['pca']
+        result = t(ica=ica)
         self.output['result'] = result

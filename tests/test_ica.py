@@ -4,7 +4,7 @@ import asyncio
 import unittest
 
 from gaia.dataset import Dataset, Importer
-from gaia.pca import Trainer
+from gaia.ica import Trainer
 from gws.settings import Settings
 from gws.model import Protocol
 
@@ -38,9 +38,9 @@ class TestTrainer(unittest.TestCase):
         
         p0.set_param("delimiter", ",")
         p0.set_param("header", 0)
-        p0.set_param('targets', ['variety'])
-        p0.set_param("file_path", os.path.join(test_dir, "./iris.csv"))
-        p1.set_param('nb_components', 2)
+        p0.set_param('targets', [])
+        p0.set_param("file_path", os.path.join(test_dir, "./digits.csv"))
+        p1.set_param('nb_components', 7)
 
         def _end(*args, **kwargs):
             r = p1.output['result']
@@ -50,4 +50,4 @@ class TestTrainer(unittest.TestCase):
         proto.on_end(_end)
         e = proto.create_experiment()
         
-        asyncio.run( e.run() )               
+        asyncio.run( e.run() )                                         

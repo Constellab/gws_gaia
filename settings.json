@@ -21,17 +21,5 @@
 
     "dependencies"  : [
         "gws"
-    ],
-    
-    "app":{
-        "title"         : "Gaia - GWS Artificial Intelligence and Analytics",
-        "description"   : "Web services for Artificial Intelligence and Analytics",
-        "statics"       : {
-            "/static/gaia"   : "./web/static"
-        },
-        "scripts": [],
-        "modules": [],
-        "styles": [],
-        "buttons":{}
-    }
+    ]
 }

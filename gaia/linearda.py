@@ -14,9 +14,6 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from gaia.data import Tuple
 from numpy import ravel
 
-#==============================================================================
-#==============================================================================
-
 class Result(Resource):
     def __init__(self, lda: LinearDiscriminantAnalysis = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -46,7 +43,33 @@ class Trainer(Process):
         t = self.output_specs["result"]
         result = t(lda=lda)
         self.output['result'] = result
+        
+#==============================================================================
+#==============================================================================
 
+class Transformer(Process):
+    """
+    Transformer of a linear discriminant analysis classifier. Project data to maximize class separation.
+    
+    See https://scikit-learn.org/stable/modules/generated/sklearn.discriminant_analysis.LinearDiscriminantAnalysis.html for more details
+
+    """
+    input_specs = {'dataset' : Dataset, 'learned_model': Result}
+    output_specs = {'result' : Tuple}
+    config_specs = {
+    }
+
+    async def task(self):
+        dataset = self.input['dataset']
+        learned_model = self.input['learned_model']
+        lda = learned_model.kv_store['lda']
+        x = lda.transform(dataset.features.values)
+
+        t = self.output_specs["result"]
+        result = t(tuple=x)
+        #a = result.kv_store['pca']
+        self.output['result'] = result
+        
 #==============================================================================
 #==============================================================================
 

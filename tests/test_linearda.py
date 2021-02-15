@@ -4,7 +4,7 @@ import asyncio
 import unittest
 
 from gaia.dataset import Dataset, Importer
-from gaia.linearda import Trainer, Predictor, Tester
+from gaia.linearda import Trainer, Predictor, Tester, Transformer
 from gws.settings import Settings
 from gws.model import Protocol
 
@@ -29,20 +29,25 @@ class TestTrainer(unittest.TestCase):
         p1 = Trainer()
         p2 = Predictor()
         p3 = Tester()
+        p4 = Transformer()
         
         proto = Protocol(
             processes = {
                 'p0' : p0,
                 'p1' : p1,
                 'p2' : p2,
-                'p3' : p3                
+                'p3' : p3,
+                'p4' : p4
             },
             connectors = [
         p0>>'dataset' | p1<<'dataset',
         p0>>'dataset' | p2<<'dataset',
         p1>>'result' | p2<<'learned_model',
         p0>>'dataset' | p3<<'dataset',
-        p1>>'result' | p3<<'learned_model'
+        p1>>'result' | p3<<'learned_model',
+        p0>>'dataset' | p4<<'dataset',
+        p1>>'result' | p4<<'learned_model'
+                
             ]
         )
 

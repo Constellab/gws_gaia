@@ -10,6 +10,7 @@ from gws.controller import Controller
 from gws.model import Process, Config, Resource
 
 from sklearn.decomposition import PCA
+from gaia.data import Tuple
 
 #==============================================================================
 #==============================================================================
@@ -25,6 +26,8 @@ class Result(Resource):
 class Trainer(Process):
     """
     Trainer of a Principal Component Analysis (PCA) model. Fit a PCA model with a training dataset.
+    
+    See https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.PCA.html for more details
     """
     input_specs = {'dataset' : Dataset}
     output_specs = {'result' : Result}
@@ -39,5 +42,31 @@ class Trainer(Process):
 
         t = self.output_specs["result"]
         result = t(pca=pca)
+        #a = result.kv_store['pca']
+        self.output['result'] = result
+        
+#==============================================================================
+#==============================================================================
+
+class Transformer(Process):
+    """
+    Transformer of a Principal Component Analysis (PCA) model. Apply dimensionality reduction to a dataset.
+    
+    See https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.PCA.html for more details
+
+    """
+    input_specs = {'dataset' : Dataset, 'learned_model': Result}
+    output_specs = {'result' : Tuple}
+    config_specs = {
+    }
+
+    async def task(self):
+        dataset = self.input['dataset']
+        learned_model = self.input['learned_model']
+        pca = learned_model.kv_store['pca']
+        x = pca.transform(dataset.features.values)
+
+        t = self.output_specs["result"]
+        result = t(tuple=x)
         #a = result.kv_store['pca']
         self.output['result'] = result

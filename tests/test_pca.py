@@ -4,7 +4,7 @@ import asyncio
 import unittest
 
 from gaia.dataset import Dataset, Importer
-from gaia.pca import Trainer
+from gaia.pca import Trainer, Transformer
 from gws.settings import Settings
 from gws.model import Protocol
 
@@ -21,18 +21,22 @@ class TestTrainer(unittest.TestCase):
 
     def test_process(self):
         settings = Settings.retrieve()
-        test_dir = settings.get_dir("gaia:testdata_dir")
+        test_dir = settings.get_dir("wassim:testdata_dir")
 
         p0 = Importer()
         p1 = Trainer()
+        p2 = Transformer()
 
         proto = Protocol(
             processes = {
                 'p0' : p0,
-                'p1' : p1
+                'p1' : p1,
+                'p2' : p2
             },
             connectors = [
                 p0>>'dataset' | p1<<'dataset',
+                p0>>'dataset' | p2<<'dataset',
+                p1>>'result' | p2<<'learned_model',
             ]
         )
         
@@ -43,9 +47,10 @@ class TestTrainer(unittest.TestCase):
         p1.set_param('nb_components', 2)
 
         def _end(*args, **kwargs):
-            r = p1.output['result']
+            r1 = p1.output['result']
+            r2 = p2.output['result']
 
-            print(r)
+            #print(r2.tuple)
 
         proto.on_end(_end)
         e = proto.create_experiment()

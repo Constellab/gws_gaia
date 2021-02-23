@@ -2,7 +2,7 @@ Usage
 =====
 
 
-Get stated
+Get started
 ----------
 
 

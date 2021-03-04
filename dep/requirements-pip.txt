@@ -1,6 +1,7 @@
 tensorflow
 torch 
 torchvision
+torchaudio
 scipy==1.4.1
 scikit-learn
 pandas

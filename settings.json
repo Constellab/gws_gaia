@@ -1,9 +1,10 @@
 {
-    "name"          : "gaia",
-    "log_dir"       : "../../logs",
-    "db_dir"        : "../../data/db/",
-    "db_name"       : "db.sqlite3",
-
+    "name"      : "gaia",
+    "authors"   : "Gencovery",
+    "version"   : "0.1",
+    "log_dir"   : "../../logs",
+    "data_dir"  : "../../data/",
+    "db_name"   : "db.sqlite3",
     "dirs"     : {
         "gaia:testdata_dir"  : "./tests/testdata"
     },

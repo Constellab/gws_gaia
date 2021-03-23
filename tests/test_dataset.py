@@ -5,22 +5,31 @@ import unittest
 
 from gaia.dataset import Dataset, Importer as DatasetImporter
 from gws.settings import Settings
+from gws.model import Protocol, Experiment, Job, Study
 
 class TestImporter(unittest.TestCase):
     
     @classmethod
     def setUpClass(cls):
-        pass
+        Dataset.drop_table()
+        Protocol.drop_table()
+        Job.drop_table()
+        Experiment.drop_table()
+        Study.drop_table()
 
     @classmethod
     def tearDownClass(cls):
         Dataset.drop_table()
-
+        Protocol.drop_table()
+        Job.drop_table()
+        Experiment.drop_table()
+        Study.drop_table()
+        
     def test_importer(self):
         
         async def _import_iris(self):
             p0 = DatasetImporter(instance_name="p0")
-            e = p0.create_experiment()
+            e = p0.create_experiment(study=Study.get_default_instance())
             
             settings = Settings.retrieve()
 
@@ -50,7 +59,7 @@ class TestImporter(unittest.TestCase):
 
         async def _import_iris_no_head(self):
             p0 = DatasetImporter(instance_name="p0")
-            e = p0.create_experiment()
+            e = p0.create_experiment(study=Study.get_default_instance())
             
             settings = Settings.retrieve()
 

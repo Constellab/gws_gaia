@@ -3,7 +3,7 @@ import os
 import asyncio
 import unittest
 
-from gws.model import Process, Resource
+from gws.model import Protocol, Experiment, Job, Study
 
 from gws.settings import Settings
 from gaia._tuto.tutorial import lda_pca_experiment
@@ -12,12 +12,17 @@ class TestTrainer(unittest.TestCase):
     
     @classmethod
     def setUpClass(cls):
-        pass
+        Protocol.drop_table()
+        Job.drop_table()
+        Experiment.drop_table()
+        Study.drop_table()
 
     @classmethod
     def tearDownClass(cls):
-        Process.drop_table()
-        Resource.drop_table()
+        Protocol.drop_table()
+        Job.drop_table()
+        Experiment.drop_table()
+        Study.drop_table()
 
     def test_process(self):
         settings = Settings.retrieve()

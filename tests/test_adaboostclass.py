@@ -6,18 +6,27 @@ import unittest
 from gaia.dataset import Dataset, Importer
 from gaia.adaboostclass import Trainer, Predictor, Tester
 from gws.settings import Settings
-from gws.model import Protocol
+from gws.model import Protocol, Study, Experiment, Job
 
 class TestTrainer(unittest.TestCase):
     
     @classmethod
     def setUpClass(cls):
-        pass
+        Dataset.drop_table()
+        Trainer.drop_table()
+        Protocol.drop_table()
+        Job.drop_table()
+        Experiment.drop_table()
+        Study.drop_table()
 
     @classmethod
     def tearDownClass(cls):
         Dataset.drop_table()
         Trainer.drop_table()
+        Protocol.drop_table()
+        Job.drop_table()
+        Experiment.drop_table()
+        Study.drop_table()
 
     def test_process(self):
         settings = Settings.retrieve()
@@ -61,7 +70,8 @@ class TestTrainer(unittest.TestCase):
             print(r3.tuple)
 
         proto.on_end(_end)
-        e = proto.create_experiment()
+        
+        e = proto.create_experiment(study=Study.get_default_instance())
         
         asyncio.run( e.run() )
         

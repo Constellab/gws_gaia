@@ -5,14 +5,20 @@ import unittest
 
 from gaia.corelayers import Dense, Activation, Embedding, Masking
 from gaia.data import InputConverter
-from gws.model import Protocol
+from gws.model import Protocol, Experiment, Job, Study
 #from gws.settings import Settings
 
 class TestTrainer(unittest.TestCase):
     
     @classmethod
     def setUpClass(cls):
-        pass
+        Dense.drop_table()
+        Activation.drop_table()
+        Embedding.drop_table()
+        Protocol.drop_table()
+        Job.drop_table()
+        Experiment.drop_table()
+        Study.drop_table()
 
     @classmethod
     def tearDownClass(cls):
@@ -20,7 +26,11 @@ class TestTrainer(unittest.TestCase):
         Dense.drop_table()
         Activation.drop_table()
         Embedding.drop_table()
-
+        Protocol.drop_table()
+        Job.drop_table()
+        Experiment.drop_table()
+        Study.drop_table()
+        
     def test_process(self):
         p1 = InputConverter()
         p2 = Dense()
@@ -66,7 +76,7 @@ class TestTrainer(unittest.TestCase):
             print(r5)
             
         proto.on_end(_end)        
-        e = proto.create_experiment()
+        e = proto.create_experiment(study=Study.get_default_instance())
  
         asyncio.run( e.run() )        
         

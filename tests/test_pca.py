@@ -6,22 +6,31 @@ import unittest
 from gaia.dataset import Dataset, Importer
 from gaia.pca import Trainer, Transformer
 from gws.settings import Settings
-from gws.model import Protocol
+from gws.model import Protocol, Experiment, Job, Study
 
 class TestTrainer(unittest.TestCase):
     
     @classmethod
     def setUpClass(cls):
-        pass
+        Dataset.drop_table()
+        Trainer.drop_table()
+        Protocol.drop_table()
+        Job.drop_table()
+        Experiment.drop_table()
+        Study.drop_table()
 
     @classmethod
     def tearDownClass(cls):
         Dataset.drop_table()
         Trainer.drop_table()
-
+        Protocol.drop_table()
+        Job.drop_table()
+        Experiment.drop_table()
+        Study.drop_table()
+        
     def test_process(self):
         settings = Settings.retrieve()
-        test_dir = settings.get_dir("wassim:testdata_dir")
+        test_dir = settings.get_dir("gaia:testdata_dir")
 
         p0 = Importer()
         p1 = Trainer()
@@ -53,6 +62,6 @@ class TestTrainer(unittest.TestCase):
             #print(r2.tuple)
 
         proto.on_end(_end)
-        e = proto.create_experiment()
+        e = proto.create_experiment(study=Study.get_default_instance())
         
         asyncio.run( e.run() )               

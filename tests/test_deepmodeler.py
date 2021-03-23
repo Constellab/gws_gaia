@@ -15,14 +15,20 @@ from gaia.data import Tuple, Tensor, Model, InputConverter
 from gaia.deepmodeler import Builder, Compiler, Trainer, Tester, Predictor
 
 from gws.settings import Settings
-from gws.model import Protocol
+from gws.model import Protocol, Experiment, Job, Study
 
 
 class TestTrainer(unittest.TestCase):
     
     @classmethod
     def setUpClass(cls):
-        pass
+        Conv2D.drop_table()
+        Builder.drop_table()
+        Compiler.drop_table()
+        Protocol.drop_table()
+        Job.drop_table()
+        Experiment.drop_table()
+        Study.drop_table()
 
     @classmethod
     def tearDownClass(cls):
@@ -30,7 +36,11 @@ class TestTrainer(unittest.TestCase):
         Conv2D.drop_table()
         Builder.drop_table()
         Compiler.drop_table()
-
+        Protocol.drop_table()
+        Job.drop_table()
+        Experiment.drop_table()
+        Study.drop_table()
+        
     def test_process(self):        
         settings = Settings.retrieve()
         test_dir = settings.get_dir("gaia:testdata_dir")
@@ -138,7 +148,7 @@ class TestTrainer(unittest.TestCase):
             r1 = p15.output['result']
             
         proto.on_end( _on_end )
-        e = proto.create_experiment()
+        e = proto.create_experiment(study=Study.get_default_instance())
         
         asyncio.run( e.run() )
 

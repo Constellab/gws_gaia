@@ -6,13 +6,20 @@ import unittest
 from gaia.dataset import Dataset, Importer
 from gaia.importingpkl import ImporterPKL, Preprocessor, AdhocExtractor
 from gws.settings import Settings
-from gws.model import Protocol
+from gws.model import Protocol, Experiment, Job, Study
 
 class TestTrainer(unittest.TestCase):
     
     @classmethod
     def setUpClass(cls):
-        pass
+        Dataset.drop_table()
+        ImporterPKL.drop_table()
+        Preprocessor.drop_table()
+        AdhocExtractor.drop_table()
+        Protocol.drop_table()
+        Job.drop_table()
+        Experiment.drop_table()
+        Study.drop_table()
 
     @classmethod
     def tearDownClass(cls):
@@ -20,6 +27,10 @@ class TestTrainer(unittest.TestCase):
         ImporterPKL.drop_table()
         Preprocessor.drop_table()
         AdhocExtractor.drop_table()
+        Protocol.drop_table()
+        Job.drop_table()
+        Experiment.drop_table()
+        Study.drop_table()
 
     def test_process(self):
         settings = Settings.retrieve()
@@ -54,7 +65,7 @@ class TestTrainer(unittest.TestCase):
             print(r3)
             
         proto.on_end(_end)
-        e = proto.create_experiment()
+        e = proto.create_experiment(study=Study.get_default_instance())
         
         asyncio.run( e.run() )
         

@@ -7,109 +7,16 @@ import os
 import pandas
 from pandas import DataFrame
 
-from gws.model import Process, Config
-from gws.model import Resource
+from gws.model import Process, Config, Resource
+from gws.csv import CSVData
 from gws.controller import Controller
 from gws.logger import Logger
 
 #====================================================================================================================
 #====================================================================================================================
 
-class Datatable(Resource):
-    _table: DataFrame = None
-
-    def __init__(self, *args, table: DataFrame = None, **kwargs):
-        self._table = table
-        super().__init__(*args, **kwargs)
-
-    # -- C --
-
-    @property
-    def column_names(self) -> list:
-        """ 
-        Returns the column names of the Datatable.
-
-        :return: The list of column names or `None` is no column names exist
-        :rtype: list or None
-        """
-        try:
-            return self._table.columns.values.tolist()
-        except:
-            return None
-
-    def column_exists(self, name) -> bool:
-        return name in self.column_names
-
-    # -- D --
-
-    @property
-    def table(self) -> DataFrame:
-        """ 
-        Returns the inner DataFrame.Alias of :property:`Datatable.table`.
-
-        :return: The inner DataFrame
-        :rtype: pandas.DataFrame
-        """
-        return self._table
-    
-    # -- H --
-
-    def head(self, n=5) -> DataFrame:
-        """ 
-        Returns the first n rows for the columns ant targets.
-
-        :param n: Number of rows
-        :param n: int
-        :return: The `panda.DataFrame` objects representing the n first rows of the `table`
-        :rtype: pandas.DataFrame
-        """
-
-        return self._table.head(n)
-
-    # -- I --
-
-    @property
-    def row_names(self) -> list:
-        """ 
-        Returns the row names.
-
-        :return: The list of row names
-        :rtype: list
-        """
-        return self._table.index.values.tolist()
-
-    # -- N --
-
-    @property
-    def nb_columns(self) -> int:
-        """ 
-        Returns the number of columns.
-
-        :return: The number of columns 
-        :rtype: int
-        """
-        return self._table.shape[1]
-    
-    @property
-    def nb_rows(self) -> int:
-        """ 
-        Returns the number of rows.
-
-        :return: The number of rows 
-        :rtype: int
-        """
-        return self._table.shape[0]
-
-    # -- R --
-
-    # -- S --
-
-    def __str__(self):
-        return self._table.__str__()
-
-    # -- V --
-
-    # -- W --
+class Datatable(CSVData):
+    pass
 
 #====================================================================================================================
 #====================================================================================================================

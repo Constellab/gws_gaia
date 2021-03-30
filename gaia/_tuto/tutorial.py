@@ -5,7 +5,7 @@
 
 from gws.model import Config
 from gws.controller import Controller
-from gws.model import Process, Config, Resource, Protocol, Study
+from gws.model import Process, Config, Resource, Protocol, Study, User
 
 from gaia.data import Tuple
 from gaia.dataset import Dataset, Importer
@@ -63,7 +63,7 @@ def lda_pca_experiment(data_file, delimiter=",", header=0, target=[], ncomp=2):
     proto.on_end(_end)
     proto.save()
     
-    e = proto.create_experiment(study=Study.get_default_instance())
+    e = proto.create_experiment(study=Study.get_default_instance(), user=User.get_sysuser())
     e.set_title("Short LDA and PCA experiment")
     e.set_description("This is a short LDA protocol provided to you to see how linear discrimant analysis could be implemented.")
     e.save()

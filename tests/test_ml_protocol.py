@@ -7,6 +7,7 @@ from gws.model import Protocol, Experiment, Job, Study
 
 from gws.settings import Settings
 from gaia._tuto.tutorial import lda_pca_experiment
+from gws.unittest import GTest
 
 class TestTrainer(unittest.TestCase):
     
@@ -16,6 +17,7 @@ class TestTrainer(unittest.TestCase):
         Job.drop_table()
         Experiment.drop_table()
         Study.drop_table()
+        GTest.init()
 
     @classmethod
     def tearDownClass(cls):

@@ -7,6 +7,7 @@ from gaia.regularizationlayers import Dropout
 from gaia.data import InputConverter
 from gws.model import Protocol, Experiment, Job, Study
 #from gws.settings import Settings
+from gws.unittest import GTest
 
 class TestTrainer(unittest.TestCase):
     
@@ -17,6 +18,7 @@ class TestTrainer(unittest.TestCase):
         Job.drop_table()
         Experiment.drop_table()
         Study.drop_table()
+        GTest.init()
 
     @classmethod
     def tearDownClass(cls):
@@ -50,7 +52,7 @@ class TestTrainer(unittest.TestCase):
             print(r)
 
         proto.on_end(_end)
-        e = proto.create_experiment(study=Study.get_default_instance())
+        e = proto.create_experiment(study=GTest.study, user=GTest.user)
         
         asyncio.run( e.run() )                
         

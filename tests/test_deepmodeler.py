@@ -17,6 +17,7 @@ from gaia.deepmodeler import Builder, Compiler, Trainer, Tester, Predictor
 from gws.settings import Settings
 from gws.model import Protocol, Experiment, Job, Study
 
+from gws.unittest import GTest
 
 class TestTrainer(unittest.TestCase):
     
@@ -29,6 +30,7 @@ class TestTrainer(unittest.TestCase):
         Job.drop_table()
         Experiment.drop_table()
         Study.drop_table()
+        GTest.init()
 
     @classmethod
     def tearDownClass(cls):
@@ -148,7 +150,7 @@ class TestTrainer(unittest.TestCase):
             r1 = p15.output['result']
             
         proto.on_end( _on_end )
-        e = proto.create_experiment(study=Study.get_default_instance())
+        e = proto.create_experiment(study=GTest.study, user=GTest.user)
         
         asyncio.run( e.run() )
 

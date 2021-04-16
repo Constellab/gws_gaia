@@ -5,7 +5,7 @@ import unittest
 
 from gaia.datatable import Datatable, Importer as DatatableImporter
 from gws.settings import Settings
-from gws.model import Protocol, Experiment, Job, Study
+from gws.model import Protocol, Experiment, Study
 from gws.unittest import GTest
 
 class TestImporter(unittest.TestCase):
@@ -14,7 +14,6 @@ class TestImporter(unittest.TestCase):
     def setUpClass(cls):
         Datatable.drop_table()
         Protocol.drop_table()
-        Job.drop_table()
         Experiment.drop_table()
         Study.drop_table()
         GTest.init()
@@ -23,24 +22,18 @@ class TestImporter(unittest.TestCase):
     def tearDownClass(cls):
         Datatable.drop_table()
         Protocol.drop_table()
-        Job.drop_table()
         Experiment.drop_table()
         Study.drop_table()
         
     def test_importer(self):
-        
-        async def _import_iris(self):
-            p0 = DatatableImporter(instance_name="p0")
-            e = p0.create_experiment(study=GTest.study, user=GTest.user)
-            
-            settings = Settings.retrieve()
+        p0 = DatatableImporter(instance_name="p0")
+        settings = Settings.retrieve()
+        test_dir = settings.get_dir("gaia:testdata_dir")
+        p0.set_param("file_path", os.path.join(test_dir, "./iris.csv"))
+        p0.set_param("delimiter", ",")
+        p0.set_param("header", 0)
 
-            test_dir = settings.get_dir("gaia:testdata_dir")
-            p0.set_param("file_path", os.path.join(test_dir, "./iris.csv"))
-            p0.set_param("delimiter", ",")
-            p0.set_param("header", 0)
-            await e.run()
-
+        def _on_end(*args, **kwargs):  
             ds = p0.output['datatable']
             self.assertEquals(ds.nb_columns, 5)
             self.assertEquals(ds.nb_rows, 150)
@@ -51,23 +44,20 @@ class TestImporter(unittest.TestCase):
             self.assertEquals(list(ds.column_names), ["sepal.length","sepal.width","petal.length","petal.width","variety"])
             print(ds)
             
-        asyncio.run( _import_iris(self) )
+        e = p0.create_experiment(study=GTest.study, user=GTest.user)
+        e.on_end(_on_end)
+        asyncio.run( e.run() )
         
     def test_importer_no_head(self):
-
-        async def _import_iris_no_head(self):
-            p0 = DatatableImporter(instance_name="p0")
-            e = p0.create_experiment(study=GTest.study, user=GTest.user)
+        p0 = DatatableImporter(instance_name="p0")
+        settings = Settings.retrieve()
+        test_dir = settings.get_dir("gaia:testdata_dir")
+        p0.set_param("file_path", os.path.join(test_dir, "./iris_no_head.csv"))
+        p0.set_param("delimiter", ",")
             
-            settings = Settings.retrieve()
-
-            test_dir = settings.get_dir("gaia:testdata_dir")
-            p0.set_param("file_path", os.path.join(test_dir, "./iris_no_head.csv"))
-            p0.set_param("delimiter", ",")
-            await e.run()
-
+        def _on_end(*args, **kwargs):  
             ds = p0.output['datatable']
-
+            
             self.assertEquals(ds.nb_columns, 5)
             self.assertEquals(ds.nb_rows, 150)
             self.assertEquals(ds.table.values[0,0], 5.1)
@@ -77,6 +67,8 @@ class TestImporter(unittest.TestCase):
             self.assertEquals(list(ds.column_names), list(range(0,5)))
             print(ds)
             
-        asyncio.run( _import_iris_no_head(self) )
+        e = p0.create_experiment(study=GTest.study, user=GTest.user)
+        e.on_end(_on_end)
+        asyncio.run( e.run() )
 
         

@@ -5,7 +5,7 @@ import unittest
 
 from gaia.convlayers import Conv1D, Conv2D, Conv3D
 from gaia.data import InputConverter
-from gws.model import Protocol, Experiment, Job, Study
+from gws.model import Protocol, Experiment, Study
 from gws.unittest import GTest
 
 class TestTrainer(unittest.TestCase):
@@ -16,7 +16,6 @@ class TestTrainer(unittest.TestCase):
         Conv2D.drop_table()
         Conv3D.drop_table()
         Protocol.drop_table()
-        Job.drop_table()
         Experiment.drop_table()
         Study.drop_table()
         GTest.init()
@@ -28,7 +27,6 @@ class TestTrainer(unittest.TestCase):
         Conv2D.drop_table()
         Conv3D.drop_table()
         Protocol.drop_table()
-        Job.drop_table()
         Experiment.drop_table()
         Study.drop_table()
         

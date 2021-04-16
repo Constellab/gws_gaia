@@ -3,7 +3,7 @@ import os
 import asyncio
 import unittest
 
-from gws.model import Protocol, Experiment, Job, Study
+from gws.model import Protocol, Experiment, Study
 
 from gws.settings import Settings
 from gaia._tuto.tutorial import lda_pca_experiment
@@ -14,7 +14,6 @@ class TestTrainer(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         Protocol.drop_table()
-        Job.drop_table()
         Experiment.drop_table()
         Study.drop_table()
         GTest.init()
@@ -22,7 +21,6 @@ class TestTrainer(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         Protocol.drop_table()
-        Job.drop_table()
         Experiment.drop_table()
         Study.drop_table()
 

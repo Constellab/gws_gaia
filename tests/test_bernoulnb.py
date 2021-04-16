@@ -5,7 +5,7 @@ import unittest
 
 from gaia.dataset import Dataset, Importer
 from gaia.bernoulnb import Trainer, Predictor, Tester
-from gws.model import Protocol, Study, Experiment, Job
+from gws.model import Protocol, Study, Experiment
 from gws.settings import Settings
 from gws.unittest import GTest
 
@@ -18,7 +18,6 @@ class TestTrainer(unittest.TestCase):
         Predictor.drop_table()
         Tester.drop_table()
         Protocol.drop_table()
-        Job.drop_table()
         Experiment.drop_table()
         Study.drop_table()
         GTest.init()
@@ -30,7 +29,6 @@ class TestTrainer(unittest.TestCase):
         Predictor.drop_table()
         Tester.drop_table()
         Protocol.drop_table()
-        Job.drop_table()
         Experiment.drop_table()
         Study.drop_table()
         

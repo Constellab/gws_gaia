@@ -15,7 +15,7 @@ from gaia.data import Tuple, Tensor, Model, InputConverter
 from gaia.deepmodeler import Builder, Compiler, Trainer, Tester, Predictor
 
 from gws.settings import Settings
-from gws.model import Protocol, Experiment, Job, Study
+from gws.model import Protocol, Experiment, Study
 
 from gws.unittest import GTest
 
@@ -27,7 +27,6 @@ class TestTrainer(unittest.TestCase):
         Builder.drop_table()
         Compiler.drop_table()
         Protocol.drop_table()
-        Job.drop_table()
         Experiment.drop_table()
         Study.drop_table()
         GTest.init()
@@ -39,7 +38,6 @@ class TestTrainer(unittest.TestCase):
         Builder.drop_table()
         Compiler.drop_table()
         Protocol.drop_table()
-        Job.drop_table()
         Experiment.drop_table()
         Study.drop_table()
         

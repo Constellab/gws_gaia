@@ -5,7 +5,7 @@ import unittest
 
 from gaia.recurrentlayers import SimpleRNN, LSTM, GRU
 from gaia.data import InputConverter
-from gws.model import Protocol, Experiment, Job, Study
+from gws.model import Protocol, Experiment, Study
 #from gws.settings import Settings
 from gws.unittest import GTest
 
@@ -17,7 +17,6 @@ class TestTrainer(unittest.TestCase):
         LSTM.drop_table()
         GRU.drop_table()
         Protocol.drop_table()
-        Job.drop_table()
         Experiment.drop_table()
         Study.drop_table()
         GTest.init()
@@ -29,7 +28,6 @@ class TestTrainer(unittest.TestCase):
         LSTM.drop_table()
         GRU.drop_table()
         Protocol.drop_table()
-        Job.drop_table()
         Experiment.drop_table()
         Study.drop_table()
         

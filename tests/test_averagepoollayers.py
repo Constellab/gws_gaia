@@ -5,7 +5,7 @@ import unittest
 
 from gaia.averagepoollayers import AveragePooling1D, AveragePooling2D, AveragePooling3D
 from gaia.data import InputConverter
-from gws.model import Protocol, Study, Experiment, Job
+from gws.model import Protocol, Study, Experiment
 #from gws.settings import Settings
 from gws.unittest import GTest
 
@@ -17,7 +17,6 @@ class TestTrainer(unittest.TestCase):
         AveragePooling2D.drop_table()
         AveragePooling3D.drop_table()
         Protocol.drop_table()
-        Job.drop_table()
         Experiment.drop_table()
         Study.drop_table()
         GTest.init()
@@ -29,7 +28,6 @@ class TestTrainer(unittest.TestCase):
         AveragePooling2D.drop_table()
         AveragePooling3D.drop_table()
         Protocol.drop_table()
-        Job.drop_table()
         Experiment.drop_table()
         Study.drop_table()
         

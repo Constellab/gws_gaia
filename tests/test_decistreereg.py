@@ -72,9 +72,8 @@ class TestTrainer(unittest.TestCase):
             # print(r1)
             # print(r2)
             # print(r3.tuple)
-            
-        proto.on_end(_end)        
+                
         e = proto.create_experiment(study=GTest.study, user=GTest.user)
- 
+        e.on_end(_end)
         asyncio.run( e.run() )      
         

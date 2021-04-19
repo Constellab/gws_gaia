@@ -61,7 +61,7 @@ class TestTrainer(unittest.TestCase):
 
             #print(r2.tuple)
 
-        proto.on_end(_end)
-        e = proto.create_experiment(study=GTest.study, user=GTest.user)
         
+        e = proto.create_experiment(study=GTest.study, user=GTest.user)
+        e.on_end(_end)
         asyncio.run( e.run() )               

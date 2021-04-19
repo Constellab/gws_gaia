@@ -147,9 +147,9 @@ class TestTrainer(unittest.TestCase):
             r1 = p12.output['result']
             r1 = p15.output['result']
             
-        proto.on_end( _on_end )
-        e = proto.create_experiment(study=GTest.study, user=GTest.user)
         
+        e = proto.create_experiment(study=GTest.study, user=GTest.user)
+        e.on_end( _on_end )
         asyncio.run( e.run() )
 
 

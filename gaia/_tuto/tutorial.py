@@ -54,13 +54,9 @@ def lda_pca_experiment(data_file, delimiter=",", header=0, target=[], ncomp=2):
     importer.set_param("file_path", data_file)
     lda_trainer.set_param('nb_components', ncomp)
     pca_trainer.set_param('nb_components', ncomp)
-
-    def _end(*args, **kwargs):
-        pass
-    
     proto.set_title("LDA protocol")
     proto.set_description("This is a short LDA protocol provided to you to see how linear discrimant analysis could be implemented.")
-    proto.on_end(_end)
+    
     proto.save()
     
     e = proto.create_experiment(study=Study.get_default_instance(), user=User.get_sysuser())

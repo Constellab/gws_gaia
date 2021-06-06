@@ -2,25 +2,19 @@
     "name"      : "gaia",
     "authors"   : "Gencovery",
     "version"   : "0.1",
-    "log_dir"   : "../../logs",
-    "data_dir"  : "../../data/",
-    "db_name"   : "db.sqlite3",
     "dirs"     : {
         "gaia:testdata_dir"  : "./tests/testdata"
     },
-
-    "externs"  : [
-        "gaia-cpp",
-        "dlib-cpp",
-        "gaia-cpp",
-        "gflags-cpp",
-        "glog-cpp",
-        "googletest-cpp",
-        "json-cpp",
-        "odeint-v2-cpp"
-    ],
-
-    "dependencies"  : [
-        "gws"
-    ]
+    "externs"  : {
+        "gaia-cpp": "DEFAULT_ORIGIN",
+        "dlib-cpp": "DEFAULT_ORIGIN",
+        "gflags-cpp": "DEFAULT_ORIGIN",
+        "glog-cpp": "DEFAULT_ORIGIN",
+        "googletest-cpp": "DEFAULT_ORIGIN",
+        "json-cpp": "DEFAULT_ORIGIN",
+        "odeint-v2-cpp": "DEFAULT_ORIGIN"
+    },
+    "dependencies"  : {
+        "gws": "DEFAULT_ORIGIN"
+    }
 }

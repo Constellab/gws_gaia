@@ -6,7 +6,7 @@ import unittest
 from gws.model import Protocol, Experiment, Study
 
 from gws.settings import Settings
-from gaia._tuto.tutorial import lda_pca_experiment
+from gaia.example.tutorial import lda_pca_experiment
 from gws.unittest import GTest
 
 class TestTrainer(unittest.TestCase):

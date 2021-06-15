@@ -7,7 +7,6 @@ from gaia.dataset import Dataset
 from pandas import DataFrame
 
 from gws.model import Config
-from gws.controller import Controller
 from gws.model import Process, Config, Resource
 
 from sklearn.ensemble import GradientBoostingClassifier

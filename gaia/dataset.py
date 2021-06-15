@@ -9,7 +9,6 @@ from pandas import DataFrame
 
 from gws.model import Process, Config
 from gws.model import Resource
-from gws.controller import Controller
 from gws.logger import Error
 
 #====================================================================================================================

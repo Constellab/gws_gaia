@@ -6,7 +6,6 @@
 from gaia.dataset import Dataset
 
 from gws.model import Config
-from gws.controller import Controller
 from gws.model import Process, Config, Resource
 
 from sklearn.decomposition import PCA

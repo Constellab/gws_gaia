@@ -9,7 +9,6 @@ from pandas import DataFrame
 
 from gws.model import Process, Config, Resource
 from gws.csv import CSVData
-from gws.controller import Controller
 from gws.logger import Logger
 
 #====================================================================================================================

@@ -4,6 +4,8 @@
 # About us: https://gencovery.com
 
 
+# Pre-installation script executed before server installation
+
 echo "Building dlib ..."
 
 build_dir="/app/lab/.gws/externs/dlib-cpp/build"

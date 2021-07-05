@@ -6,9 +6,9 @@
 
 # Pre-installation script executed before server installation
 
-echo "Building dlib ..."
+# echo "Building dlib ..."
 
-build_dir="/app/lab/.gws/externs/dlib-cpp/build"
+build_dir="/lab/.gws/externs/dlib-cpp/build"
 ready_file="$build_dir/READY"
 if [ ! -f "$ready_file" ]; then
     if [ ! -d "$build_dir" ]; then

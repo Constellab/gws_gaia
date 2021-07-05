@@ -6,7 +6,7 @@
 
 # Pre-installation script executed before server installation
 
-# echo "Building dlib ..."
+echo "Building dlib ..."
 
 build_dir="/lab/.gws/externs/dlib-cpp/build"
 ready_file="$build_dir/READY"

@@ -10,6 +10,18 @@ echo "Building dlib ..."
 
 build_dir="/lab/.gws/externs/dlib-cpp/build"
 ready_file="$build_dir/READY"
+
+if [ -d "$build_dir" ]; then
+    if [ ! -f "$ready_file" ]; then
+        n=1
+        while [ ! -f "$ready_file" ] && [ $n -le 30 ]; do
+            echo "$n/30 - A dlib build is already in progress. Sleep 10 secs ..."
+            sleep 10
+            n=$(( $n + 1 ))
+        done
+    fi
+fi
+
 if [ ! -f "$ready_file" ]; then
     if [ ! -d "$build_dir" ]; then
         mkdir -p $build_dir

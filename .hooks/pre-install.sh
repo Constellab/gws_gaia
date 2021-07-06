@@ -35,7 +35,7 @@ if [ ! -f "$ready_file" ]; then
     cmake --build . --config Release
     make
     touch $ready_file
-    rm -r $in_progress_file
+    rm -f $in_progress_file
 fi
 
 echo "Build done!"

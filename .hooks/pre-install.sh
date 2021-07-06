@@ -9,33 +9,26 @@
 echo "Building dlib ..."
 
 build_dir="/lab/.gws/externs/dlib-cpp/build"
-in_progress_file="$build_dir/IN_PROGRESS"
 ready_file="$build_dir/READY"
 
 if [ -d "$build_dir" ]; then
     if [ ! -f "$ready_file" ]; then
         n=1
-        while [ ! -f "$ready_file" ] && [ $n -le 30 ]; do
-            echo "$n/30 - A dlib build is already in progress. Sleep 10 secs ..."
+        while [ ! -f "$ready_file" ] && [ $n -le 60 ]; do
+            echo "$n/60 - A dlib build is already in progress. Sleep 10 secs ..."
             sleep 10
             n=$(( $n + 1 ))
         done
     fi
+else
+    mkdir -p $build_dir
 fi
 
 if [ ! -f "$ready_file" ]; then
-    if [ ! -d "$build_dir" ]; then
-        mkdir -p $build_dir
-    fi
-    
     cd $build_dir
-
-    touch $in_progress_file
     cmake -DUSE_AVX_INSTRUCTIONS=ON -DBUILD_SHARED_LIBS=1 ..
     cmake --build . --config Release
     make
-    touch $ready_file
-    rm -f $in_progress_file
 fi
 
 echo "Build done!"
@@ -44,3 +37,5 @@ echo "Installing dlib ..."
 cd $build_dir
 make install
 ldconfig
+
+touch $ready_file

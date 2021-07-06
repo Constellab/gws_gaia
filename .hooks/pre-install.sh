@@ -9,6 +9,7 @@
 echo "Building dlib ..."
 
 build_dir="/lab/.gws/externs/dlib-cpp/build"
+in_progress_file="$build_dir/IN_PROGRESS"
 ready_file="$build_dir/READY"
 
 if [ -d "$build_dir" ]; then
@@ -28,10 +29,13 @@ if [ ! -f "$ready_file" ]; then
     fi
     
     cd $build_dir
+
+    touch $in_progress_file
     cmake -DUSE_AVX_INSTRUCTIONS=ON -DBUILD_SHARED_LIBS=1 ..
     cmake --build . --config Release
     make
     touch $ready_file
+    rm -r $in_progress_file
 fi
 
 echo "Build done!"

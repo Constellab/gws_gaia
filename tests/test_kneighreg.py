@@ -6,33 +6,21 @@ import unittest
 from gaia.dataset import Dataset, Importer
 from gaia.kneighreg import Trainer, Predictor, Tester
 from gws.settings import Settings
-from gws.model import Protocol, Experiment, Study
+from gws.protocol import Protocol
 from gws.unittest import GTest
 
 class TestTrainer(unittest.TestCase):
     
     @classmethod
     def setUpClass(cls):
-        Dataset.drop_table()
-        Trainer.drop_table()
-        Predictor.drop_table()
-        Tester.drop_table()
-        Protocol.drop_table()
-        Experiment.drop_table()
-        Study.drop_table()
+        GTest.drop_tables()
+        GTest.create_tables()
         GTest.init()
-
+        
     @classmethod
     def tearDownClass(cls):
-        Dataset.drop_table()
-        Trainer.drop_table()
-        Predictor.drop_table()
-        Tester.drop_table()
-        Protocol.drop_table()
-        Experiment.drop_table()
-        Study.drop_table()
+        GTest.drop_tables()
 
-        
     def test_process(self):
         settings = Settings.retrieve()
         test_dir = settings.get_dir("gaia:testdata_dir")

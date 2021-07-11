@@ -5,7 +5,7 @@ import unittest
 
 from gaia.maxpoollayers import MaxPooling1D, MaxPooling2D, MaxPooling3D
 from gaia.data import InputConverter
-from gws.model import Protocol, Experiment, Study
+from gws.protocol import Protocol
 #from gws.settings import Settings
 from gws.unittest import GTest
 
@@ -13,19 +13,13 @@ class TestTrainer(unittest.TestCase):
     
     @classmethod
     def setUpClass(cls):
-        MaxPooling1D.drop_table()
-        Protocol.drop_table()
-        Experiment.drop_table()
-        Study.drop_table()
+        GTest.drop_tables()
+        GTest.create_tables()
         GTest.init()
-
+        
     @classmethod
     def tearDownClass(cls):
-        #Dataset.drop_table()
-        MaxPooling1D.drop_table()
-        Protocol.drop_table()
-        Experiment.drop_table()
-        Study.drop_table()
+        GTest.drop_tables()
         
     def test_process(self):
         p1 = InputConverter()

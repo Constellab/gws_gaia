@@ -5,31 +5,20 @@ import unittest
 
 from gaia.corelayers import Dense, Activation, Embedding, Masking
 from gaia.data import InputConverter
-from gws.model import Protocol, Experiment, Study
-#from gws.settings import Settings
+from gws.protocol import Protocol
 from gws.unittest import GTest
 
 class TestTrainer(unittest.TestCase):
     
     @classmethod
     def setUpClass(cls):
-        Dense.drop_table()
-        Activation.drop_table()
-        Embedding.drop_table()
-        Protocol.drop_table()
-        Experiment.drop_table()
-        Study.drop_table()
+        GTest.drop_tables()
+        GTest.create_tables()
         GTest.init()
         
     @classmethod
     def tearDownClass(cls):
-        #Dataset.drop_table()
-        Dense.drop_table()
-        Activation.drop_table()
-        Embedding.drop_table()
-        Protocol.drop_table()
-        Experiment.drop_table()
-        Study.drop_table()
+        GTest.drop_tables()
         
     def test_process(self):
         p1 = InputConverter()

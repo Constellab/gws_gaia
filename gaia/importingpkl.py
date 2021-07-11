@@ -4,13 +4,15 @@
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
-from gws.model import Resource, Process
+import sys, pickle
+import tensorflow as tf
 from tensorflow.python.framework.ops import Tensor as Kerastensor
 from tensorflow.keras import Model as KerasModel
-from gws.logger import Error
-import tensorflow as tf
-import sys, pickle
-from gaia.data import Tuple
+
+from gws.process import Process
+from gws.resource import Resource
+
+from .data import Tuple
 
 #==============================================================================
 #==============================================================================

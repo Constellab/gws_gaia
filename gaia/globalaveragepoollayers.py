@@ -3,19 +3,18 @@
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
-from gaia.dataset import Dataset
-from pandas import DataFrame
-
-from gws.model import Config
-from gws.model import Process, Config, Resource
-
 import numpy as np
+import tensorflow as tf
 from tensorflow.keras.layers import GlobalAveragePooling1D as Kerasglobalaveragepooling1d
 from tensorflow.keras.layers import GlobalAveragePooling2D as Kerasglobalaveragepooling2d
 from tensorflow.keras.layers import GlobalAveragePooling3D as Kerasglobalaveragepooling3d
+from pandas import DataFrame
 
-import tensorflow as tf
-from gaia.data import Tensor
+from gws.process import Process
+from gws.resource import Resource
+
+from .data import Tensor
+from .dataset import Dataset
 
 #==============================================================================
 #==============================================================================

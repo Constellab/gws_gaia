@@ -3,20 +3,19 @@
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
-from gaia.dataset import Dataset
-from pandas import DataFrame
-
-from gws.model import Config
-from gws.model import Process, Config, Resource
-
 import numpy as np
 import tensorflow as tf
-from gaia.data import Tensor
-
 from tensorflow.keras.layers import Dense as Kerasdense
 from tensorflow.keras.layers import Activation as Kerasactivation
 from tensorflow.keras.layers import Embedding as Kerasembedding
 from tensorflow.keras.layers import Masking as Kerasmasking
+from pandas import DataFrame
+
+from gws.process import Process
+from gws.resource import Resource
+
+from .dataset import Dataset
+from .data import Tensor
 
 #========================================================================================
 #========================================================================================

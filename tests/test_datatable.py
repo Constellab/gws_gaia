@@ -1,29 +1,23 @@
-
 import os
 import asyncio
 import unittest
 
 from gaia.datatable import Datatable, Importer as DatatableImporter
 from gws.settings import Settings
-from gws.model import Protocol, Experiment, Study
+from gws.protocol import Protocol
 from gws.unittest import GTest
 
 class TestImporter(unittest.TestCase):
     
     @classmethod
     def setUpClass(cls):
-        Datatable.drop_table()
-        Protocol.drop_table()
-        Experiment.drop_table()
-        Study.drop_table()
+        GTest.drop_tables()
+        GTest.create_tables()
         GTest.init()
-
+        
     @classmethod
     def tearDownClass(cls):
-        Datatable.drop_table()
-        Protocol.drop_table()
-        Experiment.drop_table()
-        Study.drop_table()
+        GTest.drop_tables()
         
     def test_importer(self):
         p0 = DatatableImporter(instance_name="p0")

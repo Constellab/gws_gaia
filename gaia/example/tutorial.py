@@ -3,8 +3,9 @@
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
-from gws.model import Config
-from gws.model import Process, Config, Resource, Protocol, Study, User
+from gws.protocol import Protocol
+from gws.study import Study
+from gws.user import User
 
 from gaia.data import Tuple
 from gaia.dataset import Dataset, Importer

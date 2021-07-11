@@ -4,23 +4,13 @@
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
-
-# from gws.settings import Settings
-# from gws.view import HTMLViewTemplate, JSONViewTemplate, PlainTextViewTemplate
-# from gws.model import Resource, HTMLViewModel, JSONViewModel
-# from gws.controller import Controller
-#
-# class SimpleData(Resource):
-#     pass
-#
-# class SimpleDataHTMLViewModel(HTMLViewModel):
-#     template = HTMLViewTemplate("Value: {{vmodel.model.data}}")
-
-from gws.model import Resource, Process
+import tensorflow as tf
 from tensorflow.python.framework.ops import Tensor as Kerastensor
 from tensorflow.keras import Model as KerasModel
+
 from gws.logger import Error
-import tensorflow as tf
+from gws.process import Process
+from gws.resource import Resource
 
 #==============================================================================
 #==============================================================================

@@ -3,15 +3,15 @@
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
-from gaia.dataset import Dataset
-from pandas import DataFrame
-
-from gws.model import Config
-from gws.model import Process, Config, Resource
-
-from sklearn.linear_model import Ridge
-from gaia.data import Tuple
 from numpy import ravel
+from pandas import DataFrame
+from sklearn.linear_model import Ridge
+
+from gws.process import Process
+from gws.resource import Resource
+
+from .data import Tuple
+from .dataset import Dataset
 
 #==============================================================================
 #==============================================================================
@@ -40,7 +40,6 @@ class Trainer(Process):
         dataset = self.input['dataset']
         rir = Ridge(alpha=self.get_param("alpha"))
         rir.fit(dataset.features.values, ravel(dataset.targets.values))
-        
         t = self.output_specs["result"]
         result = t(rir=rir)
         self.output['result'] = result

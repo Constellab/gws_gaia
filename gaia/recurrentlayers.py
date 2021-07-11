@@ -3,18 +3,18 @@
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
-from gaia.dataset import Dataset
-from pandas import DataFrame
-
-from gws.model import Config
-from gws.model import Process, Config, Resource
-
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras.layers import LSTM as Keraslstm
 from tensorflow.keras.layers import GRU as Kerasgru
 from tensorflow.keras.layers import SimpleRNN as Kerassimplernn
-from gaia.data import Tensor
+from pandas import DataFrame
+
+from gws.process import Process
+from gws.resource import Resource
+
+from .data import Tensor
+from .dataset import Dataset
 
 #==================================================================================
 #==================================================================================

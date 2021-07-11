@@ -5,30 +5,20 @@ import unittest
 
 from gaia.convlayers import Conv1D, Conv2D, Conv3D
 from gaia.data import InputConverter
-from gws.model import Protocol, Experiment, Study
+from gws.protocol import Protocol
 from gws.unittest import GTest
 
 class TestTrainer(unittest.TestCase):
     
     @classmethod
     def setUpClass(cls):
-        Conv1D.drop_table()
-        Conv2D.drop_table()
-        Conv3D.drop_table()
-        Protocol.drop_table()
-        Experiment.drop_table()
-        Study.drop_table()
+        GTest.drop_tables()
+        GTest.create_tables()
         GTest.init()
         
     @classmethod
     def tearDownClass(cls):
-        #Dataset.drop_table()
-        Conv1D.drop_table()
-        Conv2D.drop_table()
-        Conv3D.drop_table()
-        Protocol.drop_table()
-        Experiment.drop_table()
-        Study.drop_table()
+        GTest.drop_tables()
         
     def test_process(self):
         p1 = InputConverter()

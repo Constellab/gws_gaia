@@ -6,27 +6,20 @@ import unittest
 from gaia.dataset import Dataset, Importer
 from gaia.adaboostclass import Trainer, Predictor, Tester
 from gws.settings import Settings
-from gws.model import Protocol, Study, Experiment
 from gws.unittest import GTest
+from gws.protocol import Protocol
 
 class TestTrainer(unittest.TestCase):
     
     @classmethod
     def setUpClass(cls):
-        Dataset.drop_table()
-        Trainer.drop_table()
-        Protocol.drop_table()
-        Experiment.drop_table()
-        Study.drop_table()
+        GTest.drop_tables()
+        GTest.create_tables()
         GTest.init()
         
     @classmethod
     def tearDownClass(cls):
-        Dataset.drop_table()
-        Trainer.drop_table()
-        Protocol.drop_table()
-        Experiment.drop_table()
-        Study.drop_table()
+        GTest.drop_tables()
 
     def test_process(self):
         settings = Settings.retrieve()

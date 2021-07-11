@@ -1,4 +1,3 @@
-
 import os
 import asyncio
 import unittest
@@ -8,38 +7,25 @@ from gaia.maxpoollayers import MaxPooling2D
 from gaia.reshapinglayers import Flatten
 from gaia.regularizationlayers import Dropout
 from gaia.corelayers import Dense
-
 from gaia.importingpkl import ImporterPKL, Preprocessor, AdhocExtractor
 from gaia.data import Tuple, Tensor, Model, InputConverter
-
 from gaia.deepmodeler import Builder, Compiler, Trainer, Tester, Predictor
 
 from gws.settings import Settings
-from gws.model import Protocol, Experiment, Study
-
+from gws.protocol import Protocol
 from gws.unittest import GTest
 
 class TestTrainer(unittest.TestCase):
     
     @classmethod
     def setUpClass(cls):
-        Conv2D.drop_table()
-        Builder.drop_table()
-        Compiler.drop_table()
-        Protocol.drop_table()
-        Experiment.drop_table()
-        Study.drop_table()
+        GTest.drop_tables()
+        GTest.create_tables()
         GTest.init()
-
+        
     @classmethod
     def tearDownClass(cls):
-        #Dataset.drop_table()
-        Conv2D.drop_table()
-        Builder.drop_table()
-        Compiler.drop_table()
-        Protocol.drop_table()
-        Experiment.drop_table()
-        Study.drop_table()
+        GTest.drop_tables()
         
     def test_process(self):        
         settings = Settings.retrieve()

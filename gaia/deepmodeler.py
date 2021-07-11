@@ -3,17 +3,17 @@
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
-from gaia.dataset import Dataset
-from pandas import DataFrame
-
-from gws.model import Config
-from gws.model import Process, Config, Resource
-
 import numpy as np
 from numpy import ravel
 import tensorflow as tf
 from tensorflow.keras import Model as Kerasmodel
-from gaia.data import Tuple, Tensor, Model
+from pandas import DataFrame
+
+from gws.process import Process
+from gws.resource import Resource
+
+from .data import Tuple, Tensor, Model
+from .dataset import Dataset
 
 #==================================================================================
 #==================================================================================

@@ -3,16 +3,16 @@
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
-
-from gaia.dataset import Dataset
+from numpy import ravel
+from sklearn.ensemble import AdaBoostClassifier
 from pandas import DataFrame
 
-from gws.model import Config
-from gws.model import Process, Config, Resource
+from gws.config import Config
+from gws.process import Process
+from gws.resource import Resource
 
-from sklearn.ensemble import AdaBoostClassifier
-from gaia.data import Tuple
-from numpy import ravel
+from .data import Tuple
+from .dataset import Dataset
 
 class Result(Resource):
     def __init__(self, *args, abc: AdaBoostClassifier = None, **kwargs):

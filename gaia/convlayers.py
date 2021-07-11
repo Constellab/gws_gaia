@@ -3,20 +3,19 @@
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
-from gaia.dataset import Dataset
-from pandas import DataFrame
-
-from gws.model import Config
-from gws.model import Process, Config, Resource
-
 import numpy as np
 import tensorflow as tf
 from tensorflow.python.framework.ops import Tensor as Kerastensor
 from tensorflow.keras.layers import Conv1D as Kerasconv1d
 from tensorflow.keras.layers import Conv2D as Kerasconv2d
 from tensorflow.keras.layers import Conv3D as Kerasconv3d
+from pandas import DataFrame
 
-from gaia.data import Tensor
+from gws.process import Process
+from gws.resource import Resource
+
+from .dataset import Dataset
+from .data import Tensor
 
 #==============================================================================
 #==============================================================================

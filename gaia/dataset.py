@@ -7,8 +7,8 @@ import os
 import pandas
 from pandas import DataFrame
 
-from gws.model import Process, Config
-from gws.model import Resource
+from gws.process import Process
+from gws.resource import Resource
 from gws.logger import Error
 
 #====================================================================================================================

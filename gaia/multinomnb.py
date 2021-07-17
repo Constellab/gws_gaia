@@ -26,7 +26,7 @@ class Result(Resource):
 
 class Trainer(Process):
     """
-    Trainer of a naïve Bayes classifier for a multinomial model. Fit a naïve Bayes classifier according to a training dataset.
+    Trainer of a naive Bayes classifier for a multinomial model. Fit a naive Bayes classifier according to a training dataset.
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.MultinomialNB.html for more details.
     """

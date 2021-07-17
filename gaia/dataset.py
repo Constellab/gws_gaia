@@ -15,6 +15,13 @@ from gws.logger import Error
 #====================================================================================================================
 
 class Dataset(Resource):
+    """
+    Dataset class
+    """
+
+    # @Todo
+    # Refactor class usgin CVData (see Datatable class)
+     
     _features: DataFrame = None
     _targets: DataFrame = None
     _store_file_name = 'data.pkl'

@@ -21,7 +21,7 @@ class TestImporter(unittest.TestCase):
         GTest.drop_tables()
         
     def test_importer(self):
-        
+        GTest.print("Dataset")
         p0 = DatasetImporter(instance_name="p0")
         settings = Settings.retrieve()
 

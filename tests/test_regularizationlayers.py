@@ -20,6 +20,7 @@ class TestTrainer(unittest.TestCase):
         GTest.drop_tables()
         
     def test_process(self):
+        GTest.print("Dropout layer")
         p1 = InputConverter()
         p2 = Dropout()
 

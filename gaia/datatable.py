@@ -10,11 +10,15 @@ from pandas import DataFrame
 from gws.process import Process
 from gws.resource import Resource
 from gws.csv import CSVData
+from gws.logger import Error
 
 #====================================================================================================================
 #====================================================================================================================
 
 class Datatable(CSVData):
+    """
+    Datatable class
+    """
     pass
 
 #====================================================================================================================

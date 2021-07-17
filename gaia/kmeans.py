@@ -24,7 +24,7 @@ class Result(Resource):
 
 class Trainer(Process):
     """
-    Trainer of a trained K-means clustering model. Compute a k-means clustering from a dataset.
+    Trainer of a trained k-means clustering model. Compute a k-means clustering from a dataset.
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html for more details.
     """

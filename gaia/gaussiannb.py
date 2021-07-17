@@ -26,7 +26,7 @@ class Result(Resource):
 
 class Trainer(Process):
     """
-    Trainer of a gaussian naïve Bayes model. Fit a gaussian naïve Bayes according to a training set.
+    Trainer of a gaussian naive Bayes model. Fit a gaussian naive Bayes according to a training set.
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.GaussianNB.html for more details
     """

@@ -22,6 +22,7 @@ class TestTrainer(unittest.TestCase):
         GTest.drop_tables()
         
     def test_process(self):
+        GTest.print("K-means clustering")
         settings = Settings.retrieve()
         test_dir = settings.get_dir("gaia:testdata_dir")
 

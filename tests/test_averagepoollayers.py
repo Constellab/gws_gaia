@@ -21,6 +21,7 @@ class TestTrainer(unittest.TestCase):
         GTest.drop_tables()
         
     def test_process(self):
+        GTest.print("Average pooling operation for 1D data")
         p1 = InputConverter()
         p2 = InputConverter()
         p3 = InputConverter()

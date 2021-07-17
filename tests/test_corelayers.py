@@ -21,6 +21,7 @@ class TestTrainer(unittest.TestCase):
         GTest.drop_tables()
         
     def test_process(self):
+        GTest.print("Densely connected Neural Network layer")
         p1 = InputConverter()
         p2 = Dense()
         p3 = Activation()

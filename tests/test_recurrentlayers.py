@@ -20,6 +20,7 @@ class TestTrainer(unittest.TestCase):
         GTest.drop_tables()
         
     def test_process(self):
+        GTest.print("Long Short-Term Memory (LSTM) layer")
         p1 = InputConverter()
         p2 = SimpleRNN()
         p3 = LSTM()

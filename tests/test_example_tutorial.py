@@ -21,6 +21,7 @@ class TestTrainer(unittest.TestCase):
         GTest.drop_tables()
 
     def test_process(self):
+        GTest.print("Small tutorial")
         settings = Settings.retrieve()
         test_dir = settings.get_dir("gaia:testdata_dir")
         data_file = os.path.join(test_dir, "./iris.csv")

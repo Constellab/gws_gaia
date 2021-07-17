@@ -21,6 +21,7 @@ class TestTrainer(unittest.TestCase):
         GTest.drop_tables()
         
     def test_process(self):
+        GTest.print("1D convolution layer")
         p1 = InputConverter()
         p2 = InputConverter()
         p3 = InputConverter()        

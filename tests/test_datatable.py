@@ -20,6 +20,7 @@ class TestImporter(unittest.TestCase):
         GTest.drop_tables()
         
     def test_importer(self):
+        GTest.print("Datatable")
         p0 = DatatableImporter(instance_name="p0")
         settings = Settings.retrieve()
         test_dir = settings.get_dir("gaia:testdata_dir")

@@ -27,7 +27,8 @@ class TestTrainer(unittest.TestCase):
     def tearDownClass(cls):
         GTest.drop_tables()
         
-    def test_process(self):        
+    def test_process(self): 
+        GTest.print("Deep modeler")       
         settings = Settings.retrieve()
         test_dir = settings.get_dir("gaia:testdata_dir")
 

@@ -26,7 +26,7 @@ class Result(Resource):
 
 class Trainer(Process):
     """
-    Trainer of a K-nearest neighbors classifier. Fit the k-nearest neighbors classifier from the training dataset.
+    Trainer of a k-nearest neighbors classifier. Fit the k-nearest neighbors classifier from the training dataset.
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsClassifier.html for more details.
     """

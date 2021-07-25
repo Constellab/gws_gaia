@@ -10,7 +10,7 @@ from pandas import DataFrame
 from gws.process import Process
 from gws.resource import Resource
 from gws.csv import CSVData
-from gws.logger import Error
+from gws.exception.bad_request_exception import BadRequestException
 
 #====================================================================================================================
 #====================================================================================================================
@@ -48,7 +48,7 @@ class Importer(Process):
                 index_col = self.get_param("index")
             )
         else:
-            raise Error("Importer", "task", "Cannot detect the file type using file extension. Valid file extensions are [.xls, .xlsx, .csv, .tsv, .txt, .tab].")
+            raise BadRequestException("Cannot detect the file type using file extension. Valid file extensions are [.xls, .xlsx, .csv, .tsv, .txt, .tab].")
         
         t = self.output_specs["datatable"]
         self.output['datatable'] = t(table=df)

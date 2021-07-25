@@ -9,7 +9,7 @@ from pandas import DataFrame
 
 from gws.process import Process
 from gws.resource import Resource
-from gws.logger import Error
+from gws.exception.bad_request_exception import BadRequestException
 
 #====================================================================================================================
 #====================================================================================================================
@@ -223,7 +223,7 @@ class Importer(Process):
                 index_col = self.get_param("index")
             )
         else:
-            raise Error("Importer", "task", "Cannot detect the file type using file extension. Valid file extensions are [.xls, .xlsx, .csv, .tsv, .txt, .tab].")
+            raise BadRequestException("Cannot detect the file type using file extension. Valid file extensions are [.xls, .xlsx, .csv, .tsv, .txt, .tab].")
         
         out_type = self.output_specs["dataset"]
 
@@ -233,8 +233,8 @@ class Importer(Process):
             targets = self.get_param('targets')
             try:
                 t_df = df.loc[:,targets]
-            except:
-                raise Error("Importer", "task", f"The targets {targets} are no found in column names. Please check targets names or set parameter 'header' to read column names.")
+            except Exception as err:
+                raise BadRequestException(f"The targets {targets} are no found in column names. Please check targets names or set parameter 'header' to read column names.") from err
             
             df.drop(columns = targets, inplace = True)
             ds = out_type(features = df, targets = t_df)

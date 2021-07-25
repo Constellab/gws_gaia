@@ -8,7 +8,7 @@ import tensorflow as tf
 from tensorflow.python.framework.ops import Tensor as Kerastensor
 from tensorflow.keras import Model as KerasModel
 
-from gws.logger import Error
+from gws.exception.bad_request_exception import BadRequestException
 from gws.process import Process
 from gws.resource import Resource
 
@@ -38,7 +38,7 @@ class Model(Resource):
         super().__init__(*args, **kwargs)
         
         if not isinstance(model, KerasModel):
-            raise Error("Model", "__init__", f"The model must an instance of tensorflow.keras.Model. The given model is {model}")
+            raise BadRequestException(f"The model must an instance of tensorflow.keras.Model. The given model is {model}")
 
         self._data = model
 

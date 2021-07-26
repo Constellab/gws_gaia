@@ -8,7 +8,7 @@
 
 echo "Building dlib ..."
 
-build_dir="/lab/.gws/externs/dlib-cpp/build"
+build_dir="/lab/.core/externs/dlib-cpp/build"
 ready_file="$build_dir/READY"
 
 if [ -d "$build_dir" ]; then

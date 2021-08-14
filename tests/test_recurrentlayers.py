@@ -1,13 +1,12 @@
 import os
 import asyncio
-import unittest
+from unittest import IsolatedAsyncioTestCase
 
-from gaia.recurrentlayers import SimpleRNN, LSTM, GRU
-from gaia.data import InputConverter
-from gws.protocol import Protocol
-from gws.unittest import GTest
+from gws_gaia.tf import SimpleRNN, LSTM, GRU
+from gws_gaia.tf import InputConverter
+from gws_core import Settings, GTest, Protocol, Experiment, ExperimentService
 
-class TestTrainer(unittest.TestCase):
+class TestTrainer(IsolatedAsyncioTestCase):
     
     @classmethod
     def setUpClass(cls):
@@ -19,7 +18,7 @@ class TestTrainer(unittest.TestCase):
     def tearDownClass(cls):
         GTest.drop_tables()
         
-    def test_process(self):
+    async def test_process(self):
         GTest.print("Long Short-Term Memory (LSTM) layer")
         p1 = InputConverter()
         p2 = SimpleRNN()
@@ -53,19 +52,17 @@ class TestTrainer(unittest.TestCase):
         p4.set_param('recurrent_activation_type', 'sigmoid')    
         p4.set_param('use_bias', True)    
 
-        def _end(*args, **kwargs):
-            r1 = p2.output['result']
-            r2 = p3.output['result']
-            r3 = p4.output['result']
+        experiment: Experiment = Experiment(
+            protocol=proto, study=GTest.study, user=GTest.user)
+        experiment.save()
+        experiment = await ExperimentService.run_experiment(
+            experiment=experiment, user=GTest.user)                
 
-            print(r1)
-            print(r2)
-            print(r3)
+        r1 = p2.output['result']
+        r2 = p3.output['result']
+        r3 = p4.output['result']
 
-        
-        e = proto.create_experiment(study=GTest.study, user=GTest.user)
-        e.on_end(_end)
-        asyncio.run( e.run() )                
-
-        
+        print(r1)
+        print(r2)
+        print(r3)
         

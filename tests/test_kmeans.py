@@ -1,15 +1,13 @@
 
 import os
 import asyncio
-import unittest
+from unittest import IsolatedAsyncioTestCase
 
-from gaia.dataset import Dataset, Importer
-from gaia.kmeans import Trainer, Predictor
-from gws.settings import Settings
-from gws.protocol import Protocol
-from gws.unittest import GTest
+from gws_gaia import Dataset, DatasetLoader
+from gws_gaia import KMeansTrainer, KMeansPredictor
+from gws_core import Settings, GTest, Protocol, Experiment, ExperimentService
 
-class TestTrainer(unittest.TestCase):
+class TestTrainer(IsolatedAsyncioTestCase):
     
     @classmethod
     def setUpClass(cls):
@@ -21,15 +19,15 @@ class TestTrainer(unittest.TestCase):
     def tearDownClass(cls):
         GTest.drop_tables()
         
-    def test_process(self):
+    async def test_process(self):
         GTest.print("K-means clustering")
         settings = Settings.retrieve()
         test_dir = settings.get_dir("gaia:testdata_dir")
 
-        p0 = Importer()
-        p1 = Importer()
-        p2 = Trainer()
-        p3 = Predictor()
+        p0 = DatasetLoader()
+        p1 = DatasetLoader()
+        p2 = KMeansTrainer()
+        p3 = KMeansPredictor()
 
         proto = Protocol(
             processes = {
@@ -56,15 +54,14 @@ class TestTrainer(unittest.TestCase):
         p1.set_param("file_path", os.path.join(test_dir, "./iris.csv"))
         p2.set_param('nb_clusters', 2)
         
-        def _end(*args, **kwargs):
-            r1 = p2.output['result']
-            r2 = p3.output['result']
-
-            print(r1)
-            print(r2)
-
+        experiment: Experiment = Experiment(
+            protocol=proto, study=GTest.study, user=GTest.user)
+        experiment.save()
+        experiment = await ExperimentService.run_experiment(
+            experiment=experiment, user=GTest.user)                                 
         
-        e = proto.create_experiment(study=GTest.study, user=GTest.user)
-        e.on_end(_end)
-        asyncio.run( e.run() )                                 
-        
+        r1 = p2.output['result']
+        r2 = p3.output['result']
+
+        print(r1)
+        print(r2)

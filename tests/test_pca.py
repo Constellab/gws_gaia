@@ -1,15 +1,13 @@
 
 import os
 import asyncio
-import unittest
+from unittest import IsolatedAsyncioTestCase
 
-from gaia.dataset import Dataset, Importer
-from gaia.pca import Trainer, Transformer
-from gws.settings import Settings
-from gws.protocol import Protocol
-from gws.unittest import GTest
+from gws_gaia import Dataset, DatasetLoader
+from gws_gaia import PCATrainer, PCATransformer
+from gws_core import Settings, GTest, Protocol, Experiment, ExperimentService
 
-class TestTrainer(unittest.TestCase):
+class TestTrainer(IsolatedAsyncioTestCase):
     
     @classmethod
     def setUpClass(cls):
@@ -21,14 +19,14 @@ class TestTrainer(unittest.TestCase):
     def tearDownClass(cls):
         GTest.drop_tables()
         
-    def test_process(self):
+    async def test_process(self):
         GTest.print("Principal Component Analysis (PCA)")
         settings = Settings.retrieve()
         test_dir = settings.get_dir("gaia:testdata_dir")
 
-        p0 = Importer()
-        p1 = Trainer()
-        p2 = Transformer()
+        p0 = DatasetLoader()
+        p1 = PCATrainer()
+        p2 = PCATransformer()
 
         proto = Protocol(
             processes = {
@@ -49,13 +47,13 @@ class TestTrainer(unittest.TestCase):
         p0.set_param("file_path", os.path.join(test_dir, "./iris.csv"))
         p1.set_param('nb_components', 2)
 
-        def _end(*args, **kwargs):
-            r1 = p1.output['result']
-            r2 = p2.output['result']
+        experiment: Experiment = Experiment(
+            protocol=proto, study=GTest.study, user=GTest.user)
+        experiment.save()
+        experiment = await ExperimentService.run_experiment(
+            experiment=experiment, user=GTest.user)               
 
-            #print(r2.tuple)
+        r1 = p1.output['result']
+        r2 = p2.output['result']
 
-        
-        e = proto.create_experiment(study=GTest.study, user=GTest.user)
-        e.on_end(_end)
-        asyncio.run( e.run() )               
+        #print(r2.tuple)

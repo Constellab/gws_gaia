@@ -1,14 +1,13 @@
 
 import os
 import asyncio
-import unittest
+from unittest import IsolatedAsyncioTestCase
 
-from gaia.corelayers import Dense, Activation, Embedding, Masking
-from gaia.data import InputConverter
-from gws.protocol import Protocol
-from gws.unittest import GTest
+from gws_gaia.tf import Dense, Activation, Embedding, Masking
+from gws_gaia.tf import InputConverter
+from gws_core import Settings, GTest, Protocol, Experiment, ExperimentService
 
-class TestTrainer(unittest.TestCase):
+class TestTrainer(IsolatedAsyncioTestCase):
     
     @classmethod
     def setUpClass(cls):
@@ -20,7 +19,7 @@ class TestTrainer(unittest.TestCase):
     def tearDownClass(cls):
         GTest.drop_tables()
         
-    def test_process(self):
+    async def test_process(self):
         GTest.print("Densely connected Neural Network layer")
         p1 = InputConverter()
         p2 = Dense()
@@ -53,19 +52,19 @@ class TestTrainer(unittest.TestCase):
         p4.set_param('output_dimension', 64)
         p4.set_param('input_length', 10)
         p5.set_param('mask_value', 0.0)
-
-        def _end(*args, **kwargs):
-            r2 = p2.output['result']
-            r3 = p3.output['result']
-            r4 = p4.output['result']
-            r5 = p5.output['result']
-
-            print(r2)
-            print(r3)
-            print(r4)
-            print(r5)
-                   
-        e = proto.create_experiment(study=GTest.study, user=GTest.user)
-        e.on_end(_end)
-        asyncio.run( e.run() )        
+       
+        experiment: Experiment = Experiment(
+            protocol=proto, study=GTest.study, user=GTest.user)
+        experiment.save()
+        experiment = await ExperimentService.run_experiment(
+            experiment=experiment, user=GTest.user)        
         
+        r2 = p2.output['result']
+        r3 = p3.output['result']
+        r4 = p4.output['result']
+        r5 = p5.output['result']
+
+        print(r2)
+        print(r3)
+        print(r4)
+        print(r5)

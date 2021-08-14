@@ -1,15 +1,13 @@
 
 import os
 import asyncio
-import unittest
+from unittest import IsolatedAsyncioTestCase
 
-from gaia.dataset import Dataset, Importer
-from gaia.aggclust import Trainer
-from gws.settings import Settings
-from gws.protocol import Protocol
-from gws.unittest import GTest
+from gws_gaia import Dataset, DatasetLoader
+from gws_gaia import AgglomerativeClusteringTrainer
+from gws_core import Settings, GTest, Protocol, Experiment, ExperimentService
 
-class TestTrainer(unittest.TestCase):
+class TestTrainer(IsolatedAsyncioTestCase):
     
     @classmethod
     def setUpClass(cls):
@@ -21,13 +19,13 @@ class TestTrainer(unittest.TestCase):
     def tearDownClass(cls):
         GTest.drop_tables()
         
-    def test_process(self):
-        GTest.print("Hierarchical clustering")
+    async def test_process(self):
+        GTest.print("Agglomerative clustering")
         settings = Settings.retrieve()
         test_dir = settings.get_dir("gaia:testdata_dir")
 
-        p0 = Importer()
-        p1 = Trainer()
+        p0 = DatasetImporter()
+        p1 = AgglomerativeClusteringTrainer()
 
         proto = Protocol(
             processes = {
@@ -45,11 +43,11 @@ class TestTrainer(unittest.TestCase):
         p0.set_param("file_path", os.path.join(test_dir, "./dataset1.csv"))
         p1.set_param('nb_clusters', 2)
 
-        def _end(*args, **kwargs):
-            r1 = p1.output['result']
-            
-            print(r1)
+        experiment: Experiment = Experiment(
+            protocol=proto, study=GTest.study, user=GTest.user)
+        experiment.save()
+        experiment = await ExperimentService.run_experiment(
+            experiment=experiment, user=GTest.user)                
 
-        e = proto.create_experiment(study=GTest.study, user=GTest.user)
-        e.on_end(_end)
-        asyncio.run( e.run() )                
+        r1 = p1.output['result']
+        print(r1)

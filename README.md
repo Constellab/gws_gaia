@@ -1,4 +1,4 @@
-# Gencovery C++ Artificial Intelligence and Analytics library (gaia)
+# Gencovery Artificial Intelligence and Analytics (GAIA)
 
 This software is the core library for mathematical analyses in artificial intelligence
 

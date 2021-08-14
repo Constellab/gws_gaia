@@ -1,13 +1,12 @@
 import os
 import asyncio
-import unittest
+from unittest import IsolatedAsyncioTestCase
 
-from gaia.globalaveragepoollayers import GlobalAveragePooling1D, GlobalAveragePooling2D, GlobalAveragePooling3D
-from gaia.data import InputConverter
-from gws.protocol import Protocol
-from gws.unittest import GTest
+from gws_gaia.tf import GlobalAveragePooling1D, GlobalAveragePooling2D, GlobalAveragePooling3D
+from gws_gaia.tf import InputConverter
+from gws_core import Settings, GTest, Protocol, Experiment, ExperimentService
 
-class TestTrainer(unittest.TestCase):
+class TestTrainer(IsolatedAsyncioTestCase):
     
     @classmethod
     def setUpClass(cls):
@@ -19,7 +18,7 @@ class TestTrainer(unittest.TestCase):
     def tearDownClass(cls):
         GTest.drop_tables()
         
-    def test_process(self):
+    async def test_process(self):
         GTest.print("Global average pooling operation for 1D data")
         p1 = InputConverter()
         p2 = InputConverter()
@@ -48,21 +47,21 @@ class TestTrainer(unittest.TestCase):
         p2.set_param('input_shape', [None, 3, 3])
         p3.set_param('input_shape', [None, 3, 3 ,3])
 
-        def _end(*args, **kwargs):
-            r1 = p4.output['result']
-            r2 = p5.output['result']
-            r3 = p6.output['result']            
 
-            print(r1)
-            print(r2)
-            print(r3)
+        experiment: Experiment = Experiment(
+            protocol=proto, study=GTest.study, user=GTest.user)
+        experiment.save()
+        experiment = await ExperimentService.run_experiment(
+            experiment=experiment, user=GTest.user)                
+
+        r1 = p4.output['result']
+        r2 = p5.output['result']
+        r3 = p6.output['result']            
+
+        print(r1)
+        print(r2)
+        print(r3)
             
-        
-        e = proto.create_experiment(study=GTest.study, user=GTest.user)
-        e.on_end(_end)
-        asyncio.run( e.run() )                
-
-
 
         
         

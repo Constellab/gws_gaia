@@ -1,14 +1,12 @@
 import os
 import asyncio
-import unittest
+from unittest import IsolatedAsyncioTestCase
 
-from gaia.dataset import Dataset, Importer
-from gaia.gradboostreg import Trainer, Predictor, Tester
-from gws.settings import Settings
-from gws.protocol import Protocol
-from gws.unittest import GTest
+from gws_gaia import Dataset, DatasetLoader
+from gws_gaia import GradientBoostingRegressorTrainer, GradientBoostingRegressorPredictor, GradientBoostingRegressorTester
+from gws_core import Settings, GTest, Protocol, Experiment, ExperimentService
 
-class TestTrainer(unittest.TestCase):
+class TestTrainer(IsolatedAsyncioTestCase):
     
     @classmethod
     def setUpClass(cls):
@@ -20,15 +18,15 @@ class TestTrainer(unittest.TestCase):
     def tearDownClass(cls):
         GTest.drop_tables()
         
-    def test_process(self):
+    async def test_process(self):
         GTest.print("Gradient boosting regressor")
         settings = Settings.retrieve()
         test_dir = settings.get_dir("gaia:testdata_dir")
 
-        p0 = Importer()
-        p1 = Trainer()
-        p2 = Predictor()
-        p3 = Tester()
+        p0 = DatasetLoader()
+        p1 = GradientBoostingRegressorTrainer()
+        p2 = GradientBoostingRegressorPredictor()
+        p3 = GradientBoostingRegressorTester()
         
         proto = Protocol(
             processes = {
@@ -51,17 +49,16 @@ class TestTrainer(unittest.TestCase):
         p0.set_param('targets', ['target']) 
         p0.set_param("file_path", os.path.join(test_dir, "./diabetes.csv"))
 
-        def _end(*args, **kwargs):
-            r1 = p1.output['result']
-            r2 = p2.output['result']
-            r3 = p3.output['result']
-            
-            # print(r1)
-            # print(r2)
-            print(r3.tuple)
-
+        experiment: Experiment = Experiment(
+            protocol=proto, study=GTest.study, user=GTest.user)
+        experiment.save()
+        experiment = await ExperimentService.run_experiment(
+            experiment=experiment, user=GTest.user)                                 
         
-        e = proto.create_experiment(study=GTest.study, user=GTest.user)
-        e.on_end(_end)
-        asyncio.run( e.run() )                                 
+        r1 = p1.output['result']
+        r2 = p2.output['result']
+        r3 = p3.output['result']
         
+        # print(r1)
+        # print(r2)
+        print(r3.tuple)

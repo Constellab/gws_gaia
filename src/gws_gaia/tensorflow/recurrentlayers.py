@@ -1,0 +1,99 @@
+# LICENSE
+# This software is the exclusive property of Gencovery SAS. 
+# The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
+# About us: https://gencovery.com
+
+import numpy as np
+import tensorflow as tf
+from tensorflow.keras.layers import LSTM as KerasLSTM
+from tensorflow.keras.layers import GRU as KerasGRU
+from tensorflow.keras.layers import SimpleRNN as KerasSimpleRNN
+from pandas import DataFrame
+
+from gws_core import (Process, Resource, ProcessDecorator, ResourceDecorator)
+
+from .data import Tensor
+from ..data.dataset import Dataset
+
+#==================================================================================
+#==================================================================================
+
+@ProcessDecorator("LSTM")
+class LSTM(Process):
+    """
+    Long Short-Term Memory (LSTM) layer
+
+    See https://keras.io/api/layers/recurrent_layers/lstm/ for more details
+    """
+    input_specs = {'tensor' : Tensor}
+    output_specs = {'result' : Tensor}
+    config_specs = {
+        'units': {"type": 'int', "default": 10},
+        'activation_type': {"type": 'str', "default": 'tanh'},
+        'recurrent_activation_type': {"type": 'str', "default": 'sigmoid'},
+        'use_bias': {"type": 'bool', "default": True}
+    }
+
+    async def task(self):
+        x = self.input['tensor']
+        y = x._data
+        z = KerasLSTM(self.get_param('units'), activation=self.get_param('activation_type'), recurrent_activation=self.get_param('recurrent_activation_type'), use_bias=self.get_param('use_bias'))(y)
+
+        t = self.output_specs["result"]
+        result = t(tensor=z)
+        self.output['result'] = result
+
+#==================================================================================
+#==================================================================================
+
+@ProcessDecorator("GRU")
+class GRU(Process):
+    """
+    Gated Recurrent Unit (GRU) layer
+
+    See https://keras.io/api/layers/recurrent_layers/gru/ for more details
+    """
+    input_specs = {'tensor' : Tensor}
+    output_specs = {'result' : Tensor}
+    config_specs = {
+        'units': {"type": 'int', "default": 10},
+        'activation_type': {"type": 'str', "default": 'tanh'},
+        'recurrent_activation_type': {"type": 'str', "default": 'sigmoid'},
+        'use_bias': {"type": 'bool', "default": True}
+    }
+
+    async def task(self):
+        x = self.input['tensor']
+        y = x._data
+        z = KerasGRU(self.get_param('units'), activation=self.get_param('activation_type'), recurrent_activation=self.get_param('recurrent_activation_type'), use_bias=self.get_param('use_bias'))(y)        
+
+        t = self.output_specs["result"]
+        result = t(tensor=z)
+        self.output['result'] = result
+
+#==================================================================================
+#==================================================================================
+
+@ProcessDecorator("SimpleRNN")
+class SimpleRNN(Process):
+    """
+    Fully-connected RNN where the output is to be fed back to input.
+
+    See https://keras.io/api/layers/recurrent_layers/simple_rnn/ for more details
+    """
+    input_specs = {'tensor' : Tensor}
+    output_specs = {'result' : Tensor}
+    config_specs = {
+        'units': {"type": 'int', "default": 10},
+        'activation_type': {"type": 'str', "default": 'tanh'},
+        'use_bias': {"type": 'bool', "default": True}
+    }
+
+    async def task(self):
+        x = self.input['tensor']
+        y = x._data
+        z = KerasSimpleRNN(self.get_param('units'), activation=self.get_param('activation_type'), use_bias=self.get_param('use_bias'))(y)
+
+        t = self.output_specs["result"]
+        result = t(tensor=z)
+        self.output['result'] = result

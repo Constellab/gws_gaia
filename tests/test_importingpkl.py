@@ -1,14 +1,12 @@
 import os
 import asyncio
-import unittest
+from unittest import IsolatedAsyncioTestCase
 
-from gaia.dataset import Dataset, Importer
-from gaia.importingpkl import ImporterPKL, Preprocessor, AdhocExtractor
-from gws.settings import Settings
-from gws.protocol import Protocol
-from gws.unittest import GTest
+from gws_gaia import Dataset, DatasetLoader
+from gws_gaia.tf import ImporterPKL, Preprocessor, AdhocExtractor
+from gws_core import Settings, GTest, Protocol, Experiment, ExperimentService
 
-class TestTrainer(unittest.TestCase):
+class TestTrainer(IsolatedAsyncioTestCase):
     
     @classmethod
     def setUpClass(cls):
@@ -20,7 +18,7 @@ class TestTrainer(unittest.TestCase):
     def tearDownClass(cls):
         GTest.drop_tables()
 
-    def test_process(self):
+    async def test_process(self):
         GTest.print("ImporterPKL")
         settings = Settings.retrieve()
         test_dir = settings.get_dir("gaia:testdata_dir")
@@ -44,19 +42,17 @@ class TestTrainer(unittest.TestCase):
         p0.set_param("file_path", os.path.join(test_dir, "./mnist.pkl"))
         p1.set_param('number_classes', 10)
 
-        def _end(*args, **kwargs):
-            r1 = p0.output['result']
-            r2 = p1.output['result']
-            r3 = p2.output['result']
-            
-            print(r1)
-            print(r2)
-            print(r3)
-            
+        experiment: Experiment = Experiment(
+            protocol=proto, study=GTest.study, user=GTest.user)
+        experiment.save()
+        experiment = await ExperimentService.run_experiment(
+            experiment=experiment, user=GTest.user)
         
-        e = proto.create_experiment(study=GTest.study, user=GTest.user)
-        e.on_end(_end)
-        asyncio.run( e.run() )
+        r1 = p0.output['result']
+        r2 = p1.output['result']
+        r3 = p2.output['result']
         
-        
+        print(r1)
+        print(r2)
+        print(r3)
         

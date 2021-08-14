@@ -1,7 +1,7 @@
 {
-    "name"      : "gaia",
+    "name"      : "gws_gaia",
     "authors"   : "Gencovery",
-    "version"   : "0.1",
+    "version"   : "0.1.0",
     "dirs"     : {
         "gaia:testdata_dir"  : "./tests/testdata"
     },
@@ -15,6 +15,6 @@
         "odeint-v2-cpp": "DEFAULT_ORIGIN"
     },
     "dependencies"  : {
-        "gws": "DEFAULT_ORIGIN"
+        "gws_core": "DEFAULT_ORIGIN"
     }
 }

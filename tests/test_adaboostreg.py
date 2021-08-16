@@ -53,7 +53,7 @@ class TestTrainer(IsolatedAsyncioTestCase):
             protocol=proto, study=GTest.study, user=GTest.user)
         experiment.save()
         experiment = await ExperimentService.run_experiment(
-            experiment=experiment, user=GTest.user)        
+            experiment=experiment, user=GTest.user)
         
         r1 = p1.output['result']
         r2 = p2.output['result']

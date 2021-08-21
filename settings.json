@@ -1,20 +1,49 @@
 {
     "name"      : "gws_gaia",
-    "authors"   : "Gencovery",
+    "author"   : "Gencovery",
     "version"   : "0.1.0",
-    "dirs"     : {
-        "gaia:testdata_dir"  : "./tests/testdata"
+    "variables":{
+        "gws_gaia:testdata_dir" : "{CURRENT_DIR}/tests/testdata"
     },
-    "externs"  : {
-        "gaia-cpp": "DEFAULT_ORIGIN",
-        "dlib-cpp": "DEFAULT_ORIGIN",
-        "gflags-cpp": "DEFAULT_ORIGIN",
-        "glog-cpp": "DEFAULT_ORIGIN",
-        "googletest-cpp": "DEFAULT_ORIGIN",
-        "json-cpp": "DEFAULT_ORIGIN",
-        "odeint-v2-cpp": "DEFAULT_ORIGIN"
-    },
-    "dependencies"  : {
-        "gws_core": "DEFAULT_ORIGIN"
+    "environment":{
+        "pip":[
+            {
+                "source": "https://pypi.python.org/simple",
+                "packages":[]
+            },
+            {
+                "source": "https://$GWS_PIP_PACKAGE_TOKEN@gitlab.com/api/v4/projects/27171024/packages/pypi",
+                "packages":[]
+            }
+        ],
+        "git":[
+            {
+                "source": "https://$GWS_GIT_LOGIN:$GWS_GIT_PWD@gitlab.com/gencovery/core",
+                "packages":[
+                    "gws_core[commit=latest, branch=djo]"
+                ]
+            },
+            {
+                "source": "https://$GWS_GIT_LOGIN:$GWS_GIT_PWD@gitlab.com/gencovery/core/lib",
+                "packages":[
+                    "gaia-cpp"
+                ]
+            },
+            {
+                "source": "https://$GWS_GIT_LOGIN:$GWS_GIT_PWD@gitlab.com/gencovery/lib",
+                "packages":[
+                    "dlib-cpp", 
+                    "gflags-cpp", 
+                    "googletest-cpp", 
+                    "json-cpp", 
+                    "odeint-v2-cpp"
+                ]
+            }
+        ],
+        "variables":{
+            "GWS_GIT_LOGIN": "",
+            "GWS_GIT_PWD": "",
+            "GWS_PIP_PACKAGE_TOKEN": ""
+        }
     }
 }

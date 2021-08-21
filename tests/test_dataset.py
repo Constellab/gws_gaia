@@ -23,7 +23,7 @@ class TestImporter(IsolatedAsyncioTestCase):
         p0 = DatasetLoader(instance_name="p0")
         settings = Settings.retrieve()
 
-        test_dir = settings.get_dir("gaia:testdata_dir")
+        test_dir = settings.get_variable("gws_gaia:testdata_dir")
         p0.set_param("file_path", os.path.join(test_dir, "./iris.csv"))
         p0.set_param("delimiter", ",")
         p0.set_param("header", 0)
@@ -49,7 +49,7 @@ class TestImporter(IsolatedAsyncioTestCase):
         p0 = DatasetLoader(instance_name="p0")
         settings = Settings.retrieve()
 
-        test_dir = settings.get_dir("gaia:testdata_dir")
+        test_dir = settings.get_variable("gws_gaia:testdata_dir")
         p0.set_param("file_path", os.path.join(test_dir, "./iris_no_head.csv"))
         p0.set_param("header", None)
         p0.set_param("delimiter", ",")

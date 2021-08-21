@@ -22,7 +22,7 @@ class TestTrainer(IsolatedAsyncioTestCase):
     async def test_process(self):
         GTest.print("Agglomerative clustering")
         settings = Settings.retrieve()
-        test_dir = settings.get_dir("gaia:testdata_dir")
+        test_dir = settings.get_variable("gws_gaia:testdata_dir")
 
         p0 = DatasetImporter()
         p1 = AgglomerativeClusteringTrainer()

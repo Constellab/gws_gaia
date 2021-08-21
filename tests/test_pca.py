@@ -22,7 +22,7 @@ class TestTrainer(IsolatedAsyncioTestCase):
     async def test_process(self):
         GTest.print("Principal Component Analysis (PCA)")
         settings = Settings.retrieve()
-        test_dir = settings.get_dir("gaia:testdata_dir")
+        test_dir = settings.get_variable("gws_gaia:testdata_dir")
 
         p0 = DatasetLoader()
         p1 = PCATrainer()

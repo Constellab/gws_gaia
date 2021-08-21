@@ -1,6 +1,6 @@
 
 # cluster
-from .cluster.aggclust import AgglomerativeClusteringResult, AgglomerativeClusteringTrainer, AgglomerativeClustering
+from .cluster.aggclust import AgglomerativeClusteringResult, AgglomerativeClusteringTrainer
 from .cluster.kmeans import KMeansResult, KMeansTrainer, KMeansPredictor
 # discrinimant analysis
 from .da.linearda import LDAResult, LDATrainer, LDATransformer, LDATester, LDAPredictor

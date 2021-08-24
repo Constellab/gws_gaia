@@ -23,7 +23,7 @@ class TestTrainer(IsolatedAsyncioTestCase):
         settings = Settings.retrieve()
         test_dir = settings.get_variable("gws_gaia:testdata_dir")
 
-        p0 = DatasetImporter()
+        p0 = DatasetLoader()
         p1 = AdaBoostRegressorTrainer()
         p2 = AdaBoostRegressorPredictor()
         p3 = AdaBoostRegressorTester()

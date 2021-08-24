@@ -4,7 +4,7 @@
 # About us: https://gencovery.com
 
 import click
-from gws.settings import Settings
+from gws_core import Settings
 
 @click.command(context_settings=dict(
     ignore_unknown_options=True,

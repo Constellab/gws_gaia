@@ -4,7 +4,7 @@ import asyncio
 from unittest import IsolatedAsyncioTestCase
 
 from gws_gaia import Dataset, DatasetLoader
-from gws_gaia import RidgeRegressionTrainer, RidgeClassifierPredictor, RidgeRegressionTester
+from gws_gaia import RidgeRegressionTrainer, RidgeRegressionPredictor, RidgeRegressionTester
 from gws_core import Settings, GTest, Protocol, Experiment, ExperimentService
 
 class TestTrainer(IsolatedAsyncioTestCase):

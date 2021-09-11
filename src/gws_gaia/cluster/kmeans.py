@@ -6,13 +6,13 @@
 from pandas import DataFrame
 from sklearn.cluster import KMeans
 
-from gws_core import (Process, Resource, ProcessDecorator, ResourceDecorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator)
 from ..data.dataset import Dataset
 
 #==============================================================================
 #==============================================================================
 
-@ResourceDecorator("KMeansResult")
+@resource_decorator("KMeansResult")
 class KMeansResult(Resource):
     def __init__(self, kmeans: KMeans = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -21,8 +21,8 @@ class KMeansResult(Resource):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("KMeansTrainer")
-class KMeansTrainer(Process):
+@task_decorator("KMeansTrainer")
+class KMeansTrainer(Task):
     """
     Trainer of a trained k-means clustering model. Compute a k-means clustering from a dataset.
 
@@ -46,8 +46,8 @@ class KMeansTrainer(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("KMeansPredictor")
-class KMeansPredictor(Process):
+@task_decorator("KMeansPredictor")
+class KMeansPredictor(Task):
     """
     Predictor of a K-means clustering model. Predict the closest cluster each sample in a dataset belongs to.
 

@@ -11,7 +11,7 @@ from tensorflow.keras.layers import Conv2D as Kerasconv2d
 from tensorflow.keras.layers import Conv3D as Kerasconv3d
 from pandas import DataFrame
 
-from gws_core import (Process, Resource, ProcessDecorator, ResourceDecorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator)
 
 from ..data.dataset import Dataset
 from .data import Tensor
@@ -19,8 +19,8 @@ from .data import Tensor
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("Conv1D")
-class Conv1D(Process):
+@task_decorator("Conv1D")
+class Conv1D(Task):
     """
     1D convolution layer (e.g. temporal convolution).
 
@@ -46,8 +46,8 @@ class Conv1D(Process):
 #================================================================================
 #================================================================================
 
-@ProcessDecorator("Conv2D")
-class Conv2D(Process):
+@task_decorator("Conv2D")
+class Conv2D(Task):
     """
     2D convolution layer (e.g. spatial convolution over images).
 
@@ -74,8 +74,8 @@ class Conv2D(Process):
 #================================================================================
 #================================================================================
 
-@ProcessDecorator("Conv3D")
-class Conv3D(Process):
+@task_decorator("Conv3D")
+class Conv3D(Task):
     """
     3D convolution layer (e.g. spatial convolution over volumes).
     

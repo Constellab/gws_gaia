@@ -7,7 +7,7 @@ from numpy import ravel
 from pandas import DataFrame
 from sklearn.naive_bayes import GaussianNB
 
-from gws_core import (Process, Resource, ProcessDecorator, ResourceDecorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator)
 
 from ..data.core import Tuple
 from ..data.dataset import Dataset
@@ -15,7 +15,7 @@ from ..data.dataset import Dataset
 #==============================================================================
 #==============================================================================
 
-@ResourceDecorator("GaussianNaiveBayesResult", hide=True)
+@resource_decorator("GaussianNaiveBayesResult", hide=True)
 class GaussianNaiveBayesResult(Resource):
     def __init__(self, gnb: GaussianNB = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -24,8 +24,8 @@ class GaussianNaiveBayesResult(Resource):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("GaussianNaiveBayesTrainer")
-class GaussianNaiveBayesTrainer(Process):
+@task_decorator("GaussianNaiveBayesTrainer")
+class GaussianNaiveBayesTrainer(Task):
     """
     Trainer of a gaussian naive Bayes model. Fit a gaussian naive Bayes according to a training set.
 
@@ -49,8 +49,8 @@ class GaussianNaiveBayesTrainer(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("GaussianNaiveBayesTester")
-class GaussianNaiveBayesTester(Process):
+@task_decorator("GaussianNaiveBayesTester")
+class GaussianNaiveBayesTester(Task):
     """
     Tester of a trained gaussian Naïve Bayes model. Return the mean accuracy on a given dataset for a trained gaussian Naïve Bayes model.
     
@@ -75,8 +75,8 @@ class GaussianNaiveBayesTester(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("GaussianNaiveBayesPredictor")
-class GaussianNaiveBayesPredictor(Process):
+@task_decorator("GaussianNaiveBayesPredictor")
+class GaussianNaiveBayesPredictor(Task):
     """
     Predictor of a gaussian naïve Bayes model. Perform classification on a dataset.
     

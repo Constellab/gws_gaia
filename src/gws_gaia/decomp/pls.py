@@ -7,14 +7,14 @@
 from pandas import DataFrame
 from sklearn.cross_decomposition import PLSRegression
 
-from gws_core import (Process, Resource, ProcessDecorator, ResourceDecorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator)
 from ..data.core import Tuple
 from ..data.dataset import Dataset
 
 #==============================================================================
 #==============================================================================
 
-@ResourceDecorator("PLSResult", hide=True)
+@resource_decorator("PLSResult", hide=True)
 class PLSResult(Resource):
     def __init__(self, pls: PLSRegression = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -23,8 +23,8 @@ class PLSResult(Resource):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("PLSTrainer")
-class PLSTrainer(Process):
+@task_decorator("PLSTrainer")
+class PLSTrainer(Task):
     """
     Trainer of a Partial Least Squares (PLS) regression model. Fit a PLS regression model to a training dataset.
 
@@ -48,8 +48,8 @@ class PLSTrainer(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("PLSTester")
-class PLSTester(Process):
+@task_decorator("PLSTester")
+class PLSTester(Task):
     """
     Tester of a trained Partial Least Squares (PLS) regression model. Return the coefficient of determination R^2 of the prediction on a given dataset for a trained Partial Least Squares (PLS) regression model.
     
@@ -74,8 +74,8 @@ class PLSTester(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("PLSPredictor")
-class PLSPredictor(Process):
+@task_decorator("PLSPredictor")
+class PLSPredictor(Task):
     """
     Predictor of a Partial Least Squares (PLS) regression model. Predict targets of a dataset with a trained PLS regression model.
 

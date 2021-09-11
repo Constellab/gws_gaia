@@ -13,7 +13,7 @@ from tensorflow.keras.layers import Dropout as Kerasdropout
 from tensorflow.keras.layers import Flatten as Kerasflatten
 from pandas import DataFrame
 
-from gws_core import (Process, Resource, ProcessDecorator, ResourceDecorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator)
 
 from ..data.dataset import Dataset
 from .data import Tensor
@@ -21,8 +21,8 @@ from .data import Tensor
 #========================================================================================
 #========================================================================================
 
-@ProcessDecorator("Dense")
-class Dense(Process):
+@task_decorator("Dense")
+class Dense(Task):
     """
     Densely connected Neural Network layer.
 
@@ -48,8 +48,8 @@ class Dense(Process):
 #========================================================================================
 #========================================================================================
 
-@ProcessDecorator("Activation")
-class Activation(Process):
+@task_decorator("Activation")
+class Activation(Task):
     """
     Applies an activation function to an output.
 
@@ -73,8 +73,8 @@ class Activation(Process):
 #========================================================================================
 #========================================================================================
 
-@ProcessDecorator("Embedding")
-class Embedding(Process):
+@task_decorator("Embedding")
+class Embedding(Task):
     """
     Turns positive integers (indexes) into dense vectors of fixed size.
 
@@ -100,8 +100,8 @@ class Embedding(Process):
 #========================================================================================
 #========================================================================================
 
-@ProcessDecorator("Masking")
-class Masking(Process):
+@task_decorator("Masking")
+class Masking(Task):
     """
     Masks a sequence by using a mask value to skip timesteps.
     
@@ -122,8 +122,8 @@ class Masking(Process):
         result = t(tensor=z)
         self.output['result'] = result
 
-@ProcessDecorator("Dropout")
-class Dropout(Process):
+@task_decorator("Dropout")
+class Dropout(Task):
     """
     Dropout layer
 
@@ -144,8 +144,8 @@ class Dropout(Process):
         result = t(tensor=z)
         self.output['result'] = result
 
-@ProcessDecorator("Flatten")
-class Flatten(Process):
+@task_decorator("Flatten")
+class Flatten(Task):
     """
     Flatten layer
 

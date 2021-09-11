@@ -7,14 +7,14 @@ from numpy import ravel
 from pandas import DataFrame
 from sklearn.ensemble import GradientBoostingClassifier
 
-from gws_core import (Process, Resource, ProcessDecorator, ResourceDecorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator)
 from ..data.core import Tuple
 from ..data.dataset import Dataset
 
 #==============================================================================
 #==============================================================================
 
-@ResourceDecorator("GradientBoostingClassifierResult", hide=True)
+@resource_decorator("GradientBoostingClassifierResult", hide=True)
 class GradientBoostingClassifierResult(Resource):
     def __init__(self, gbc: GradientBoostingClassifier = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -23,8 +23,8 @@ class GradientBoostingClassifierResult(Resource):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("GradientBoostingClassifierTrainer")
-class GradientBoostingClassifierTrainer(Process):
+@task_decorator("GradientBoostingClassifierTrainer")
+class GradientBoostingClassifierTrainer(Task):
     """
     Trainer of a gradient boosting classifier. Fit a gradient boosting classifier with a training dataset.
 
@@ -48,8 +48,8 @@ class GradientBoostingClassifierTrainer(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("GradientBoostingClassifierTester")
-class GradientBoostingClassifierTester(Process):
+@task_decorator("GradientBoostingClassifierTester")
+class GradientBoostingClassifierTester(Task):
     """
     Tester of a trained gradient boosting classifier. Return the mean accuracy on a given dataset for a trained gradient boosting classifier.
     
@@ -74,8 +74,8 @@ class GradientBoostingClassifierTester(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("GradientBoostingClassifierPredictor")
-class GradientBoostingClassifierPredictor(Process):
+@task_decorator("GradientBoostingClassifierPredictor")
+class GradientBoostingClassifierPredictor(Task):
     """
     Predictor of a gradient boosting classifier. Predict classes for a dataset.
 

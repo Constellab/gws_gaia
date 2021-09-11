@@ -8,7 +8,7 @@ from numpy import ravel
 from pandas import DataFrame
 from sklearn.linear_model import Lasso
 
-from gws_core import (Process, Resource, ProcessDecorator, ResourceDecorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator)
 
 from ..data.core import Tuple
 from ..data.dataset import Dataset
@@ -16,7 +16,7 @@ from ..data.dataset import Dataset
 #==============================================================================
 #==============================================================================
 
-@ResourceDecorator("LassoResult", hide=True)
+@resource_decorator("LassoResult", hide=True)
 class LassoResult(Resource):
     def __init__(self, las: Lasso = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -25,8 +25,8 @@ class LassoResult(Resource):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("LassoTrainer")
-class LassoTrainer(Process):
+@task_decorator("LassoTrainer")
+class LassoTrainer(Task):
     """
     Trainer of a lasso model. Fit a lasso model with a training dataset.
 
@@ -50,8 +50,8 @@ class LassoTrainer(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("LassoTester")
-class LassoTester(Process):
+@task_decorator("LassoTester")
+class LassoTester(Task):
     """
     Tester of a trained lasso model. Return the coefficient of determination R^2 of the prediction on a given dataset for a trained lasso model.
     
@@ -76,8 +76,8 @@ class LassoTester(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("LassoPredictor")
-class LassoPredictor(Process):
+@task_decorator("LassoPredictor")
+class LassoPredictor(Task):
     """
     Predictor of a lasso model. Predict target values from a dataset with a trained lasso model.
 

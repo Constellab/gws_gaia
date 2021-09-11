@@ -5,23 +5,23 @@
 
 from sklearn.cluster import AgglomerativeClustering
 
-from gws_core import (Process, Resource, ProcessDecorator, ResourceDecorator)
+from gws_core import (Task, Resource, 
+                        task_decorator, resource_decorator, 
+                        ConfigParams, TaskInputs, TaskOutputs, IntParam)
 from ..data.dataset import Dataset
+from ..base.base_resource import BaseResource
+#==============================================================================
+#==============================================================================
+
+@resource_decorator("AgglomerativeClusteringResult", hide=True)
+class AgglomerativeClusteringResult(BaseResource):
+    pass
 
 #==============================================================================
 #==============================================================================
 
-@ResourceDecorator("AgglomerativeClusteringResult", hide=True)
-class AgglomerativeClusteringResult(Resource):
-    def __init__(self, aggclust: AgglomerativeClustering = None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        #self.kv_store['pls'] = pls
-
-#==============================================================================
-#==============================================================================
-
-@ProcessDecorator("AgglomerativeClusteringTrainer")
-class AgglomerativeClusteringTrainer(Process):
+@task_decorator("AgglomerativeClusteringTrainer")
+class AgglomerativeClusteringTrainer(Task):
     """ Trainer of the hierarchical clustering. Fits the hierarchical clustering from features, or distance matrix.
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.cluster.AgglomerativeClustering.html for more details
@@ -29,14 +29,13 @@ class AgglomerativeClusteringTrainer(Process):
     input_specs = {'dataset' : Dataset}
     output_specs = {'result' : AgglomerativeClusteringResult}
     config_specs = {
-        'nb_clusters': {"type": 'int', "default": 2, "min": 0}
+        'nb_clusters': IntParam(default_value=2, min_value=0)
     }
 
-    async def task(self):
-        dataset = self.input['dataset']
-        aggclust = AgglomerativeClustering(n_clusters=self.get_param("nb_clusters"))
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
+        aggclust = AgglomerativeClustering(n_clusters=params["nb_clusters"])
         aggclust.fit(dataset.features.values)
         
-        t = self.output_specs["result"]
-        result = t(aggclust=aggclust)
-        self.output['result'] = result
+        result = AgglomerativeClusteringResult.from_result(result=aggclust)
+        return {'result': result}

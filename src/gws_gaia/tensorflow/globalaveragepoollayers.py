@@ -10,7 +10,7 @@ from tensorflow.keras.layers import GlobalAveragePooling2D as Kerasglobalaverage
 from tensorflow.keras.layers import GlobalAveragePooling3D as Kerasglobalaveragepooling3d
 from pandas import DataFrame
 
-from gws_core import (Process, Resource, ProcessDecorator, ResourceDecorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator)
 
 from .data import Tensor
 from ..data.dataset import Dataset
@@ -18,8 +18,8 @@ from ..data.dataset import Dataset
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("GlobalAveragePooling1D")
-class GlobalAveragePooling1D(Process):
+@task_decorator("GlobalAveragePooling1D")
+class GlobalAveragePooling1D(Task):
     """
     Global average pooling operation for 1D data (temporal data)
     """
@@ -40,8 +40,8 @@ class GlobalAveragePooling1D(Process):
 #================================================================================
 #================================================================================
 
-@ProcessDecorator("GlobalAveragePooling2D")
-class GlobalAveragePooling2D(Process):
+@task_decorator("GlobalAveragePooling2D")
+class GlobalAveragePooling2D(Task):
     """
     Global average pooling operation for 2D data (spatial data)
     """
@@ -62,8 +62,8 @@ class GlobalAveragePooling2D(Process):
 #================================================================================
 #================================================================================
 
-@ProcessDecorator("GlobalAveragePooling3D")
-class GlobalAveragePooling3D(Process):
+@task_decorator("GlobalAveragePooling3D")
+class GlobalAveragePooling3D(Task):
     """
     Global average pooling operation for 3D data (spatial or spatio-temporal data)
     """

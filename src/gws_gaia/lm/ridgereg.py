@@ -7,7 +7,7 @@ from numpy import ravel
 from pandas import DataFrame
 from sklearn.linear_model import Ridge
 
-from gws_core import (Process, Resource, ProcessDecorator, ResourceDecorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator)
 
 from ..data.core import Tuple
 from ..data.dataset import Dataset
@@ -15,7 +15,7 @@ from ..data.dataset import Dataset
 #==============================================================================
 #==============================================================================
 
-@ResourceDecorator("RidgeRegressionResult", hide=True)
+@resource_decorator("RidgeRegressionResult", hide=True)
 class RidgeRegressionResult(Resource):
     def __init__(self, rir: Ridge = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -24,8 +24,8 @@ class RidgeRegressionResult(Resource):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("RidgeRegressionTrainer")
-class RidgeRegressionTrainer(Process):
+@task_decorator("RidgeRegressionTrainer")
+class RidgeRegressionTrainer(Task):
     """
     Trainer of a Ridge regression model. Fit a Ridge regression model with a training dataset. 
 
@@ -48,8 +48,8 @@ class RidgeRegressionTrainer(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("RidgeRegressionTester")
-class RidgeRegressionTester(Process):
+@task_decorator("RidgeRegressionTester")
+class RidgeRegressionTester(Task):
     """
     Tester of a trained Ridge regression model. Return the coefficient of determination R^2 of the prediction on a given dataset for a trained Ridge regression model.
     
@@ -74,8 +74,8 @@ class RidgeRegressionTester(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("RidgeRegressionPredictor")
-class RidgeRegressionPredictor(Process):
+@task_decorator("RidgeRegressionPredictor")
+class RidgeRegressionPredictor(Task):
     """
     Predictor of a Ridge regression model. Predict target values of a dataset with a trained Ridge regression model. 
 

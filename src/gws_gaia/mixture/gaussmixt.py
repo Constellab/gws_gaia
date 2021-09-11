@@ -7,14 +7,14 @@ from numpy import ravel
 from sklearn.mixture import GaussianMixture
 from pandas import DataFrame
 
-from gws_core import (Process, Resource, ProcessDecorator, ResourceDecorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator)
 
 from ..data.dataset import Dataset
 
 #==============================================================================
 #==============================================================================
 
-@ResourceDecorator("GaussianMixtureResult", hide=True)
+@resource_decorator("GaussianMixtureResult", hide=True)
 class GaussianMixtureResult(Resource):
     def __init__(self, gmixt: GaussianMixture = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -23,8 +23,8 @@ class GaussianMixtureResult(Resource):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("GaussianMixtureTrainer")
-class GaussianMixtureTrainer(Process):
+@task_decorator("GaussianMixtureTrainer")
+class GaussianMixtureTrainer(Task):
     """
     Trainer of a Gaussian mixture model. Estimate model parameters with a training set.
 
@@ -49,8 +49,8 @@ class GaussianMixtureTrainer(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("GaussianMixturePredictor")
-class GaussianMixturePredictor(Process):
+@task_decorator("GaussianMixturePredictor")
+class GaussianMixturePredictor(Task):
     """
     Predictor of a Gaussian mixture model. Predict the labels for a dataset.
 

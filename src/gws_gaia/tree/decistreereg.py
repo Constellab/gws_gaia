@@ -8,7 +8,7 @@ from numpy import ravel
 from pandas import DataFrame
 from sklearn.tree import DecisionTreeRegressor
 
-from gws_core import (Process, Resource, ProcessDecorator, ResourceDecorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator)
 
 from ..data.core import Tuple
 from ..data.dataset import Dataset
@@ -17,7 +17,7 @@ from ..data.dataset import Dataset
 #==============================================================================
 #==============================================================================
 
-@ResourceDecorator("DecisionTreeRegressorResult")
+@resource_decorator("DecisionTreeRegressorResult")
 class DecisionTreeRegressorResult(Resource):
     def __init__(self, dtr: DecisionTreeRegressor = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -26,8 +26,8 @@ class DecisionTreeRegressorResult(Resource):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("DecisionTreeRegressorTrainer")
-class DecisionTreeRegressorTrainer(Process):
+@task_decorator("DecisionTreeRegressorTrainer")
+class DecisionTreeRegressorTrainer(Task):
     """ Trainer of a decision tree regressor. Build a decision tree regressor from a training set   
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeRegressor.html for more details
@@ -50,8 +50,8 @@ class DecisionTreeRegressorTrainer(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("DecisionTreeRegressorTester")
-class DecisionTreeRegressorTester(Process):
+@task_decorator("DecisionTreeRegressorTester")
+class DecisionTreeRegressorTester(Task):
     """
     Tester of a trained decision tree regressor. Return the coefficient of determination R^2 of the prediction on a given dataset for a trained decision tree regressor.
     
@@ -76,8 +76,8 @@ class DecisionTreeRegressorTester(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("DecisionTreeRegressorPredictor")
-class DecisionTreeRegressorPredictor(Process):
+@task_decorator("DecisionTreeRegressorPredictor")
+class DecisionTreeRegressorPredictor(Task):
     """ Predictor of a trained decision tree regressor. Predict class or regression value for the dataset. For a classification model, the predicted class for each sample in the dataset is returned. For a regression model, the predicted value based on the dataset is returned.
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeRegressor.html for more details

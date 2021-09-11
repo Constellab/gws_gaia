@@ -7,7 +7,7 @@ from numpy import ravel
 from pandas import DataFrame
 from sklearn.linear_model import LogisticRegression
 
-from gws_core import (Process, Resource, ProcessDecorator, ResourceDecorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator)
 
 from ..data.core import Tuple
 from ..data.dataset import Dataset
@@ -15,7 +15,7 @@ from ..data.dataset import Dataset
 #==============================================================================
 #==============================================================================
 
-@ResourceDecorator("LogisticRegressionResult", hide=True)
+@resource_decorator("LogisticRegressionResult", hide=True)
 class LogisticRegressionResult(Resource):
     def __init__(self, logreg: LogisticRegression = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -24,8 +24,8 @@ class LogisticRegressionResult(Resource):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("LogisticRegressionTrainer")
-class LogisticRegressionTrainer(Process):
+@task_decorator("LogisticRegressionTrainer")
+class LogisticRegressionTrainer(Task):
     """
     Trainer of a logistic regression classifier. Fit a logistic regression model according to a training dataset.
 
@@ -49,8 +49,8 @@ class LogisticRegressionTrainer(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("LogisticRegressionTester")
-class LogisticRegressionTester(Process):
+@task_decorator("LogisticRegressionTester")
+class LogisticRegressionTester(Task):
     """
     Tester of a trained logistic regression classifier. Return the mean accuracy on a given dataset for a trained logistic regression classifier.
     
@@ -75,8 +75,8 @@ class LogisticRegressionTester(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("LogisticRegressionPredictor")
-class LogisticRegressionPredictor(Process):
+@task_decorator("LogisticRegressionPredictor")
+class LogisticRegressionPredictor(Task):
     """
     Predictor of a logistic regression classifier. Predict class labels for samples in a dataset with a trained logistic regression classifier.
 

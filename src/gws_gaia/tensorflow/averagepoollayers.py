@@ -11,7 +11,7 @@ from tensorflow.keras.layers import AveragePooling2D as Kerasaveragepooling2d
 from tensorflow.keras.layers import AveragePooling3D as Kerasaveragepooling3d
 from pandas import DataFrame
 
-from gws_core import (Process, Resource, ProcessDecorator, ResourceDecorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator)
 
 from .data import Tensor
 from ..data.dataset import Dataset
@@ -25,8 +25,8 @@ from ..data.dataset import Dataset
 #================================================================================
 #================================================================================
 
-@ProcessDecorator("AveragePooling1D")
-class AveragePooling1D(Process):
+@task_decorator("AveragePooling1D")
+class AveragePooling1D(Task):
     """
     Average pooling operation for 1D data (temporal data)
     """
@@ -48,8 +48,8 @@ class AveragePooling1D(Process):
 #================================================================================
 #================================================================================
 
-@ProcessDecorator("AveragePooling2D")
-class AveragePooling2D(Process):
+@task_decorator("AveragePooling2D")
+class AveragePooling2D(Task):
     """
     Average pooling operation for 2D data (spatial data)
     """
@@ -73,8 +73,8 @@ class AveragePooling2D(Process):
 #================================================================================
 #================================================================================
 
-@ProcessDecorator("AveragePooling3D")
-class AveragePooling3D(Process):
+@task_decorator("AveragePooling3D")
+class AveragePooling3D(Task):
     """
     Average pooling operation for 3D data (spatial or spatio-temporal data)
     """

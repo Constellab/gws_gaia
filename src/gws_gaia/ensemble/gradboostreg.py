@@ -8,7 +8,7 @@ from numpy import ravel
 from pandas import DataFrame
 from sklearn.ensemble import GradientBoostingRegressor
 
-from gws_core import (Process, Resource, ProcessDecorator, ResourceDecorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator)
 from ..data.core import Tuple
 from ..data.dataset import Dataset
 
@@ -16,7 +16,7 @@ from ..data.dataset import Dataset
 #==============================================================================
 
 
-@ResourceDecorator("GradientBoostingRegressorResult", hide=True)
+@resource_decorator("GradientBoostingRegressorResult", hide=True)
 class GradientBoostingRegressorResult(Resource):
     def __init__(self, gbr: GradientBoostingRegressor = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -25,8 +25,8 @@ class GradientBoostingRegressorResult(Resource):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("GradientBoostingRegressorTrainer")
-class GradientBoostingRegressorTrainer(Process):
+@task_decorator("GradientBoostingRegressorTrainer")
+class GradientBoostingRegressorTrainer(Task):
     """
     Trainer of a gradient boosting regressor. Fit a gradient boosting regressor with a training dataset.
 
@@ -50,8 +50,8 @@ class GradientBoostingRegressorTrainer(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("GradientBoostingRegressorTester")
-class GradientBoostingRegressorTester(Process):
+@task_decorator("GradientBoostingRegressorTester")
+class GradientBoostingRegressorTester(Task):
     """
     Tester of a trained gradient boosting regressor. Return the coefficient of determination R^2 of the prediction on a given dataset for a trained gradient boosting regressor.
     
@@ -76,8 +76,8 @@ class GradientBoostingRegressorTester(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("GradientBoostingRegressorPredictor")
-class GradientBoostingRegressorPredictor(Process):
+@task_decorator("GradientBoostingRegressorPredictor")
+class GradientBoostingRegressorPredictor(Task):
     """
     Predictor of a gradient boosting regressor. Predict regression target for a dataset.
 

@@ -29,7 +29,7 @@ class TestImporter(IsolatedAsyncioTestCase):
         p0.set_param("header", 0)
         p0.set_param("targets", ["variety"])
             
-        experiment: Experiment = ExperimentService.create_experiment_from_process(process=p0)
+        experiment: Experiment = ExperimentService.create_experiment_from_task_model(task_model=p0)
         experiment.save()
         experiment = await ExperimentService.run_experiment(
             experiment=experiment, user=GTest.user)
@@ -55,7 +55,7 @@ class TestImporter(IsolatedAsyncioTestCase):
         p0.set_param("delimiter", ",")
         p0.set_param("targets", [4])
 
-        experiment: Experiment = ExperimentService.create_experiment_from_process(process=p0)
+        experiment: Experiment = ExperimentService.create_experiment_from_task_model(process=p0)
         experiment.save()
         experiment = await ExperimentService.run_experiment(
             experiment=experiment, user=GTest.user)

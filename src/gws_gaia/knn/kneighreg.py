@@ -7,14 +7,14 @@ from numpy import ravel
 from pandas import DataFrame
 from sklearn.neighbors import KNeighborsRegressor
 
-from gws_core import (Process, Resource, ProcessDecorator, ResourceDecorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator)
 from ..data.core import Tuple
 from ..data.dataset import Dataset
 
 #==============================================================================
 #==============================================================================
 
-@ResourceDecorator("KNNRegressorResult", hide=True)
+@resource_decorator("KNNRegressorResult", hide=True)
 class KNNRegressorResult(Resource):
     def __init__(self, neigh: KNeighborsRegressor = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -23,8 +23,8 @@ class KNNRegressorResult(Resource):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("KNNRegressorTrainer")
-class KNNRegressorTrainer(Process):
+@task_decorator("KNNRegressorTrainer")
+class KNNRegressorTrainer(Task):
     """
     Trainer for a k-nearest neighbors regressor. Fit a k-nearest neighbors regressor from a training dataset.
 
@@ -48,8 +48,8 @@ class KNNRegressorTrainer(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("KNNRegressorTester")
-class KNNRegressorTester(Process):
+@task_decorator("KNNRegressorTester")
+class KNNRegressorTester(Task):
     """
     Tester of a trained k-nearest neighbors regressor. Return the coefficient of determination R^2 of the prediction on a given dataset for a trained k-nearest neighbors regressor.
     
@@ -74,8 +74,8 @@ class KNNRegressorTester(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("KNNRegressorPredictor")
-class KNNRegressorPredictor(Process):
+@task_decorator("KNNRegressorPredictor")
+class KNNRegressorPredictor(Task):
     """
     Predictor for a k-nearest neighbors regressor. Predict the regression target for a dataset.
 

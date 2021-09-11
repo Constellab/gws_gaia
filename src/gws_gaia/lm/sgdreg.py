@@ -7,7 +7,7 @@ from numpy import ravel
 from pandas import DataFrame
 from sklearn.linear_model import SGDRegressor
 
-from gws_core import (Process, Resource, ProcessDecorator, ResourceDecorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator)
 
 from ..data.dataset import Dataset
 from ..data.core import Tuple
@@ -15,7 +15,7 @@ from ..data.core import Tuple
 #==============================================================================
 #==============================================================================
 
-@ResourceDecorator("SGDRegressorResult", hide=True)
+@resource_decorator("SGDRegressorResult", hide=True)
 class SGDRegressorResult(Resource):
     def __init__(self, sgdr: SGDRegressor = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -24,8 +24,8 @@ class SGDRegressorResult(Resource):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("SGDRegressorTrainer")
-class SGDRegressorTrainer(Process):
+@task_decorator("SGDRegressorTrainer")
+class SGDRegressorTrainer(Task):
     """
     Trainer of a linear regressor with stochastic gradient descent (SGD). Fit a SGD linear regressor with a training dataset.
 
@@ -51,8 +51,8 @@ class SGDRegressorTrainer(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("SGDRegressorTester")
-class SGDRegressorTester(Process):
+@task_decorator("SGDRegressorTester")
+class SGDRegressorTester(Task):
     """
     Tester of a trained linear regressor with stochastic gradient descent (SGD). Return the coefficient of determination R^2 of the prediction on a given dataset for a trained linear regressor with stochastic gradient descent (SGD).
     
@@ -77,8 +77,8 @@ class SGDRegressorTester(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("SGDRegressorPredictor")
-class SGDRegressorPredictor(Process):
+@task_decorator("SGDRegressorPredictor")
+class SGDRegressorPredictor(Task):
     """
     Predictor of a linear regressor with stochastic gradient descent (SGD). Predict target values of a dataset with a trained SGD linear regressor.
 

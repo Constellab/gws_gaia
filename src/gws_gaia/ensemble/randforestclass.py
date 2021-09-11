@@ -7,14 +7,14 @@ from numpy import ravel
 from pandas import DataFrame
 from sklearn.ensemble import RandomForestClassifier
 
-from gws_core import (Process, Resource, ProcessDecorator, ResourceDecorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator)
 from ..data.core import Tuple
 from ..data.dataset import Dataset
 
 #==============================================================================
 #==============================================================================
 
-@ResourceDecorator("RandomForestClassifierResult", hide=True)
+@resource_decorator("RandomForestClassifierResult", hide=True)
 class RandomForestClassifierResult(Resource):
     def __init__(self, rfc: RandomForestClassifier = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -23,8 +23,8 @@ class RandomForestClassifierResult(Resource):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("RandomForestClassifierTrainer")
-class RandomForestClassifierTrainer(Process):
+@task_decorator("RandomForestClassifierTrainer")
+class RandomForestClassifierTrainer(Task):
     """
     Trainer of a random forest classifier. Build a forest of trees from a training dataset.
 
@@ -48,8 +48,8 @@ class RandomForestClassifierTrainer(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("RandomForestClassifierTester")
-class RandomForestClassifierTester(Process):
+@task_decorator("RandomForestClassifierTester")
+class RandomForestClassifierTester(Task):
     """
     Tester of a trained random forest classifier. Return the mean accuracy on a given dataset for a trained random forest classifier.
     
@@ -74,8 +74,8 @@ class RandomForestClassifierTester(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("RandomForestClassifierPredictor")
-class RandomForestClassifierPredictor(Process):
+@task_decorator("RandomForestClassifierPredictor")
+class RandomForestClassifierPredictor(Task):
     """
     Predictor of a random forest classifier. Predict class labels of a dataset with a trained random forest classifier.
 

@@ -7,11 +7,11 @@ from numpy import ravel
 from pandas import DataFrame
 from sklearn.ensemble import AdaBoostRegressor
 
-from gws_core import (Process, Resource, ProcessDecorator, ResourceDecorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator)
 from ..data.dataset import Dataset
 from ..data.core import Tuple
 
-@ResourceDecorator("AdaBoostRegressorResult", hide=True)
+@resource_decorator("AdaBoostRegressorResult", hide=True)
 class AdaBoostRegressorResult(Resource):
     def __init__(self, abr: AdaBoostRegressor = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -20,8 +20,8 @@ class AdaBoostRegressorResult(Resource):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("AdaBoostRegressorTrainer")
-class AdaBoostRegressorTrainer(Process):
+@task_decorator("AdaBoostRegressorTrainer")
+class AdaBoostRegressorTrainer(Task):
     """
     Trainer of an Adaboost regressor. This process build a boosted regressor from a training set.
 
@@ -45,8 +45,8 @@ class AdaBoostRegressorTrainer(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("AdaBoostRegressorTester")
-class AdaBoostRegressorTester(Process):
+@task_decorator("AdaBoostRegressorTester")
+class AdaBoostRegressorTester(Task):
     """
     Tester of a trained Adaboost regressor. Return the coefficient of determination R^2 of the prediction on a given test data for a trained Adaboost regressor.
     
@@ -71,8 +71,8 @@ class AdaBoostRegressorTester(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("AdaBoostRegressorPredictor")
-class AdaBoostRegressorPredictor(Process):
+@task_decorator("AdaBoostRegressorPredictor")
+class AdaBoostRegressorPredictor(Task):
     """
     Predictor of a trained Adaboost regressor. The predicted regression value of an input sample is computed as the weighted median 
     prediction of the classifiers in the ensemble.

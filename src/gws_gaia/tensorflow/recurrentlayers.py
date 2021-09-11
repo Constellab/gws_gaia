@@ -10,7 +10,7 @@ from tensorflow.keras.layers import GRU as KerasGRU
 from tensorflow.keras.layers import SimpleRNN as KerasSimpleRNN
 from pandas import DataFrame
 
-from gws_core import (Process, Resource, ProcessDecorator, ResourceDecorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator)
 
 from .data import Tensor
 from ..data.dataset import Dataset
@@ -18,8 +18,8 @@ from ..data.dataset import Dataset
 #==================================================================================
 #==================================================================================
 
-@ProcessDecorator("LSTM")
-class LSTM(Process):
+@task_decorator("LSTM")
+class LSTM(Task):
     """
     Long Short-Term Memory (LSTM) layer
 
@@ -46,8 +46,8 @@ class LSTM(Process):
 #==================================================================================
 #==================================================================================
 
-@ProcessDecorator("GRU")
-class GRU(Process):
+@task_decorator("GRU")
+class GRU(Task):
     """
     Gated Recurrent Unit (GRU) layer
 
@@ -74,8 +74,8 @@ class GRU(Process):
 #==================================================================================
 #==================================================================================
 
-@ProcessDecorator("SimpleRNN")
-class SimpleRNN(Process):
+@task_decorator("SimpleRNN")
+class SimpleRNN(Task):
     """
     Fully-connected RNN where the output is to be fed back to input.
 

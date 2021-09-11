@@ -7,14 +7,14 @@ from numpy import ravel
 from pandas import DataFrame
 from sklearn.ensemble import ExtraTreesRegressor
 
-from gws_core import (Process, Resource, ProcessDecorator, ResourceDecorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator)
 from ..data.core import Tuple
 from ..data.dataset import Dataset
 
 #==============================================================================
 #==============================================================================
 
-@ResourceDecorator("ExtraTreesRegressorResult", hide=True)
+@resource_decorator("ExtraTreesRegressorResult", hide=True)
 class ExtraTreesRegressorResult(Resource):
     def __init__(self, etr: ExtraTreesRegressor = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -23,8 +23,8 @@ class ExtraTreesRegressorResult(Resource):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("ExtraTreesRegressorTrainer")
-class ExtraTreesRegressorTrainer(Process):
+@task_decorator("ExtraTreesRegressorTrainer")
+class ExtraTreesRegressorTrainer(Task):
     """
     Trainer of an extra-trees regressor. Build a forest of trees from a training set.
 
@@ -48,8 +48,8 @@ class ExtraTreesRegressorTrainer(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("ExtraTreesRegressorTester")
-class ExtraTreesRegressorTester(Process):
+@task_decorator("ExtraTreesRegressorTester")
+class ExtraTreesRegressorTester(Task):
     """
     Tester of a trained extra-trees regressor. Return the coefficient of determination R^2 of the prediction on a given dataset for a trained extra-trees regressor.
     
@@ -74,8 +74,8 @@ class ExtraTreesRegressorTester(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("ExtraTreesRegressorPredictor")
-class ExtraTreesRegressorPredictor(Process):
+@task_decorator("ExtraTreesRegressorPredictor")
+class ExtraTreesRegressorPredictor(Task):
     """
     Predictor of an extra-trees regressor. Predict regression target of a dataset.
 

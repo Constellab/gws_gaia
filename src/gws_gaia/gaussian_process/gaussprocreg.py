@@ -7,7 +7,7 @@ from numpy import ravel
 from pandas import DataFrame
 from sklearn.gaussian_process import GaussianProcessRegressor
 
-from gws_core import (Process, Resource, ProcessDecorator, ResourceDecorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator)
 
 from ..data.core import Tuple
 from ..data.dataset import Dataset
@@ -15,7 +15,7 @@ from ..data.dataset import Dataset
 #==============================================================================
 #==============================================================================
 
-@ResourceDecorator("GaussianProcessRegressorResult", hide=True)
+@resource_decorator("GaussianProcessRegressorResult", hide=True)
 class GaussianProcessRegressorResult(Resource):
     def __init__(self, gpr: GaussianProcessRegressor = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -24,8 +24,8 @@ class GaussianProcessRegressorResult(Resource):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("GaussianProcessRegressorTrainer")
-class GaussianProcessRegressorTrainer(Process):
+@task_decorator("GaussianProcessRegressorTrainer")
+class GaussianProcessRegressorTrainer(Task):
     """
     Trainer of a Gaussian process regressor. Fit a Gaussian process regressor model with a training dataset.
 
@@ -49,8 +49,8 @@ class GaussianProcessRegressorTrainer(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("GaussianProcessRegressorTester")
-class GaussianProcessRegressorTester(Process):
+@task_decorator("GaussianProcessRegressorTester")
+class GaussianProcessRegressorTester(Task):
     """
     Tester of a trained Gaussian process regressor. Return the coefficient of determination R^2 of the prediction on a given dataset for a trained Gaussian process regressor.
     
@@ -75,8 +75,8 @@ class GaussianProcessRegressorTester(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("GaussianProcessRegressorPredictor")
-class GaussianProcessRegressorPredictor(Process):
+@task_decorator("GaussianProcessRegressorPredictor")
+class GaussianProcessRegressorPredictor(Task):
     """
     Predictor of a Gaussian process regressor. Predict regression targets of a dataset.
 

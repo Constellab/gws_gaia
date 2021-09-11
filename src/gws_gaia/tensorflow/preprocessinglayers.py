@@ -7,11 +7,11 @@ import numpy as np
 import tensorflow as tf
 from pandas import DataFrame
 
-from gws_core import (Process, Resource, ProcessDecorator, ResourceDecorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator)
 
 from ..data.dataset import Dataset
 
-# class Rescaler(Process):
+# class Rescaler(Task):
 #     input_specs = {'tensor' : Tensor}
 #     output_specs = {'result' : Tensor}
 #     config_specs = {

@@ -7,14 +7,14 @@ from numpy import ravel
 from pandas import DataFrame
 from sklearn.svm import SVR
 
-from gws_core import Process, Resource, ResourceDecorator, ProcessDecorator
+from gws_core import Task, Resource, resource_decorator, task_decorator
 from ..data.core import Tuple
 from ..data.dataset import Dataset
 
 #==============================================================================
 #==============================================================================
 
-@ResourceDecorator("SVRResult", hide=True)
+@resource_decorator("SVRResult", hide=True)
 class SVRResult(Resource):
     def __init__(self, svr: SVR = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -23,8 +23,8 @@ class SVRResult(Resource):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("SVRTrainer")
-class SVRTrainer(Process):
+@task_decorator("SVRTrainer")
+class SVRTrainer(Task):
     """
     Trainer of a Epsilon-Support Vector Regression (SVR) model. Fit a SVR model according to a training dataset.
 
@@ -48,8 +48,8 @@ class SVRTrainer(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("SVRTester")
-class SVRTester(Process):
+@task_decorator("SVRTester")
+class SVRTester(Task):
     """
     Tester of a trained Epsilon-Support Vector Regression (SVR) model. Return the coefficient of determination R^2 of the prediction on a given dataset for a trained Epsilon-Support Vector Regression (SVR) model.
     
@@ -74,8 +74,8 @@ class SVRTester(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("SVRPredictor")
-class SVRPredictor(Process):
+@task_decorator("SVRPredictor")
+class SVRPredictor(Task):
     """
     Predictor of a Epsilon-Support Vector Regression (SVR) model. Predict target values of a dataset with a trained SVR model.
 

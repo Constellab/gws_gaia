@@ -7,14 +7,14 @@ from numpy import ravel
 from pandas import DataFrame
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
 
-from gws_core import (Process, Resource, ProcessDecorator, ResourceDecorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator)
 from ..data.core import Tuple
 from ..data.dataset import Dataset
 
 #==============================================================================
 #==============================================================================
 
-@ResourceDecorator("QDAResult")
+@resource_decorator("QDAResult")
 class QDAResult(Resource):
     def __init__(self, qda: QuadraticDiscriminantAnalysis = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -23,8 +23,8 @@ class QDAResult(Resource):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("QDAResult")
-class QDATrainer(Process):
+@task_decorator("QDAResult")
+class QDATrainer(Task):
     """
     Trainer of quadratic discriminant analysis model. Fit a quadratic discriminant analysis model with a training dataset.
 
@@ -48,8 +48,8 @@ class QDATrainer(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("QDATester")
-class QDATester(Process):
+@task_decorator("QDATester")
+class QDATester(Task):
     """
     Tester of a trained quadratic discriminant analysis model. Return the coefficient of determination R^2 of the prediction on a given dataset for a trained quadratic discriminant analysis model.
     
@@ -74,8 +74,8 @@ class QDATester(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("QDAPredictor")
-class QDAPredictor(Process):
+@task_decorator("QDAPredictor")
+class QDAPredictor(Task):
     """
     Predictor of quadratic discriminant analysis model. Predic class labels of a dataset with a trained quadratic discriminant analysis model.
 

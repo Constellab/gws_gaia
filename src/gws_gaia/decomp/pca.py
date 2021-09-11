@@ -5,14 +5,14 @@
 
 from sklearn.decomposition import PCA
 
-from gws_core import (Process, Resource, ProcessDecorator, ResourceDecorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator)
 from ..data.dataset import Dataset
 from ..data.core import Tuple
 
 #==============================================================================
 #==============================================================================
 
-@ResourceDecorator("PCAResult", hide=True)
+@resource_decorator("PCAResult", hide=True)
 class PCAResult(Resource):
     def __init__(self, pca: PCA = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -21,8 +21,8 @@ class PCAResult(Resource):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("PCATrainer")
-class PCATrainer(Process):
+@task_decorator("PCATrainer")
+class PCATrainer(Task):
     """
     Trainer of a Principal Component Analysis (PCA) model. Fit a PCA model with a training dataset.
     
@@ -41,14 +41,13 @@ class PCATrainer(Process):
 
         t = self.output_specs["result"]
         result = t(pca=pca)
-        #a = result.kv_store['pca']
         self.output['result'] = result
         
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("PCATransformer")
-class PCATransformer(Process):
+@task_decorator("PCATransformer")
+class PCATransformer(Task):
     """
     Transformer of a Principal Component Analysis (PCA) model. Apply dimensionality reduction to a dataset.
     

@@ -7,7 +7,7 @@ from numpy import ravel
 from pandas import DataFrame
 from sklearn.gaussian_process import GaussianProcessClassifier
 
-from gws_core import (Process, Resource, ProcessDecorator, ResourceDecorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator)
 
 from ..data.core import Tuple
 from ..data.dataset import Dataset
@@ -15,7 +15,7 @@ from ..data.dataset import Dataset
 #==============================================================================
 #==============================================================================
 
-@ResourceDecorator("GaussianProcessClassifierResult", hide=True)
+@resource_decorator("GaussianProcessClassifierResult", hide=True)
 class GaussianProcessClassifierResult(Resource):
     def __init__(self, gpc: GaussianProcessClassifier = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -24,8 +24,8 @@ class GaussianProcessClassifierResult(Resource):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("GaussianProcessClassifierTrainer")
-class GaussianProcessClassifierTrainer(Process):
+@task_decorator("GaussianProcessClassifierTrainer")
+class GaussianProcessClassifierTrainer(Task):
     """
     Trainer of a Gaussian process classifier. Fit a Gaussian process classification model with a training dataset.
 
@@ -49,8 +49,8 @@ class GaussianProcessClassifierTrainer(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("GaussianProcessClassifierTester")
-class GaussianProcessClassifierTester(Process):
+@task_decorator("GaussianProcessClassifierTester")
+class GaussianProcessClassifierTester(Task):
     """
     Tester of a trained Gaussian process classifier. Return the mean accuracy on a given dataset for a trained Gaussian process classifier.
     
@@ -75,8 +75,8 @@ class GaussianProcessClassifierTester(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("GaussianProcessClassifierPredictor")
-class GaussianProcessClassifierPredictor(Process):
+@task_decorator("GaussianProcessClassifierPredictor")
+class GaussianProcessClassifierPredictor(Task):
     """
     Predictor of a Gaussian process classifier. Predict classes of a dataset.
 

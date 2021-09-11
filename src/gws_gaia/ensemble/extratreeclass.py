@@ -7,7 +7,7 @@ from numpy import ravel
 from pandas import DataFrame
 from sklearn.ensemble import ExtraTreesClassifier
 
-from gws_core import (Process, Resource, ProcessDecorator, ResourceDecorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator)
 from ..data.core import Tuple
 from ..data.dataset import Dataset
 
@@ -15,7 +15,7 @@ from ..data.dataset import Dataset
 #==============================================================================
 #==============================================================================
 
-@ResourceDecorator("ExtraTreesClassifierResult", hide=True)
+@resource_decorator("ExtraTreesClassifierResult", hide=True)
 class ExtraTreesClassifierResult(Resource):
     def __init__(self, etc: ExtraTreesClassifier = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -24,8 +24,8 @@ class ExtraTreesClassifierResult(Resource):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("ExtraTreesClassifierTrainer")
-class ExtraTreesClassifierTrainer(Process):
+@task_decorator("ExtraTreesClassifierTrainer")
+class ExtraTreesClassifierTrainer(Task):
     """
     Trainer of an extra-trees classifier. Build a forest of trees from a training set.
 
@@ -49,8 +49,8 @@ class ExtraTreesClassifierTrainer(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("ExtraTreesClassifierTester")
-class ExtraTreesClassifierTester(Process):
+@task_decorator("ExtraTreesClassifierTester")
+class ExtraTreesClassifierTester(Task):
     """
     Tester of a trained extra-trees classifier. Return the mean accuracy on a given dataset for a trained extra-trees classifier.
     
@@ -75,8 +75,8 @@ class ExtraTreesClassifierTester(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("ExtraTreesClassifierPredictor")
-class ExtraTreesClassifierPredictor(Process):
+@task_decorator("ExtraTreesClassifierPredictor")
+class ExtraTreesClassifierPredictor(Task):
     """
     Predictor of an extra-trees classifier. Predict class for a dataset.
 

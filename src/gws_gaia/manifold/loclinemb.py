@@ -5,14 +5,14 @@
 
 from sklearn.manifold import LocallyLinearEmbedding
 
-from gws_core import (Process, Resource, ProcessDecorator, ResourceDecorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator)
 
 from ..data.dataset import Dataset
 
 #==============================================================================
 #==============================================================================
 
-@ResourceDecorator("LocallyLinearEmbeddingResult", hide=True)
+@resource_decorator("LocallyLinearEmbeddingResult", hide=True)
 class LocallyLinearEmbeddingResult(Resource):
     def __init__(self, lle: LocallyLinearEmbedding = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -21,8 +21,8 @@ class LocallyLinearEmbeddingResult(Resource):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("LocallyLinearEmbeddingTrainer")
-class LocallyLinearEmbeddingTrainer(Process):
+@task_decorator("LocallyLinearEmbeddingTrainer")
+class LocallyLinearEmbeddingTrainer(Task):
     """
     Trainer of a locally linear embedding model. Compute the embedding vectors for a dataset.
 

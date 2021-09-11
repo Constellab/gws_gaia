@@ -7,14 +7,14 @@ from numpy import ravel
 from pandas import DataFrame
 from sklearn.linear_model import ElasticNet
 
-from gws_core import (Process, Resource, ProcessDecorator, ResourceDecorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator)
 from ..data.core import Tuple
 from ..data.dataset import Dataset
 
 #==============================================================================
 #==============================================================================
 
-@ResourceDecorator("ElasticNetResult", hide=True)
+@resource_decorator("ElasticNetResult", hide=True)
 class ElasticNetResult(Resource):
     def __init__(self, *args, eln: ElasticNet = None, **kwargs):
         super().__init__(*args, **kwargs)
@@ -23,8 +23,8 @@ class ElasticNetResult(Resource):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("ElasticNetTrainer")
-class ElasticNetTrainer(Process):
+@task_decorator("ElasticNetTrainer")
+class ElasticNetTrainer(Task):
     """ 
     Trainer of an elastic net model. Fit model with coordinate descent.
 
@@ -48,8 +48,8 @@ class ElasticNetTrainer(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("ElasticNetTester")
-class ElasticNetTester(Process):
+@task_decorator("ElasticNetTester")
+class ElasticNetTester(Task):
     """
     Tester of a trained elastic net model. Return the coefficient of determination R^2 of the prediction on a given dataset for a trained elastic net model.
     
@@ -74,8 +74,8 @@ class ElasticNetTester(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("ElasticNetPredictor")
-class ElasticNetPredictor(Process):
+@task_decorator("ElasticNetPredictor")
+class ElasticNetPredictor(Task):
     """
     Predictor of a trained elastic net model. Predict from a dataset using the trained model.
 

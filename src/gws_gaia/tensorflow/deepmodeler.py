@@ -9,7 +9,7 @@ import tensorflow as tf
 from tensorflow.keras import Model as KerasModel
 from pandas import DataFrame
 
-from gws_core import (Process, Resource, ProcessDecorator, ResourceDecorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator)
 from ..data.core import Tuple
 from ..data.dataset import Dataset
 from .data import Tensor, DeepModel
@@ -18,8 +18,8 @@ from .data import Tensor, DeepModel
 #==================================================================================
 #==================================================================================
 
-@ProcessDecorator("DeepModelerBuilder")
-class DeepModelerBuilder(Process):
+@task_decorator("DeepModelerBuilder")
+class DeepModelerBuilder(Task):
     """
     Build the model from layers specifications
     """
@@ -42,8 +42,8 @@ class DeepModelerBuilder(Process):
 #==================================================================================
 #==================================================================================
 
-@ProcessDecorator("DeepModelerCompiler")
-class DeepModelerCompiler(Process):
+@task_decorator("DeepModelerCompiler")
+class DeepModelerCompiler(Task):
     """
     Configures the model for training.
 
@@ -68,8 +68,8 @@ class DeepModelerCompiler(Process):
 #==================================================================================
 #==================================================================================
 
-@ProcessDecorator("DeepModelerTrainer")
-class DeepModelerTrainer(Process):
+@task_decorator("DeepModelerTrainer")
+class DeepModelerTrainer(Task):
     """
     Trainer of a model on a dataset
 
@@ -99,8 +99,8 @@ class DeepModelerTrainer(Process):
 #==================================================================================
 #==================================================================================
 
-@ProcessDecorator("DeepModelerTester")
-class DeepModelerTester(Process):
+@task_decorator("DeepModelerTester")
+class DeepModelerTester(Task):
     """
     Tester of a model on a test dataset.
 
@@ -128,8 +128,8 @@ class DeepModelerTester(Process):
 #==================================================================================
 #==================================================================================
 
-@ProcessDecorator("DeepModelerPredictor")
-class DeepModelerPredictor(Process):
+@task_decorator("DeepModelerPredictor")
+class DeepModelerPredictor(Task):
     """
     Predictor of a trained model from a dataset. Generates output predictions for the input samples.
 

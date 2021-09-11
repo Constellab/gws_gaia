@@ -7,7 +7,7 @@ from numpy import ravel
 from pandas import DataFrame
 from sklearn.kernel_ridge import KernelRidge
 
-from gws_core import (Process, Resource, ProcessDecorator, ResourceDecorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator)
 
 from ..data.core import Tuple
 from ..data.dataset import Dataset
@@ -16,7 +16,7 @@ from ..data.dataset import Dataset
 #==============================================================================
 #==============================================================================
 
-@ResourceDecorator("KernelRidgeResult", hide=True)
+@resource_decorator("KernelRidgeResult", hide=True)
 class KernelRidgeResult(Resource):
     def __init__(self, krr: KernelRidge = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -25,8 +25,8 @@ class KernelRidgeResult(Resource):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("KernelRidgeTrainer")
-class KernelRidgeTrainer(Process):
+@task_decorator("KernelRidgeTrainer")
+class KernelRidgeTrainer(Task):
     """
     Trainer of a kernel ridge regression model. Fit a kernel ridge regression model with a training dataset. 
 
@@ -51,8 +51,8 @@ class KernelRidgeTrainer(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("KernelRidgeTester")
-class KernelRidgeTester(Process):
+@task_decorator("KernelRidgeTester")
+class KernelRidgeTester(Task):
     """
     Tester of a trained kernel ridge regression model. Return the coefficient of determination R^2 of the prediction on a given dataset for a kernel ridge regression model.
     
@@ -77,8 +77,8 @@ class KernelRidgeTester(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("KernelRidgePredictor")
-class KernelRidgePredictor(Process):
+@task_decorator("KernelRidgePredictor")
+class KernelRidgePredictor(Task):
     """
     Predictor of a kernel ridge regression model. Predict a regression target from a dataset with a trained kernel ridge regression model. 
 

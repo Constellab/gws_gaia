@@ -9,15 +9,15 @@ import tensorflow as tf
 from tensorflow.python.framework.ops import Tensor as Kerastensor
 from tensorflow.keras import Model as KerasModel
 
-from gws_core import (Process, Resource, ProcessDecorator, ResourceDecorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator)
 
 from ..data.core import Tuple
 
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("ImporterPKL")
-class ImporterPKL(Process):
+@task_decorator("ImporterPKL")
+class ImporterPKL(Task):
     input_specs = {}
     output_specs = {'result': Tuple}
     config_specs = {
@@ -39,8 +39,8 @@ class ImporterPKL(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("Preprocessor")
-class Preprocessor(Process):
+@task_decorator("Preprocessor")
+class Preprocessor(Task):
     input_specs = {'data': Tuple}
     output_specs = {'result': Tuple}
     config_specs = {
@@ -66,8 +66,8 @@ class Preprocessor(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("AdhocExtractor")
-class AdhocExtractor(Process):
+@task_decorator("AdhocExtractor")
+class AdhocExtractor(Task):
     input_specs = {'data': Tuple}
     output_specs = {'result': Tuple}
     config_specs = {

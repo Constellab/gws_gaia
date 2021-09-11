@@ -7,7 +7,7 @@ from numpy import ravel
 from pandas import DataFrame
 from sklearn.neighbors import KNeighborsClassifier
 
-from gws_core import (Process, Resource, ProcessDecorator, ResourceDecorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator)
 
 from ..data.core import Tuple
 from ..data.dataset import Dataset
@@ -15,7 +15,7 @@ from ..data.dataset import Dataset
 #==============================================================================
 #==============================================================================
 
-@ResourceDecorator("KNNClassifierResult", hide=True)
+@resource_decorator("KNNClassifierResult", hide=True)
 class KNNClassifierResult(Resource):
     def __init__(self, neigh: KNeighborsClassifier = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -24,8 +24,8 @@ class KNNClassifierResult(Resource):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("KNNClassifierTrainer")
-class KNNClassifierTrainer(Process):
+@task_decorator("KNNClassifierTrainer")
+class KNNClassifierTrainer(Task):
     """
     Trainer of a k-nearest neighbors classifier. Fit the k-nearest neighbors classifier from the training dataset.
 
@@ -49,8 +49,8 @@ class KNNClassifierTrainer(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("KNNClassifierTester")
-class KNNClassifierTester(Process):
+@task_decorator("KNNClassifierTester")
+class KNNClassifierTester(Task):
     """
     Tester of a trained K-nearest neighbors classifier. Return the mean accuracy on a given dataset for a trained K-nearest neighbors classifier.
     
@@ -75,8 +75,8 @@ class KNNClassifierTester(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("KNNClassifierPredictor")
-class KNNClassifierPredictor(Process):
+@task_decorator("KNNClassifierPredictor")
+class KNNClassifierPredictor(Task):
     """
     Predictor of a K-nearest neighbors classifier. Predict the class labels for a dataset.
 

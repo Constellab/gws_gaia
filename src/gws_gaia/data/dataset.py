@@ -7,66 +7,69 @@ import os
 import numpy as np
 import pandas
 from pandas import DataFrame
-from typing import Union
+from typing import Union, List
+from pathlib import Path
 
-from gws_core import (ProcessDecorator, 
-                        ResourceDecorator, BadRequestException, 
-                        CSVTable, File, CSVExporter, CSVImporter, CSVLoader, CSVDumper)
+from gws_core import (task_decorator, 
+                        resource_decorator, BadRequestException, 
+                        CSVTable, File, CSVExporter, CSVImporter, CSVLoader, CSVDumper, 
+                        StrParam, IntParam, ListParam, BoolParam)
 
 #====================================================================================================================
 #====================================================================================================================
 
-@ResourceDecorator("Dataset")
+@resource_decorator("Dataset")
 class Dataset(CSVTable):
     """
     Dataset class
     """
 
     def __init__(self, *args, features: Union[DataFrame, np.ndarray] = None, 
-                    targets: Union[DataFrame, np.ndarray] = None, **kwargs):
+                    targets: Union[DataFrame, np.ndarray] = None, 
+                    feature_names: List[str]=None, target_names: List[str]=None, row_names: List[str]=None, **kwargs):
         super().__init__(*args, **kwargs)
-        if features is None:
-            features = DataFrame()
-        else:
-            if isinstance(features, DataFrame):
-                # OK!
-                pass
-            elif isinstance(features, (np.ndarray, list)):
-                features = DataFrame(features)
-                if column_names:
-                    features.columns = column_names
-                if row_names:
-                    features.index = row_names
+
+        if 'features' not in self.binary_store:
+            if features is None:
+                features = DataFrame()
             else:
-                raise BadRequestException(
-                    "The table mus be an instance of DataFrame or Numpy array")
+                if isinstance(features, DataFrame):
+                    # OK!
+                    pass
+                elif isinstance(features, (np.ndarray, list)):
+                    features = DataFrame(features)
+                    if feature_names:
+                        features.columns = feature_names
+                    if row_names:
+                        features.index = row_names
+                else:
+                    raise BadRequestException(
+                        "The table mus be an instance of DataFrame or Numpy array")
+            self.binary_store['features'] = features
 
-        if targets is None:
-            targets = DataFrame()
-        else:
-            if isinstance(targets, DataFrame):
-                # OK!
-                pass
-            elif isinstance(targets, (np.ndarray, list)):
-                targets = DataFrame(targets)
-                if column_names:
-                    targets.columns = column_names
-                if row_names:
-                    targets.index = row_names
+        if 'targets' not in self.binary_store:
+            if targets is None:
+                targets = DataFrame()
             else:
-                raise BadRequestException(
-                    "The table mus be an instance of DataFrame or Numpy array")
-
-        if not self.id:
-            self.kv_store['features'] = features
-            self.kv_store['targets'] = targets
-
+                if isinstance(targets, DataFrame):
+                    # OK!
+                    pass
+                elif isinstance(targets, (np.ndarray, list)):
+                    targets = DataFrame(targets)
+                    if target_names:
+                        targets.columns = target_names
+                    if row_names:
+                        targets.index = row_names
+                else:
+                    raise BadRequestException(
+                        "The table mus be an instance of DataFrame or Numpy array")
+            self.binary_store['targets'] = targets
 
     # -- C --
 
     # -- E --
 
-    def _export(self, file_path: str, delimiter: str = "\t", index=True, file_format: str = None, **kwargs):
+    def export_to_path(self, file_path: str, delimiter: str = "\t", index=True, file_format: str = None, **kwargs):
         """
         Export to a repository
 
@@ -83,8 +86,7 @@ class Dataset(CSVTable):
             table.to_csv(
                 file_path,
                 sep=delimiter,
-                index=index,
-                header=header
+                index=index
             )
         else:
             raise BadRequestException(
@@ -101,7 +103,7 @@ class Dataset(CSVTable):
         :return: The inner DataFrame
         :rtype: pandas.DataFrame
         """
-        return self.kv_store["features"]
+        return self.binary_store["features"]
 
     @property
     def feature_names(self) -> list:
@@ -143,12 +145,12 @@ class Dataset(CSVTable):
     # -- I --
 
     @classmethod
-    def _import(cls, file_path: str, delimiter: str = "\t", header=0, index_col=None, file_format: str = None, targets: list=None, **kwargs) -> 'Dataset':
+    def import_from_path(cls, file_path: str, delimiter: str = "\t", header=0, index_col=None, file_format: str = None, targets: list=None, **kwargs) -> 'Dataset':
         """
         Import from a repository
 
         :param file_path: The source file path
-        :type file_path: File
+        :type file_path: file path
         :returns: the parsed data
         :rtype any
         """
@@ -176,7 +178,6 @@ class Dataset(CSVTable):
                 raise BadRequestException(f"The targets {targets} are no found in column names. Please check targets names or set parameter 'header' to read column names.") from err
             df.drop(columns = targets, inplace = True)
             ds = cls(features = df, targets = t_df)
-
         return ds
 
     @property
@@ -249,7 +250,7 @@ class Dataset(CSVTable):
         :return: The inner DataFrame
         :rtype: pandas.DataFrame
         """
-        return self.kv_store["targets"]
+        return self.binary_store["targets"]
 
     @property
     def target_names(self) -> list:
@@ -272,53 +273,53 @@ class Dataset(CSVTable):
 #====================================================================================================================
 #====================================================================================================================
 
-@ProcessDecorator("DatasetImporter")
+@task_decorator("DatasetImporter")
 class DatasetImporter(CSVImporter):
     input_specs = {'file': File}
     output_specs = {'dataset': Dataset}
     config_specs = {
-        'file_format': {"type": str, "default": ".csv", 'description': "File format"},
-        'delimiter': {"type": 'str', "default": '\t', "description": "Delimiter character. Only for parsing CSV files"},
-        'header': {"type": 'int', "default": None, "description": "Row number to use as the column names. Use None to prevent parsing column names. Only for parsing CSV files"},
-        'index' : {"type": 'int', "default": None, "description": "Column number to use as the row names. Use None to prevent parsing row names. Only for parsing CSV files"},
-        'targets': {"type": 'list', "default": '[]', "description": "List of integers or strings (eg. ['name', 6, '7'])"},
+        'file_format': StrParam(default_value=".csv", description="File format"),
+        'delimiter': StrParam(default_value='\t', description="Delimiter character. Only for parsing CSV files"),
+        'header': IntParam(optional=True, default_value=0, description="Row number to use as the column names. Use None to prevent parsing column names. Only for parsing CSV files"),
+        'index' : IntParam(optional=True, description="Column number to use as the row names. Use None to prevent parsing row names. Only for parsing CSV files"),
+        'targets': ListParam(default_value='[]', description="List of integers or strings (eg. ['name', 6, '7'])"),
     }
 
-@ProcessDecorator("DatasetExporter")
+@task_decorator("DatasetExporter")
 class DatasetExporter(CSVExporter):
     input_specs = {'dataset': Dataset}
     output_specs = {'file': File}
     config_specs = {
-        'file_format': {"type": str, "default": ".csv", 'description': "File format"},
-        'delimiter': {"type": 'str', "default": "\t", "description": "Delimiter character. Only for parsing CSV files"},
-        'header': {"type": bool, "default": True, "description":  "Write column names (header)"},
-        'index': {"type": bool, "default": True, 'description': "Write row names (index)"},
+        'file_format': StrParam(default_value=".csv", description="File format"),
+        'delimiter': StrParam(default_value="\t", description="Delimiter character. Only for parsing CSV files"),
+        'header': BoolParam(optional=True, description= "Write column names (header)"),
+        'index': BoolParam(optional=True, description="Write row names (index)"),
     }
 
 #====================================================================================================================
 #====================================================================================================================
 
-@ProcessDecorator("DatasetLoader")
+@task_decorator("DatasetLoader")
 class DatasetLoader(CSVLoader):
     input_specs = {}
     output_specs = {'dataset': Dataset}
     config_specs = {
-        'file_path': {"type": 'str', "default": ""},
-        'file_format': {"type": str, "default": ".csv", 'description': "File format"},
-        'delimiter': {"type": 'str', "default": '\t', "description": "Delimiter character. Only for parsing CSV files"},
-        'header': {"type": 'int', "default": None, "description": "Row number to use as the column names. Use None to prevent parsing column names. Only for parsing CSV files"},
-        'index' : {"type": 'int', "default": None, "description": "Column number to use as the row names. Use None to prevent parsing row names. Only for parsing CSV files"},
-        'targets': {"type": 'list', "default": '[]', "description": "List of integers or strings (eg. ['name', 6, '7'])"},
+        'file_path': StrParam(description="File path"),
+        'file_format': StrParam(default_value=".csv", description="File format"),
+        'delimiter': StrParam(default_value='\t', description="Delimiter character. Only for parsing CSV files"),
+        'header': IntParam(optional=True, default_value=0, description="Row number to use as the column names. Use None to prevent parsing column names. Only for parsing CSV files"),
+        'index' : IntParam(optional=True, description="Column number to use as the row names. Use None to prevent parsing row names. Only for parsing CSV files"),
+        'targets': ListParam(default_value='[]', description="List of integers or strings (eg. ['name', 6, '7'])"),
     }
 
-@ProcessDecorator("DatasetDumper")
+@task_decorator("DatasetDumper")
 class DatasetDumper(CSVDumper):
     input_specs = {'dataset': Dataset}
     output_specs = {}
     config_specs = {
-        'file_path': {"type": 'str', "default": ""},
-        'file_format': {"type": str, "default": ".csv", 'description': "File format"},
-        'delimiter': {"type": 'str', "default": "\t", "description": "Delimiter character. Only for parsing CSV files"},
-        'header': {"type": bool, "default": True, "description":  "Write column names (header)"},
-        'index': {"type": bool, "default": True, 'description': "Write row names (index)"},
+        'file_path': StrParam(description="File path"),
+        'file_format': StrParam(default_value=".csv", description="File format"),
+        'delimiter': StrParam(default_value="\t", description="Delimiter character. Only for parsing CSV files"),
+        'header': BoolParam(optional=True, description= "Write column names (header)"),
+        'index': BoolParam(optional=True, description="Write row names (index)"),
     }

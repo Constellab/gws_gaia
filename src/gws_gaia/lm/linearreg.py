@@ -7,7 +7,7 @@ from numpy import ravel
 from pandas import DataFrame
 from sklearn.linear_model import LinearRegression
 
-from gws_core import (Process, Resource, ProcessDecorator, ResourceDecorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator)
 
 from ..data.core import Tuple
 from ..data.dataset import Dataset
@@ -15,7 +15,7 @@ from ..data.dataset import Dataset
 #==============================================================================
 #==============================================================================
 
-@ResourceDecorator("LinearRegressionResult", hide=True)
+@resource_decorator("LinearRegressionResult", hide=True)
 class LinearRegressionResult(Resource):
     def __init__(self, lir: LinearRegression = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -24,8 +24,8 @@ class LinearRegressionResult(Resource):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("LinearRegressionTrainer")
-class LinearRegressionTrainer(Process):
+@task_decorator("LinearRegressionTrainer")
+class LinearRegressionTrainer(Task):
     """
     Trainer fo a linear regression model. Fit a linear regression model with a training dataset.
 
@@ -48,8 +48,8 @@ class LinearRegressionTrainer(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("LinearRegressionTester")
-class LinearRegressionTester(Process):
+@task_decorator("LinearRegressionTester")
+class LinearRegressionTester(Task):
     """
     Tester of a trained linear regression model. Return the coefficient of determination R^2 of the prediction on a given dataset for a trained linear regression model.
     
@@ -74,8 +74,8 @@ class LinearRegressionTester(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("LinearRegressionPredictor")
-class LinearRegressionPredictor(Process):
+@task_decorator("LinearRegressionPredictor")
+class LinearRegressionPredictor(Task):
     """
     Predictor of a linear regression model. Predict target values of a dataset with a trained linear regression model.
 

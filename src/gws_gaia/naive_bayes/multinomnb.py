@@ -7,7 +7,7 @@ from numpy import ravel
 from pandas import DataFrame
 from sklearn.naive_bayes import MultinomialNB
 
-from gws_core import (Process, Resource, ProcessDecorator, ResourceDecorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator)
 
 from ..data.core import Tuple
 from ..data.dataset import Dataset
@@ -15,7 +15,7 @@ from ..data.dataset import Dataset
 #==============================================================================
 #==============================================================================
 
-@ResourceDecorator("MultinomialNaiveBayesClassifierResult", hide=True)
+@resource_decorator("MultinomialNaiveBayesClassifierResult", hide=True)
 class MultinomialNaiveBayesClassifierResult(Resource):
     def __init__(self, mnb: MultinomialNB = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -24,8 +24,8 @@ class MultinomialNaiveBayesClassifierResult(Resource):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("MultinomialNaiveBayesClassifierTrainer")
-class MultinomialNaiveBayesClassifierTrainer(Process):
+@task_decorator("MultinomialNaiveBayesClassifierTrainer")
+class MultinomialNaiveBayesClassifierTrainer(Task):
     """
     Trainer of a naive Bayes classifier for a multinomial model. Fit a naive Bayes classifier according to a training dataset.
 
@@ -49,8 +49,8 @@ class MultinomialNaiveBayesClassifierTrainer(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("MultinomialNaiveBayesClassifierTester")
-class MultinomialNaiveBayesClassifierTester(Process):
+@task_decorator("MultinomialNaiveBayesClassifierTester")
+class MultinomialNaiveBayesClassifierTester(Task):
     """
     Tester of a naïve Bayes classifier for a multinomial model. Return the mean accuracy on a given dataset for a trained naïve Bayes classifier for a multinomial model.
     
@@ -75,8 +75,8 @@ class MultinomialNaiveBayesClassifierTester(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("MultinomialNaiveBayesClassifierPredictor")
-class MultinomialNaiveBayesClassifierPredictor(Process):
+@task_decorator("MultinomialNaiveBayesClassifierPredictor")
+class MultinomialNaiveBayesClassifierPredictor(Task):
     """
     Predictor of a naïve Bayes classifier for a multinomial model. Predict class labels for a dataset using a trained naïve Bayes classifier.
 

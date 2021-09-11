@@ -7,7 +7,7 @@ from numpy import ravel
 from pandas import DataFrame
 from sklearn.naive_bayes import BernoulliNB
 
-from gws_core import (Process, Resource, ProcessDecorator, ResourceDecorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator)
 
 from ..data.core import Tuple
 from ..data.dataset import Dataset
@@ -15,7 +15,7 @@ from ..data.dataset import Dataset
 #==============================================================================
 #==============================================================================
 
-@ResourceDecorator("BernoulliNaiveBayesClassifierResult", hide=True)
+@resource_decorator("BernoulliNaiveBayesClassifierResult", hide=True)
 class BernoulliNaiveBayesClassifierResult(Resource):
     def __init__(self, bnb: BernoulliNB = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -24,8 +24,8 @@ class BernoulliNaiveBayesClassifierResult(Resource):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("BernoulliNaiveBayesClassifierTrainer")
-class BernoulliNaiveBayesClassifierTrainer(Process):
+@task_decorator("BernoulliNaiveBayesClassifierTrainer")
+class BernoulliNaiveBayesClassifierTrainer(Task):
     """
     Trainer of a Naive Bayes classifier. Fit Naive Bayes classifier with dataset.
 
@@ -49,8 +49,8 @@ class BernoulliNaiveBayesClassifierTrainer(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("BernoulliNaiveBayesClassifierTester")
-class BernoulliNaiveBayesClassifierTester(Process):
+@task_decorator("BernoulliNaiveBayesClassifierTester")
+class BernoulliNaiveBayesClassifierTester(Task):
     """
     Tester of a trained Naive Bayes classifier. Return the mean accuracy on a given test data and labels for a trained Naive Bayes classifier.
     
@@ -75,8 +75,8 @@ class BernoulliNaiveBayesClassifierTester(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("BernoulliNaiveBayesClassifierPredictor")
-class BernoulliNaiveBayesClassifierPredictor(Process):
+@task_decorator("BernoulliNaiveBayesClassifierPredictor")
+class BernoulliNaiveBayesClassifierPredictor(Task):
     """
     Predictor of a Naive Bayes classifier. Perform classification on a dataset.
 

@@ -8,12 +8,12 @@ import tensorflow as tf
 from tensorflow.python.framework.ops import Tensor as KerasTensor
 from tensorflow.keras import Model as KerasModel
 
-from gws_core import (Process, Resource, ProcessDecorator, ResourceDecorator, BadRequestException)
+from gws_core import (Task, Resource, task_decorator, resource_decorator, BadRequestException)
 
 #==============================================================================
 #==============================================================================
 
-@ResourceDecorator("Tensor", hide=True)
+@resource_decorator("Tensor", hide=True)
 class Tensor(Resource):
     def __init__(self, *args, tensor: KerasTensor = None, **kwargs):
         super().__init__(*args, **kwargs)
@@ -23,7 +23,7 @@ class Tensor(Resource):
 #==============================================================================
 #==============================================================================
 
-@ResourceDecorator("DeepModel", hide=True)
+@resource_decorator("DeepModel", hide=True)
 class DeepModel(Resource):
     def __init__(self, *args, model: KerasModel = None,  **kwargs):
         super().__init__(*args, **kwargs)
@@ -36,8 +36,8 @@ class DeepModel(Resource):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("InputConverter")
-class InputConverter(Process):
+@task_decorator("InputConverter")
+class InputConverter(Task):
     input_specs = {}
     output_specs = {'result' : Tensor}
     config_specs = {

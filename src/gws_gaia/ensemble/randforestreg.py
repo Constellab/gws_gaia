@@ -7,14 +7,14 @@ from numpy import ravel
 from pandas import DataFrame
 from sklearn.ensemble import RandomForestRegressor
 
-from gws_core import (Process, Resource, ProcessDecorator, ResourceDecorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator)
 from ..data.core import Tuple
 from ..data.dataset import Dataset
 
 #==============================================================================
 #==============================================================================
 
-@ResourceDecorator("RandomForestRegressorResult", hide=True)
+@resource_decorator("RandomForestRegressorResult", hide=True)
 class RandomForestRegressorResult(Resource):
     def __init__(self, rfr: RandomForestRegressor = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -23,8 +23,8 @@ class RandomForestRegressorResult(Resource):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("RandomForestRegressorTrainer")
-class RandomForestRegressorTrainer(Process):
+@task_decorator("RandomForestRegressorTrainer")
+class RandomForestRegressorTrainer(Task):
     """
     Trainer of a random forest regressor. Build a forest of trees from a training dataset.
 
@@ -48,8 +48,8 @@ class RandomForestRegressorTrainer(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("RandomForestRegressorTester")
-class RandomForestRegressorTester(Process):
+@task_decorator("RandomForestRegressorTester")
+class RandomForestRegressorTester(Task):
     """
     Tester of a trained random forest regressor. Return the coefficient of determination R^2 of the prediction on a given dataset for a trained random forest regressor.
     
@@ -74,8 +74,8 @@ class RandomForestRegressorTester(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("RandomForestRegressorPredictor")
-class RandomForestRegressorPredictor(Process):
+@task_decorator("RandomForestRegressorPredictor")
+class RandomForestRegressorPredictor(Task):
     """
     Predictor of a random forest regressor. Predict regression target of a dataset with a trained random forest regressor.
 

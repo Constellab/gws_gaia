@@ -7,11 +7,11 @@ from numpy import ravel
 from pandas import DataFrame
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 
-from gws_core import (Process, Resource, ProcessDecorator, ResourceDecorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator)
 from ..data.core import Tuple
 from ..data.dataset import Dataset
 
-@ResourceDecorator("LDAResult", hide=True)
+@resource_decorator("LDAResult", hide=True)
 class LDAResult(Resource):
     def __init__(self, lda: LinearDiscriminantAnalysis = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -20,8 +20,8 @@ class LDAResult(Resource):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("LDATrainer")
-class LDATrainer(Process):
+@task_decorator("LDATrainer")
+class LDATrainer(Task):
     """
     Trainer of a linear discriminant analysis classifier. Fit Linear Discriminant Analysis model according to a training dataset.
 
@@ -46,8 +46,8 @@ class LDATrainer(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("LDATransformer")
-class LDATransformer(Process):
+@task_decorator("LDATransformer")
+class LDATransformer(Task):
     """
     Transformer of a linear discriminant analysis classifier. Project data to maximize class separation.
     
@@ -73,8 +73,8 @@ class LDATransformer(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("LDATester")
-class LDATester(Process):
+@task_decorator("LDATester")
+class LDATester(Task):
     """
     Tester of a trained linear discriminant analysis classifier. Return the mean accuracy on a given dataset for a trained linear discriminant analysis classifier.
     
@@ -99,8 +99,8 @@ class LDATester(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("LDAPredictor")
-class LDAPredictor(Process):
+@task_decorator("LDAPredictor")
+class LDAPredictor(Task):
     """
     Predictor of a linear discriminant analysis classifier. Predict class labels for samples in a dataset.
 

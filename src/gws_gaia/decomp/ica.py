@@ -5,13 +5,13 @@
 
 from sklearn.decomposition import FastICA
 
-from gws_core import (Process, Resource, ProcessDecorator, ResourceDecorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator)
 from ..data.dataset import Dataset
 
 #==============================================================================
 #==============================================================================
 
-@ResourceDecorator("ICAResult", hide=True)
+@resource_decorator("ICAResult", hide=True)
 class ICAResult(Resource):
     def __init__(self, ica: FastICA = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -20,8 +20,8 @@ class ICAResult(Resource):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("ICATrainer")
-class ICATrainer(Process):
+@task_decorator("ICATrainer")
+class ICATrainer(Task):
     """
     Trainer of an Independant Component Analysis (ICA). Fit a model of ICA to a training dataset.
 

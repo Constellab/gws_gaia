@@ -10,7 +10,7 @@ from tensorflow.keras.layers import MaxPooling2D as Kerasmaxpooling2d
 from tensorflow.keras.layers import MaxPooling3D as Kerasmaxpooling3d
 from pandas import DataFrame
 
-from gws_core import (Process, Resource, ProcessDecorator, ResourceDecorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator)
 
 from .data import Tensor
 from ..data.dataset import Dataset
@@ -18,8 +18,8 @@ from ..data.dataset import Dataset
 #==================================================================================
 #==================================================================================
 
-@ProcessDecorator("MaxPooling1D")
-class MaxPooling1D(Process):
+@task_decorator("MaxPooling1D")
+class MaxPooling1D(Task):
     """
     Max pooling operation for 1D data (temporal data)
     """
@@ -41,8 +41,8 @@ class MaxPooling1D(Process):
 #==================================================================================
 #==================================================================================
 
-@ProcessDecorator("MaxPooling2D")
-class MaxPooling2D(Process):
+@task_decorator("MaxPooling2D")
+class MaxPooling2D(Task):
     """
     Max pooling operation for 2D data (spatial data)
     """
@@ -65,8 +65,8 @@ class MaxPooling2D(Process):
 #==================================================================================
 #==================================================================================
 
-@ProcessDecorator("MaxPooling3D")
-class MaxPooling3D(Process):
+@task_decorator("MaxPooling3D")
+class MaxPooling3D(Task):
     """
     Max pooling operation for 3D data (spatial or spatio-temporal data)
     """

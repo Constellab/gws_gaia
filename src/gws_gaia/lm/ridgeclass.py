@@ -7,7 +7,7 @@ from numpy import ravel
 from pandas import DataFrame
 from sklearn.linear_model import RidgeClassifier
 
-from gws_core import (Process, Resource, ProcessDecorator, ResourceDecorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator)
 
 from ..data.core import Tuple
 from ..data.dataset import Dataset
@@ -15,7 +15,7 @@ from ..data.dataset import Dataset
 #==============================================================================
 #==============================================================================
 
-@ResourceDecorator("RidgeClassifierResult", hide=True)
+@resource_decorator("RidgeClassifierResult", hide=True)
 class RidgeClassifierResult(Resource):
     def __init__(self, ric: RidgeClassifier = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -24,8 +24,8 @@ class RidgeClassifierResult(Resource):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("RidgeClassifierTrainer")
-class RidgeClassifierTrainer(Process):
+@task_decorator("RidgeClassifierTrainer")
+class RidgeClassifierTrainer(Task):
     """
     Trainer of a Ridge regression classifier. Fit a Ridge classifier model with a training dataset.
 
@@ -49,8 +49,8 @@ class RidgeClassifierTrainer(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("RidgeClassifierTester")
-class RidgeClassifierTester(Process):
+@task_decorator("RidgeClassifierTester")
+class RidgeClassifierTester(Task):
     """
     Tester of a trained Ridge regression classifier. Return the mean accuracy on a given dataset for a trained Ridge regression classifier.
     
@@ -75,8 +75,8 @@ class RidgeClassifierTester(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("RidgeClassifierPredictor")
-class RidgeClassifierPredictor(Process):
+@task_decorator("RidgeClassifierPredictor")
+class RidgeClassifierPredictor(Task):
     """
     Predictor of a Ridge regression classifier. Predict class labels for samples in a datatset with a trained Ridge classifier.
 

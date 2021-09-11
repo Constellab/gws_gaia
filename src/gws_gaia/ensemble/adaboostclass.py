@@ -7,11 +7,11 @@ from numpy import ravel
 from sklearn.ensemble import AdaBoostClassifier
 from pandas import DataFrame
 
-from gws_core import (Process, Resource, ProcessDecorator, ResourceDecorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator)
 from ..data.core import Tuple
 from ..data.dataset import Dataset
 
-@ResourceDecorator("AdaBoostClassifierResult", hide=True)
+@resource_decorator("AdaBoostClassifierResult", hide=True)
 class AdaBoostClassifierResult(Resource):
     def __init__(self, *args, abc: AdaBoostClassifier = None, **kwargs):
         super().__init__(*args, **kwargs)
@@ -20,8 +20,8 @@ class AdaBoostClassifierResult(Resource):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("AdaBoostClassifierTrainer")
-class AdaBoostClassifierTrainer(Process):
+@task_decorator("AdaBoostClassifierTrainer")
+class AdaBoostClassifierTrainer(Task):
     """
     Trainer of an Adaboost classifier. This process builds a boosted classifier from a training set.
     
@@ -45,8 +45,8 @@ class AdaBoostClassifierTrainer(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("AdaBoostClassifierTester")
-class AdaBoostClassifierTester(Process):
+@task_decorator("AdaBoostClassifierTester")
+class AdaBoostClassifierTester(Task):
     """
     Tester of a trained Adaboost classifier. Return the mean accuracy on a given test data and labels for a trained Adaboost classifier.
     
@@ -71,8 +71,8 @@ class AdaBoostClassifierTester(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("AdaBoostClassifierPredictor")
-class AdaBoostClassifierPredictor(Process):
+@task_decorator("AdaBoostClassifierPredictor")
+class AdaBoostClassifierPredictor(Task):
     """
     Predictor of a trained Adaboost classifier. This process predicts classes for a dataset.
     The predicted class of an input sample is computed as the weighted mean prediction of the classifiers in the ensemble.

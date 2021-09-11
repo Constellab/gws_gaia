@@ -8,7 +8,7 @@ from numpy import ravel
 from pandas import DataFrame
 from sklearn.svm import SVC
 
-from gws_core import (Process, Resource, ProcessDecorator, ResourceDecorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator)
 
 from ..data.core import Tuple
 from ..data.dataset import Dataset
@@ -16,7 +16,7 @@ from ..data.dataset import Dataset
 #==============================================================================
 #==============================================================================
 
-@ResourceDecorator("SVCResult", hide=True)
+@resource_decorator("SVCResult", hide=True)
 class SVCResult(Resource):
     def __init__(self, svc: SVC = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -25,8 +25,8 @@ class SVCResult(Resource):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("SVCTrainer")
-class SVCTrainer(Process):
+@task_decorator("SVCTrainer")
+class SVCTrainer(Task):
     """
     Trainer of a C-Support Vector Classifier (SVC) model. Fit a SVC model according to a training dataset.
 
@@ -51,8 +51,8 @@ class SVCTrainer(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("SVCTester")
-class SVCTester(Process):
+@task_decorator("SVCTester")
+class SVCTester(Task):
     """
     Tester of a trained C-Support Vector Classifier (SVC) model. Return the mean accuracy on a given dataset for a trained C-Support Vector Classifier (SVC) model.
     
@@ -77,8 +77,8 @@ class SVCTester(Process):
 #==============================================================================
 #==============================================================================
 
-@ProcessDecorator("SVCPredictor")
-class SVCPredictor(Process):
+@task_decorator("SVCPredictor")
+class SVCPredictor(Task):
     """
     Predictor of a C-Support Vector Classifier (SVC) model. Predict class labels of a dataset with a trained SVC model.
 

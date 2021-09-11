@@ -7,7 +7,7 @@ from numpy import ravel
 from pandas import DataFrame
 from sklearn.tree import DecisionTreeClassifier
 
-from gws_core import (Process, Resource, ProcessDecorator, ResourceDecorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator)
 
 from ..data.core import Tuple
 from ..data.dataset import Dataset
@@ -15,7 +15,7 @@ from ..data.dataset import Dataset
 #========================================================================================
 #========================================================================================
 
-@ResourceDecorator("DecisionTreeClassifierResult")
+@resource_decorator("DecisionTreeClassifierResult")
 class DecisionTreeClassifierResult(Resource):
     def __init__(self, dtc: DecisionTreeClassifier = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -24,8 +24,8 @@ class DecisionTreeClassifierResult(Resource):
 #========================================================================================
 #========================================================================================
 
-@ProcessDecorator("DecisionTreeClassifierTrainer")
-class DecisionTreeClassifierTrainer(Process):
+@task_decorator("DecisionTreeClassifierTrainer")
+class DecisionTreeClassifierTrainer(Task):
     """ Trainer of the decision tree classifier. Build a decision tree classifier from the training set. 
     
     See https://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeClassifier.html for more details
@@ -48,8 +48,8 @@ class DecisionTreeClassifierTrainer(Process):
 #========================================================================================
 #========================================================================================
 
-@ProcessDecorator("DecisionTreeClassifierTester")
-class DecisionTreeClassifierTester(Process):
+@task_decorator("DecisionTreeClassifierTester")
+class DecisionTreeClassifierTester(Task):
     """
     Tester of a trained decision tree classifier. Return the mean accuracy on a given test data and labels for a trained decision tree classifier.
     
@@ -74,8 +74,8 @@ class DecisionTreeClassifierTester(Process):
 #========================================================================================
 #========================================================================================
 
-@ProcessDecorator("DecisionTreeClassifierPredictor")
-class DecisionTreeClassifierPredictor(Process):
+@task_decorator("DecisionTreeClassifierPredictor")
+class DecisionTreeClassifierPredictor(Task):
     """ Predictor of a trained decision tree classifier. Predict class or regression value for a dataset. For a classification model, the predicted class for each sample in the dataset is returned. For a regression model, the predicted value based on the dataset is returned.
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeClassifier.html for more details

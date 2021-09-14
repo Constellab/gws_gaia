@@ -8,19 +8,19 @@ from numpy import ravel
 from pandas import DataFrame
 from sklearn.linear_model import SGDClassifier
 
-from gws_core import (Task, Resource, task_decorator, resource_decorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator,
+                        ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam)
 
 from ..data.core import Tuple
 from ..data.dataset import Dataset
+from ..base.base_resource import BaseResource
 
 #==============================================================================
 #==============================================================================
 
 @resource_decorator("SGDClassifierResult")
-class SGDClassifierResult(Resource):
-    def __init__(self, sgdc: SGDClassifier = None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.kv_store['sgdc'] = sgdc
+class SGDClassifierResult(BaseResource):
+    pass
 
 #==============================================================================
 #==============================================================================
@@ -35,19 +35,17 @@ class SGDClassifierTrainer(Task):
     input_specs = {'dataset' : Dataset}
     output_specs = {'result' : SGDClassifierResult}
     config_specs = {
-        'loss': {"type": 'str', "default": 'hinge'},
-        'alpha': {"type": 'float', "default": 0.0001, "min": 0},
-        'max_iter': {"type": 'int', "default": 1000, "min": 0}
+        'loss':StrParam(default_value='hinge'),
+        'alpha': FloatParam(default_value=0.0001, min_value=0),
+        'max_iter':IntParam(default_value=1000, min_value=0)
     }
 
-    async def task(self):
-        dataset = self.input['dataset']
-        sgdc = SGDClassifier(max_iter=self.get_param("max_iter"),alpha=self.get_param("alpha"),loss=self.get_param("loss"))
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
+        sgdc = SGDClassifier(max_iter=params["max_iter"],alpha=params["alpha"],loss=params["loss"])
         sgdc.fit(dataset.features.values, ravel(dataset.targets.values))
-        
-        t = self.output_specs["result"]
-        result = t(sgdc=sgdc)
-        self.output['result'] = result
+        result = SGDClassifierResult.from_result(result=sgdc)
+        return {'result': result}
 
 #==============================================================================
 #==============================================================================
@@ -61,19 +59,16 @@ class SGDClassifierTester(Task):
     """
     input_specs = {'dataset' : Dataset, 'learned_model': SGDClassifierResult}
     output_specs = {'result' : Tuple}
-    config_specs = {   
-    }
+    config_specs = {   }
 
-    async def task(self):
-        dataset = self.input['dataset']
-        learned_model = self.input['learned_model']
-        sgdc = learned_model.kv_store['sgdc']
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
+        learned_model = inputs['learned_model']
+        sgdc = learned_model.binary_store['result']
         y = sgdc.score(dataset.features.values, dataset.targets.values)
         z = tuple([y])
-        
-        t = self.output_specs["result"]
-        result_dataset = t(tuple = z)
-        self.output['result'] = result_dataset
+        result_dataset = Tuple(tup = z)
+        return {'result': result_dataset}
 
 #==============================================================================
 #==============================================================================
@@ -87,15 +82,12 @@ class SGDClassifierPredictor(Task):
     """    
     input_specs = {'dataset' : Dataset, 'learned_model': SGDClassifierResult}
     output_specs = {'result' : Dataset}
-    config_specs = {   
-    }
+    config_specs = {   }
 
-    async def task(self):
-        dataset = self.input['dataset']
-        learned_model = self.input['learned_model']
-        sgdc = learned_model.kv_store['sgdc']
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
+        learned_model = inputs['learned_model']
+        sgdc = learned_model.binary_store['result']
         y = sgdc.predict(dataset.features.values)
-
-        t = self.output_specs["result"]
-        result_dataset = t(targets = DataFrame(y))
-        self.output['result'] = result_dataset
+        result_dataset = Dataset(targets = DataFrame(y))
+        return {'result': result_dataset}

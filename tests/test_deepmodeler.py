@@ -1,8 +1,8 @@
 import os
 import asyncio
-from unittest import IsolatedAsyncioTestCase
 
-from gws_core import Settings, GTest, Protocol, Experiment, ExperimentService
+
+from gws_core import Settings, GTest, BaseTestCase, TaskTester, TaskInputs, ConfigParams
 from gws_gaia import Tuple
 from gws_gaia.tf import (Conv2D, MaxPooling2D, Flatten, Dropout, Dense, 
                             ImporterPKL, Preprocessor, AdhocExtractor, 
@@ -10,17 +10,8 @@ from gws_gaia.tf import (Conv2D, MaxPooling2D, Flatten, Dropout, Dense,
                             DeepModelerBuilder, DeepModelerCompiler, DeepModelerTrainer,
                             DeepModelerTester, DeepModelerPredictor)
 
-class TestTrainer(IsolatedAsyncioTestCase):
-    
-    @classmethod
-    def setUpClass(cls):
-        GTest.drop_tables()
-        GTest.create_tables()
-        GTest.init()
-        
-    @classmethod
-    def tearDownClass(cls):
-        GTest.drop_tables()
+class TestTrainer(BaseTestCase):
+
         
     async def test_process(self): 
         GTest.print("Deep modeler")       
@@ -76,7 +67,7 @@ class TestTrainer(IsolatedAsyncioTestCase):
                 p7>>'result' | p8<<'tensor',
                 p8>>'result' | p9<<'tensor',
                 p9>>'result' | p10<<'outputs',
-                p2>>'result' | p10<<'inputs',
+                p2>>'result' | p10<<'inputs[',
                 p10>>'result' | p11<<'builded_model',            
                 p11>>'result' | p12<<'compiled_model',
                 p1>>'result' | p12<<'dataset',

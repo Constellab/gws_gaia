@@ -13,6 +13,9 @@ from gws_core import (Resource, resource_decorator)
 @resource_decorator("BaseResource", hide=True)
 class BaseResource(Resource):
 
+    def get_result(self) -> Any:
+        return self.binary_store.get('result')
+
     @classmethod
     def from_result(cls, result: Any) -> 'BaseResource':
         resource = cls()

@@ -1,73 +1,85 @@
 
 import os
 import asyncio
-from unittest import IsolatedAsyncioTestCase
+
 
 from gws_gaia.tf import Conv1D, Conv2D, Conv3D
 from gws_gaia.tf import InputConverter
-from gws_core import Settings, GTest, Protocol, Experiment, ExperimentService
+from gws_core import Settings, GTest, BaseTestCase, TaskTester, TaskInputs, ConfigParams
 
-class TestTrainer(IsolatedAsyncioTestCase):
-    
-    @classmethod
-    def setUpClass(cls):
-        GTest.drop_tables()
-        GTest.create_tables()
-        GTest.init()
-        
-    @classmethod
-    def tearDownClass(cls):
-        GTest.drop_tables()
-        
-    async def test_process(self):
-        GTest.print("1D convolution layer")
-        p1 = InputConverter()
-        p2 = InputConverter()
-        p3 = InputConverter()        
-        p4 = Conv1D()
-        p5 = Conv2D()
-        p6 = Conv3D()
+class TestTrainer(BaseTestCase):
 
-        proto = Protocol(
-            processes = {
-                "p1": p1,
-                "p2": p2,
-                "p3": p3,                
-                "p4": p4,                
-                "p5": p5,                
-                "p6": p6                
-            },
-            connectors = [
-                p1>>'result' | p4<<'tensor',
-                p2>>'result' | p5<<'tensor',
-                p3>>'result' | p6<<'tensor'                
-            ]
+    async def test_process_1D(self):
+        GTest.print("Convolutional layers")
+        # run InputConverter
+        tester = TaskTester(
+            params = ConfigParams({'input_shape': [3, 3, 3]}),
+            inputs = TaskInputs(),
+            task = InputConverter()
         )
-        
-        p1.set_param('input_shape', [3, 3, 3])
-        p2.set_param('input_shape', [3, 3, 3, 3])        
-        p3.set_param('input_shape', [3, 3, 3, 3])
-        p4.set_param('nb_filters', 32)
-        p4.set_param('kernel_size', 3)
-        p4.set_param('activation_type', 'relu')    
-        p5.set_param('nb_filters', 32)
-        p5.set_param('kernel_size', [3, 3])
-        p5.set_param('activation_type', 'relu')
-        p6.set_param('nb_filters', 32)
-        p6.set_param('kernel_size', [3, 3, 3])
-        p6.set_param('activation_type', 'relu')
+        outputs = await tester.run()
+        in1 = outputs['result']
 
-        experiment: Experiment = Experiment(
-            protocol=proto, study=GTest.study, user=GTest.user)
-        experiment.save()
-        experiment = await ExperimentService.run_experiment(
-            experiment=experiment, user=GTest.user)  
+        # run AveragePooling1D
+        tester = TaskTester(
+            params = ConfigParams({
+                'nb_filters': 32,
+                'kernel_size': 3,
+                'activation_type': 'relu'
+            }),
+            inputs = TaskInputs({'tensor': in1}),
+            task = Conv1D()
+        )
+        outputs = await tester.run()
+        result = outputs['result']
+        print(result)
 
-        r1 = p4.output['result']
-        r2 = p5.output['result']
-        r3 = p6.output['result']
+    async def test_process_2D(self):
+        GTest.print("Average pooling operation for 2D data")
+        # run InputConverter
+        tester = TaskTester(
+            params = ConfigParams({'input_shape': [3, 3, 3, 3]}),
+            inputs = TaskInputs(),
+            task = InputConverter()
+        )
+        outputs = await tester.run()
+        in2 = outputs['result']
 
-        print(r1)
-        print(r2)
-        print(r3)
-    
+        # run AveragePooling2D
+        tester = TaskTester(
+            params = ConfigParams({
+                'nb_filters': 32,
+                'kernel_size': [3, 3],
+                'activation_type': 'relu'
+            }),
+            inputs = TaskInputs({'tensor': in2}),
+            task = Conv2D()
+        )
+        outputs = await tester.run()
+        result = outputs['result']
+        print(result)
+
+    async def test_process_3D(self):
+        GTest.print("Average pooling operation for 3D data")
+        # run InputConverter
+        tester = TaskTester(
+            params = ConfigParams({'input_shape': [3, 3, 3, 3,]}),
+            inputs = TaskInputs(),
+            task = InputConverter()
+        )
+        outputs = await tester.run()
+        in3 = outputs['result']
+
+        # run AveragePooling3D
+        tester = TaskTester(
+            params = ConfigParams({
+                'nb_filters': 32,
+                'kernel_size': [3, 3, 3],
+                'activation_type': 'relu'
+            }),
+            inputs = TaskInputs({'tensor': in3}),
+            task = Conv3D()
+        )
+        outputs = await tester.run()
+        result = outputs['result']
+        print(result)

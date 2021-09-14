@@ -6,17 +6,17 @@
 from pandas import DataFrame
 from sklearn.cluster import KMeans
 
-from gws_core import (Task, Resource, task_decorator, resource_decorator)
+from gws_core import (Task, task_decorator, resource_decorator,
+                        ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam)
 from ..data.dataset import Dataset
+from ..base.base_resource import BaseResource
 
 #==============================================================================
 #==============================================================================
 
 @resource_decorator("KMeansResult")
-class KMeansResult(Resource):
-    def __init__(self, kmeans: KMeans = None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.kv_store['kmeans'] = kmeans
+class KMeansResult(BaseResource):
+    pass
 
 #==============================================================================
 #==============================================================================
@@ -31,17 +31,15 @@ class KMeansTrainer(Task):
     input_specs = {'dataset' : Dataset}
     output_specs = {'result' : KMeansResult}
     config_specs = {
-        'nb_clusters': {"type": 'int', "default": 2, "min": 0}
+        'nb_clusters': IntParam(default_value=2, min_value=0)
     }
 
-    async def task(self):
-        dataset = self.input['dataset']
-        kmeans = KMeans(n_clusters=self.get_param("nb_clusters"))
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
+        kmeans = KMeans(n_clusters=params["nb_clusters"])
         kmeans.fit(dataset.features.values)
-
-        t = self.output_specs["result"]
-        result = t(kmeans=kmeans)
-        self.output['result'] = result
+        result = KMeansResult.from_result(result=kmeans)
+        return {'result': result}
 
 #==============================================================================
 #==============================================================================
@@ -55,15 +53,12 @@ class KMeansPredictor(Task):
     """
     input_specs = {'dataset' : Dataset, 'learned_model': KMeansResult}
     output_specs = {'result' : Dataset}
-    config_specs = {   
-    }
+    config_specs = { }
 
-    async def task(self):
-        dataset = self.input['dataset']
-        learned_model = self.input['learned_model']
-        kmeans = learned_model.kv_store['kmeans']
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
+        learned_model = inputs['learned_model']
+        kmeans = learned_model.binary_store['result']
         y = kmeans.predict(dataset.features.values)
-
-        t = self.output_specs["result"]
-        result_dataset = t(targets = DataFrame(y))
-        self.output['result'] = result_dataset
+        result_dataset = Dataset(targets = DataFrame(y))
+        return {'result': result_dataset}

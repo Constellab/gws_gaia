@@ -7,18 +7,18 @@ from numpy import ravel
 from sklearn.mixture import GaussianMixture
 from pandas import DataFrame
 
-from gws_core import (Task, Resource, task_decorator, resource_decorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator,
+                        ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam)
 
 from ..data.dataset import Dataset
+from ..base.base_resource import BaseResource
 
 #==============================================================================
 #==============================================================================
 
 @resource_decorator("GaussianMixtureResult", hide=True)
-class GaussianMixtureResult(Resource):
-    def __init__(self, gmixt: GaussianMixture = None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.kv_store['gmixt'] = gmixt
+class GaussianMixtureResult(BaseResource):
+    pass
 
 #==============================================================================
 #==============================================================================
@@ -33,18 +33,16 @@ class GaussianMixtureTrainer(Task):
     input_specs = {'dataset' : Dataset}
     output_specs = {'result' : GaussianMixtureResult}
     config_specs = {
-        'nb_components': {"type": 'int', "default": 1, "min": 0},
-        'covariance_type': {"type": 'str', "default": 'full'}
+        'nb_components': IntParam(default_value=1, min_value=0),
+        'covariance_type': StrParam(default_value='full')
     }
 
-    async def task(self):
-        dataset = self.input['dataset']
-        gmixt = GaussianMixture(n_components=self.get_param("nb_components"),covariance_type=self.get_param("covariance_type"))
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
+        gmixt = GaussianMixture(n_components=params["nb_components"],covariance_type=params["covariance_type"])
         gmixt.fit(dataset.features.values)
-        
-        t = self.output_specs["result"]
-        result = t(gmixt=gmixt)
-        self.output['result'] = result
+        result = GaussianMixtureResult.from_result(result=gmixt)
+        return {'result': result}
 
 #==============================================================================
 #==============================================================================
@@ -58,15 +56,12 @@ class GaussianMixturePredictor(Task):
     """
     input_specs = {'dataset' : Dataset, 'learned_model': GaussianMixtureResult}
     output_specs = {'result' : Dataset}
-    config_specs = {   
-    }
+    config_specs = {   }
 
-    async def task(self):
-        dataset = self.input['dataset']
-        learned_model = self.input['learned_model']
-        gmixt = learned_model.kv_store['gmixt']
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
+        learned_model = inputs['learned_model']
+        gmixt = learned_model.binary_store['result']
         y = gmixt.predict(dataset.features.values)
-
-        t = self.output_specs["result"]
-        result_dataset = t(targets = DataFrame(y))
-        self.output['result'] = result_dataset
+        result_dataset = Dataset(targets = DataFrame(y))
+        return {'result': result_dataset}

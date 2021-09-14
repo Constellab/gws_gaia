@@ -7,19 +7,19 @@ from numpy import ravel
 from pandas import DataFrame
 from sklearn.naive_bayes import GaussianNB
 
-from gws_core import (Task, Resource, task_decorator, resource_decorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator,
+                        ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam)
 
 from ..data.core import Tuple
 from ..data.dataset import Dataset
+from ..base.base_resource import BaseResource
 
 #==============================================================================
 #==============================================================================
 
 @resource_decorator("GaussianNaiveBayesResult", hide=True)
 class GaussianNaiveBayesResult(Resource):
-    def __init__(self, gnb: GaussianNB = None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.kv_store['gnb'] = gnb
+    pass
 
 #==============================================================================
 #==============================================================================
@@ -37,14 +37,12 @@ class GaussianNaiveBayesTrainer(Task):
 
     }
 
-    async def task(self):
-        dataset = self.input['dataset']
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
         gnb = GaussianNB()
         gnb.fit(dataset.features.values, ravel(dataset.targets.values))
-        
-        t = self.output_specs["result"]
-        result = t(gnb=gnb)
-        self.output['result'] = result
+        result = GaussianNaiveBayesResult.from_result(gnb=gnb)
+        return {'result': result}
 
 #==============================================================================
 #==============================================================================
@@ -58,19 +56,16 @@ class GaussianNaiveBayesTester(Task):
     """
     input_specs = {'dataset' : Dataset, 'learned_model': GaussianNaiveBayesResult}
     output_specs = {'result' : Tuple}
-    config_specs = {   
-    }
+    config_specs = {   }
 
-    async def task(self):
-        dataset = self.input['dataset']
-        learned_model = self.input['learned_model']
-        gnb = learned_model.kv_store['gnb']
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
+        learned_model = inputs['learned_model']
+        gnb = learned_model.binary_store['result']
         y = gnb.score(dataset.features.values, dataset.targets.values)
         z = tuple([y])
-
-        t = self.output_specs["result"]
-        result_dataset = t(tuple = z)
-        self.output['result'] = result_dataset
+        result_dataset = Tuple(tup = z)
+        return {'result': result_dataset}
 
 #==============================================================================
 #==============================================================================
@@ -84,15 +79,12 @@ class GaussianNaiveBayesPredictor(Task):
     """
     input_specs = {'dataset' : Dataset, 'learned_model': GaussianNaiveBayesResult}
     output_specs = {'result' : Dataset}
-    config_specs = {   
-    }
+    config_specs = {   }
 
-    async def task(self):
-        dataset = self.input['dataset']
-        learned_model = self.input['learned_model']
-        gnb = learned_model.kv_store['gnb']
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
+        learned_model = inputs['learned_model']
+        gnb = learned_model.binary_store['result']
         y = gnb.predict(dataset.features.values)
-
-        t = self.output_specs["result"]
-        result_dataset = t(targets = DataFrame(y))
-        self.output['result'] = result_dataset
+        result_dataset = Dataset(targets = DataFrame(y))
+        return {'result': result_dataset}

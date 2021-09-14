@@ -8,20 +8,19 @@ from numpy import ravel
 from pandas import DataFrame
 from sklearn.tree import DecisionTreeRegressor
 
-from gws_core import (Task, Resource, task_decorator, resource_decorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator,
+                        ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam)
 
 from ..data.core import Tuple
 from ..data.dataset import Dataset
-
+from ..base.base_resource import BaseResource
 
 #==============================================================================
 #==============================================================================
 
 @resource_decorator("DecisionTreeRegressorResult")
-class DecisionTreeRegressorResult(Resource):
-    def __init__(self, dtr: DecisionTreeRegressor = None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.kv_store['dtr'] = dtr
+class DecisionTreeRegressorResult(BaseResource):
+    pass
 
 #==============================================================================
 #==============================================================================
@@ -35,17 +34,15 @@ class DecisionTreeRegressorTrainer(Task):
     input_specs = {'dataset' : Dataset}
     output_specs = {'result' : DecisionTreeRegressorResult}
     config_specs = {
-        'max_depth': {"type": 'int', "default": None, "min": 0}
+        'max_depth':IntParam(default_value=None, min_value=0)
     }
 
-    async def task(self):
-        dataset = self.input['dataset']
-        dtr = DecisionTreeRegressor(max_depth=self.get_param("max_depth"))
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
+        dtr = DecisionTreeRegressor(max_depth=params["max_depth"])
         dtr.fit(dataset.features.values, ravel(dataset.targets.values))
-        
-        t = self.output_specs["result"]
-        result = t(dtr=dtr)
-        self.output['result'] = result
+        result = DecisionTreeRegressorResult.from_result(result=dtr)
+        return {'result': result}
 
 #==============================================================================
 #==============================================================================
@@ -59,19 +56,16 @@ class DecisionTreeRegressorTester(Task):
     """
     input_specs = {'dataset' : Dataset, 'learned_model': DecisionTreeRegressorResult}
     output_specs = {'result' : Tuple}
-    config_specs = {   
-    }
+    config_specs = {   }
 
-    async def task(self):
-        dataset = self.input['dataset']
-        learned_model = self.input['learned_model']
-        dtr = learned_model.kv_store['dtr']
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
+        learned_model = inputs['learned_model']
+        dtr = learned_model.binary_store['result']
         y = dtr.score(dataset.features.values,ravel(dataset.targets.values))
         z = tuple([y])
-
-        t = self.output_specs["result"]
-        result_dataset = t(tuple = z)
-        self.output['result'] = result_dataset
+        result_dataset = Tuple(tup = z)
+        return {'result': result_dataset}
 
 #==============================================================================
 #==============================================================================
@@ -84,15 +78,12 @@ class DecisionTreeRegressorPredictor(Task):
     """
     input_specs = {'dataset' : Dataset, 'learned_model': DecisionTreeRegressorResult}
     output_specs = {'result' : Dataset}
-    config_specs = {   
-    }
+    config_specs = {   }
 
-    async def task(self):
-        dataset = self.input['dataset']
-        learned_model = self.input['learned_model']
-        dtr = learned_model.kv_store['dtr']
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
+        learned_model = inputs['learned_model']
+        dtr = learned_model.binary_store['result']
         y = dtr.predict(dataset.features.values)
-
-        t = self.output_specs["result"]
-        result_dataset = t(targets = DataFrame(y))
-        self.output['result'] = result_dataset
+        result_dataset = Dataset(targets = DataFrame(y))
+        return {'result': result_dataset}

@@ -7,19 +7,19 @@ from numpy import ravel
 from pandas import DataFrame
 from sklearn.linear_model import SGDRegressor
 
-from gws_core import (Task, Resource, task_decorator, resource_decorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator,
+                        ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam)
 
 from ..data.dataset import Dataset
 from ..data.core import Tuple
+from ..base.base_resource import BaseResource
 
 #==============================================================================
 #==============================================================================
 
 @resource_decorator("SGDRegressorResult", hide=True)
-class SGDRegressorResult(Resource):
-    def __init__(self, sgdr: SGDRegressor = None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.kv_store['sgdr'] = sgdr
+class SGDRegressorResult(BaseResource):
+    pass
 
 #==============================================================================
 #==============================================================================
@@ -34,19 +34,17 @@ class SGDRegressorTrainer(Task):
     input_specs = {'dataset' : Dataset}
     output_specs = {'result' : SGDRegressorResult}
     config_specs = {
-        'loss': {"type": 'str', "default": 'squared_loss'},
-        'alpha': {"type": 'float', "default": 0.0001, "min": 0},
-        'max_iter': {"type": 'int', "default": 1000, "min": 0}
+        'loss':StrParam(default_value='squared_loss'),
+        'alpha': FloatParam(default_value=0.0001, min_value=0),
+        'max_iter':IntParam(default_value=1000, min_value=0)
     }
 
-    async def task(self):
-        dataset = self.input['dataset']
-        sgdr = SGDRegressor(max_iter=self.get_param("max_iter"),alpha=self.get_param("alpha"),loss=self.get_param("loss"))
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
+        sgdr = SGDRegressor(max_iter=params["max_iter"],alpha=params["alpha"],loss=params["loss"])
         sgdr.fit(dataset.features.values, ravel(dataset.targets.values))
-        
-        t = self.output_specs["result"]
-        result = t(sgdr=sgdr)
-        self.output['result'] = result
+        result = SGDRegressorResult.from_result(result=sgdr)
+        return {'result': result}
 
 #==============================================================================
 #==============================================================================
@@ -60,19 +58,16 @@ class SGDRegressorTester(Task):
     """
     input_specs = {'dataset' : Dataset, 'learned_model': SGDRegressorResult}
     output_specs = {'result' : Tuple}
-    config_specs = {   
-    }
+    config_specs = {   }
 
-    async def task(self):
-        dataset = self.input['dataset']
-        learned_model = self.input['learned_model']
-        sgdr = learned_model.kv_store['sgdr']
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
+        learned_model = inputs['learned_model']
+        sgdr = learned_model.binary_store['result']
         y = sgdr.score(dataset.features.values, dataset.targets.values)
         z = tuple([y])
-        
-        t = self.output_specs["result"]
-        result_dataset = t(tuple = z)
-        self.output['result'] = result_dataset
+        result_dataset = Tuple(tup = z)
+        return {'result': result_dataset}
 
 #==============================================================================
 #==============================================================================
@@ -86,15 +81,12 @@ class SGDRegressorPredictor(Task):
     """        
     input_specs = {'dataset' : Dataset, 'learned_model': SGDRegressorResult}
     output_specs = {'result' : Dataset}
-    config_specs = {   
-    }
+    config_specs = {   }
 
-    async def task(self):
-        dataset = self.input['dataset']
-        learned_model = self.input['learned_model']
-        sgdr = learned_model.kv_store['sgdr']
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
+        learned_model = inputs['learned_model']
+        sgdr = learned_model.binary_store['result']
         y = sgdr.predict(dataset.features.values)
-
-        t = self.output_specs["result"]
-        result_dataset = t(targets = DataFrame(y))
-        self.output['result'] = result_dataset
+        result_dataset = Dataset(targets = DataFrame(y))
+        return {'result': result_dataset}

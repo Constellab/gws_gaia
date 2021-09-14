@@ -7,7 +7,7 @@ from sklearn.cluster import AgglomerativeClustering
 
 from gws_core import (Task, Resource, 
                         task_decorator, resource_decorator, 
-                        ConfigParams, TaskInputs, TaskOutputs, IntParam)
+                        ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam)
 from ..data.dataset import Dataset
 from ..base.base_resource import BaseResource
 #==============================================================================
@@ -36,6 +36,5 @@ class AgglomerativeClusteringTrainer(Task):
         dataset = inputs['dataset']
         aggclust = AgglomerativeClustering(n_clusters=params["nb_clusters"])
         aggclust.fit(dataset.features.values)
-        
         result = AgglomerativeClusteringResult.from_result(result=aggclust)
         return {'result': result}

@@ -5,18 +5,18 @@
 
 from sklearn.manifold import LocallyLinearEmbedding
 
-from gws_core import (Task, Resource, task_decorator, resource_decorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator,
+                        ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam)
 
 from ..data.dataset import Dataset
+from ..base.base_resource import BaseResource
 
 #==============================================================================
 #==============================================================================
 
 @resource_decorator("LocallyLinearEmbeddingResult", hide=True)
-class LocallyLinearEmbeddingResult(Resource):
-    def __init__(self, lle: LocallyLinearEmbedding = None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.kv_store['lle'] = lle
+class LocallyLinearEmbeddingResult(BaseResource):
+    pass
 
 #==============================================================================
 #==============================================================================
@@ -31,14 +31,12 @@ class LocallyLinearEmbeddingTrainer(Task):
     input_specs = {'dataset' : Dataset}
     output_specs = {'result' : LocallyLinearEmbeddingResult}
     config_specs = {
-        'nb_components': {"type": 'int', "default": 2, "min": 0}
+        'nb_components': IntParam(default_value=2, min_value=0)
     }
 
-    async def task(self):
-        dataset = self.input['dataset']
-        lle = LocallyLinearEmbedding(n_components=self.get_param("nb_components"))
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
+        lle = LocallyLinearEmbedding(n_components=params["nb_components"])
         lle.fit(dataset.features.values)
-
-        t = self.output_specs["result"]
-        result = t(lle=lle)
-        self.output['result'] = result
+        result = LocallyLinearEmbeddingResult.from_result(result=lle)
+        return {'result': result}

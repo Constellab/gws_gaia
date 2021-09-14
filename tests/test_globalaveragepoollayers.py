@@ -1,22 +1,13 @@
 import os
 import asyncio
-from unittest import IsolatedAsyncioTestCase
+
 
 from gws_gaia.tf import GlobalAveragePooling1D, GlobalAveragePooling2D, GlobalAveragePooling3D
 from gws_gaia.tf import InputConverter
-from gws_core import Settings, GTest, Protocol, Experiment, ExperimentService
+from gws_core import Settings, GTest, BaseTestCase, TaskTester, TaskInputs, ConfigParams
 
-class TestTrainer(IsolatedAsyncioTestCase):
-    
-    @classmethod
-    def setUpClass(cls):
-        GTest.drop_tables()
-        GTest.create_tables()
-        GTest.init()
-        
-    @classmethod
-    def tearDownClass(cls):
-        GTest.drop_tables()
+class TestTrainer(BaseTestCase):
+
         
     async def test_process(self):
         GTest.print("Global average pooling operation for 1D data")

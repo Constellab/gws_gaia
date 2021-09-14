@@ -13,7 +13,8 @@ from tensorflow.keras.layers import Dropout as Kerasdropout
 from tensorflow.keras.layers import Flatten as Kerasflatten
 from pandas import DataFrame
 
-from gws_core import (Task, Resource, task_decorator, resource_decorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator,
+                        ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam, BoolParam)
 
 from ..data.dataset import Dataset
 from .data import Tensor
@@ -31,19 +32,17 @@ class Dense(Task):
     input_specs = {'tensor' : Tensor}
     output_specs = {'result' : Tensor}
     config_specs = {
-        'units': {"type": 'int', "default": 32, "min": 0},
-        'activation': {"type": 'str', "default": 'relu'},
-        'use_bias': {"type": 'bool', "default": True}
+        'units': IntParam(default_value=32, min_value=0),
+        'activation': StrParam(default_value='relu'),
+        'use_bias': BoolParam(default_value=True)
     }
 
-    async def task(self):
-        x = self.input['tensor']
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        x = inputs['tensor']
         y = x._data
-        z = Kerasdense(self.get_param("units"),activation=self.get_param("activation"),use_bias=self.get_param("use_bias"))(y)
-        
-        t = self.output_specs["result"]
-        result = t(tensor=z)
-        self.output['result'] = result
+        z = Kerasdense(params["units"],activation=params["activation"],use_bias=params["use_bias"])(y)        
+        result = Tensor(tensor=z)
+        return {'result': result}
 
 #========================================================================================
 #========================================================================================
@@ -58,17 +57,15 @@ class Activation(Task):
     input_specs = {'tensor' : Tensor}
     output_specs = {'result' : Tensor}
     config_specs = {
-        'activation_type': {"type": 'str', "default": 'relu'}
+        'activation_type':StrParam(default_value='relu')
     }
 
-    async def task(self):
-        x = self.input['tensor']
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        x = inputs['tensor']
         y = x._data
-        z = Kerasactivation(self.get_param("activation_type"))(y)
-        
-        t = self.output_specs["result"]
-        result = t(tensor=z)
-        self.output['result'] = result
+        z = Kerasactivation(params["activation_type"])(y)
+        result = Tensor(tensor=z)
+        return {'result': result}
 
 #========================================================================================
 #========================================================================================
@@ -83,19 +80,17 @@ class Embedding(Task):
     input_specs = {'tensor' : Tensor}
     output_specs = {'result' : Tensor}
     config_specs = {
-        'input_dimension': {"type": 'int', "default": 1000, "min": 0},
-        'output_dimension': {"type": 'int', "default": 64, "min": 0},
-        'input_length': {"type": 'int', "default": 10, "min": 0}
+        'input_dimension':IntParam(default_value=1000, min_value=0),
+        'output_dimension':IntParam(default_value=64, min_value=0),
+        'input_length':IntParam(default_value=10, min_value=0)
     }
 
-    async def task(self):
-        x = self.input['tensor']
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        x = inputs['tensor']
         y = x._data
-        z = Kerasembedding(input_dim=self.get_param("input_dimension"), output_dim=self.get_param("output_dimension"), input_length=self.get_param("input_length"))(y)
-        print(z)
-        t = self.output_specs["result"]
-        result = t(tensor=z)
-        self.output['result'] = result
+        z = Kerasembedding(input_dim=params["input_dimension"], output_dim=params["output_dimension"], input_length=params["input_length"])(y)
+        result = Tensor(tensor=z)
+        return {'result': result}
 
 #========================================================================================
 #========================================================================================
@@ -110,17 +105,15 @@ class Masking(Task):
     input_specs = {'tensor' : Tensor}
     output_specs = {'result' : Tensor}
     config_specs = {
-        'mask_value': {"type": 'float', "default": 0.0}
+        'mask_value': FloatParam(default_value=0.0)
     }
 
-    async def task(self):
-        x = self.input['tensor']
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        x = inputs['tensor']
         y = x._data
-        z = Kerasmasking(mask_value=self.get_param("mask_value"))(y)
-        print(z)
-        t = self.output_specs["result"]
-        result = t(tensor=z)
-        self.output['result'] = result
+        z = Kerasmasking(mask_value=params["mask_value"])(y)
+        result = Tensor(tensor=z)
+        return {'result': result}
 
 @task_decorator("Dropout")
 class Dropout(Task):
@@ -132,17 +125,15 @@ class Dropout(Task):
     input_specs = {'tensor' : Tensor}
     output_specs = {'result' : Tensor}
     config_specs = {
-       'rate': {"type": 'float', "default": 0.5, "min": 0}
+       'rate': FloatParam(default_value=0.5, min_value=0)
     }
 
-    async def task(self):
-        x = self.input['tensor']
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        x = inputs['tensor']
         y = x._data
-        z = Kerasdropout(self.get_param("rate"))(y)
-
-        t = self.output_specs["result"]
-        result = t(tensor=z)
-        self.output['result'] = result
+        z = Kerasdropout(params["rate"])(y)
+        result = Tensor(tensor=z)
+        return {'result': result}
 
 @task_decorator("Flatten")
 class Flatten(Task):
@@ -153,15 +144,12 @@ class Flatten(Task):
     """
     input_specs = {'tensor' : Tensor}
     output_specs = {'result' : Tensor}
-    config_specs = {
-    }
+    config_specs = {}
 
-    async def task(self):
-        x = self.input['tensor']
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        x = inputs['tensor']
         y = x._data
         print(np.shape(y))
         z = Kerasflatten()(y)
-
-        t = self.output_specs["result"]
-        result = t(tensor=z)
-        self.output['result'] = result
+        result = Tensor(tensor=z)
+        return {'result': result}

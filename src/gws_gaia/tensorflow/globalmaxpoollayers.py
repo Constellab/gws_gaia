@@ -10,7 +10,8 @@ from tensorflow.keras.layers import GlobalMaxPooling2D as Kerasglobalmaxpooling2
 from tensorflow.keras.layers import GlobalMaxPooling3D as Kerasglobalmaxpooling3d
 from pandas import DataFrame
 
-from gws_core import (Task, Resource, task_decorator, resource_decorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator,
+                        ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam)
 
 from .data import Tensor
 from ..data.dataset import Dataset
@@ -25,17 +26,14 @@ class GlobalMaxPooling1D(Task):
     """
     input_specs = {'tensor' : Tensor}
     output_specs = {'result' : Tensor}
-    config_specs = {
-    }
+    config_specs = {}
 
-    async def task(self):
-        x = self.input['tensor']
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        x = inputs['tensor']
         y = x._data
         z = Kerasglobalmaxpooling1d()(y)
-        
-        t = self.output_specs["result"]
-        result = t(tensor=z)
-        self.output['result'] = result
+        result = Tensor(tensor=z)
+        return {'result': result}
 
 #================================================================================
 #================================================================================
@@ -47,17 +45,14 @@ class GlobalMaxPooling2D(Task):
     """
     input_specs = {'tensor' : Tensor}
     output_specs = {'result' : Tensor}
-    config_specs = {
-    }
+    config_specs = {}
 
-    async def task(self):
-        x = self.input['tensor']
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        x = inputs['tensor']
         y = x._data
         z = Kerasglobalmaxpooling2d()(y)
-        
-        t = self.output_specs["result"]
-        result = t(tensor=z)
-        self.output['result'] = result
+        result = Tensor(tensor=z)
+        return {'result': result}
 
 #================================================================================
 #================================================================================
@@ -69,14 +64,11 @@ class GlobalMaxPooling3D(Task):
     """
     input_specs = {'tensor' : Tensor}
     output_specs = {'result' : Tensor}
-    config_specs = {
-    }
+    config_specs = {}
 
-    async def task(self):
-        x = self.input['tensor']
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        x = inputs['tensor']
         y = x._data
         z = Kerasglobalmaxpooling3d()(y)
- 
-        t = self.output_specs["result"]
-        result = t(tensor=z)
-        self.output['result'] = result
+        result = Tensor(tensor=z)
+        return {'result': result}

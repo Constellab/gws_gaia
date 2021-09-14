@@ -7,18 +7,18 @@ from numpy import ravel
 from pandas import DataFrame
 from sklearn.svm import SVR
 
-from gws_core import Task, Resource, resource_decorator, task_decorator
+from gws_core import (Task, Resource, resource_decorator, task_decorator,
+                        ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam)
 from ..data.core import Tuple
 from ..data.dataset import Dataset
+from ..base.base_resource import BaseResource
 
 #==============================================================================
 #==============================================================================
 
 @resource_decorator("SVRResult", hide=True)
-class SVRResult(Resource):
-    def __init__(self, svr: SVR = None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.kv_store['svr'] = svr
+class SVRResult(BaseResource):
+    pass
 
 #==============================================================================
 #==============================================================================
@@ -33,17 +33,15 @@ class SVRTrainer(Task):
     input_specs = {'dataset' : Dataset}
     output_specs = {'result' : SVRResult}
     config_specs = {
-        'kernel': {"type": 'str', "default": 'rbf'}
+        'kernel':StrParam(default_value='rbf')
     }
 
-    async def task(self):
-        dataset = self.input['dataset']
-        svr = SVR(kernel=self.get_param("kernel"))
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
+        svr = SVR(kernel=params["kernel"])
         svr.fit(dataset.features.values, ravel(dataset.targets.values))
-        
-        t = self.output_specs["result"]
-        result = t(svr=svr)
-        self.output['result'] = result
+        result = SVRResult.from_result(svr=svr)
+        return {'result': result}
 
 #==============================================================================
 #==============================================================================
@@ -57,19 +55,16 @@ class SVRTester(Task):
     """
     input_specs = {'dataset' : Dataset, 'learned_model': SVRResult}
     output_specs = {'result' : Tuple}
-    config_specs = {   
-    }
+    config_specs = {   }
 
-    async def task(self):
-        dataset = self.input['dataset']
-        learned_model = self.input['learned_model']
-        svr = learned_model.kv_store['svr']
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
+        learned_model = inputs['learned_model']
+        svr = learned_model.binary_store['result']
         y = svr.score(dataset.features.values, dataset.targets.values)
         z = tuple([y])
-        
-        t = self.output_specs["result"]
-        result_dataset = t(tuple = z)
-        self.output['result'] = result_dataset
+        result_dataset = Tuple(tup = z)
+        return {'result': result_dataset}
 
 #==============================================================================
 #==============================================================================
@@ -83,15 +78,12 @@ class SVRPredictor(Task):
     """    
     input_specs = {'dataset' : Dataset, 'learned_model': SVRResult}
     output_specs = {'result' : Dataset}
-    config_specs = {   
-    }
+    config_specs = {   }
 
-    async def task(self):
-        dataset = self.input['dataset']
-        learned_model = self.input['learned_model']
-        svr = learned_model.kv_store['svr']
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
+        learned_model = inputs['learned_model']
+        svr = learned_model.binary_store['result']
         y = svr.predict(dataset.features.values)
-
-        t = self.output_specs["result"]
-        result_dataset = t(targets = DataFrame(y))
-        self.output['result'] = result_dataset
+        result_dataset = Dataset(targets = DataFrame(y))
+        return {'result': result_dataset}

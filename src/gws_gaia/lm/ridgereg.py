@@ -7,19 +7,19 @@ from numpy import ravel
 from pandas import DataFrame
 from sklearn.linear_model import Ridge
 
-from gws_core import (Task, Resource, task_decorator, resource_decorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator,
+                        ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam)
 
 from ..data.core import Tuple
 from ..data.dataset import Dataset
+from ..base.base_resource import BaseResource
 
 #==============================================================================
 #==============================================================================
 
 @resource_decorator("RidgeRegressionResult", hide=True)
-class RidgeRegressionResult(Resource):
-    def __init__(self, rir: Ridge = None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.kv_store['rir'] = rir
+class RidgeRegressionResult(BaseResource):
+    pass
 
 #==============================================================================
 #==============================================================================
@@ -34,16 +34,15 @@ class RidgeRegressionTrainer(Task):
     input_specs = {'dataset' : Dataset}
     output_specs = {'result' : RidgeRegressionResult}
     config_specs = {
-        'alpha':{"type": 'float', "default": 1, "min": 0}
+        'alpha':FloatParam(default_value=1, min_value=0)
     }
 
-    async def task(self):
-        dataset = self.input['dataset']
-        rir = Ridge(alpha=self.get_param("alpha"))
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
+        rir = Ridge(alpha=params["alpha"])
         rir.fit(dataset.features.values, ravel(dataset.targets.values))
-        t = self.output_specs["result"]
-        result = t(rir=rir)
-        self.output['result'] = result
+        result = RidgeRegressionResult.from_result(result=rir)
+        return {'result': result}
 
 #==============================================================================
 #==============================================================================
@@ -57,19 +56,16 @@ class RidgeRegressionTester(Task):
     """
     input_specs = {'dataset' : Dataset, 'learned_model': RidgeRegressionResult}
     output_specs = {'result' : Tuple}
-    config_specs = {   
-    }
+    config_specs = {   }
 
-    async def task(self):
-        dataset = self.input['dataset']
-        learned_model = self.input['learned_model']
-        rir = learned_model.kv_store['rir']
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
+        learned_model = inputs['learned_model']
+        rir = learned_model.binary_store['result']
         y = rir.score(dataset.features.values, dataset.targets.values)
         z = tuple([y])
-        
-        t = self.output_specs["result"]
-        result_dataset = t(tuple = z)
-        self.output['result'] = result_dataset
+        result_dataset = Tuple(tup = z)
+        return {'result': result_dataset}
 
 #==============================================================================
 #==============================================================================
@@ -83,15 +79,12 @@ class RidgeRegressionPredictor(Task):
     """
     input_specs = {'dataset' : Dataset, 'learned_model': RidgeRegressionResult}
     output_specs = {'result' : Dataset}
-    config_specs = {   
-    }
+    config_specs = {   }
 
-    async def task(self):
-        dataset = self.input['dataset']
-        learned_model = self.input['learned_model']
-        rir = learned_model.kv_store['rir']
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
+        learned_model = inputs['learned_model']
+        rir = learned_model.binary_store['result']
         y = rir.predict(dataset.features.values)
-
-        t = self.output_specs["result"]
-        result_dataset = t(targets = DataFrame(y))
-        self.output['result'] = result_dataset
+        result_dataset = Dataset(targets = DataFrame(y))
+        return {'result': result_dataset}

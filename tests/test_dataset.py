@@ -1,40 +1,30 @@
 
 import os
 import asyncio
-from unittest import IsolatedAsyncioTestCase
 
 from gws_gaia import Dataset, DatasetLoader
-from gws_core import Settings, GTest, Protocol, Experiment, ExperimentService
+from gws_core import (Settings, GTest, TaskTester, 
+                        ConfigParams, TaskInputs, BaseTestCase)
 
-class TestImporter(IsolatedAsyncioTestCase):
+class TestImporter(BaseTestCase):
     
-    @classmethod
-    def setUpClass(cls):
-        GTest.drop_tables()
-        GTest.create_tables()
-        GTest.init()
-        
-    @classmethod
-    def tearDownClass(cls):
-        GTest.drop_tables()
-        
     async def test_importer(self):
-        GTest.print("Dataset")
-        p0 = DatasetLoader(instance_name="p0")
+        GTest.print("Dataset import")
         settings = Settings.retrieve()
-
         test_dir = settings.get_variable("gws_gaia:testdata_dir")
-        p0.set_param("file_path", os.path.join(test_dir, "./iris.csv"))
-        p0.set_param("delimiter", ",")
-        p0.set_param("header", 0)
-        p0.set_param("targets", ["variety"])
-            
-        experiment: Experiment = ExperimentService.create_experiment_from_task_model(task_model=p0)
-        experiment.save()
-        experiment = await ExperimentService.run_experiment(
-            experiment=experiment, user=GTest.user)
-        
-        ds = p0.output['dataset']
+        # run trainer
+        tester = TaskTester(
+            params = ConfigParams({
+                "file_path": os.path.join(test_dir, "./iris.csv"),
+                "delimiter": ",",
+                "header": 0,
+                "targets": ["variety"]
+            }),
+            inputs = TaskInputs(),
+            task = DatasetLoader()
+        )
+        outputs = await tester.run()
+        ds = outputs['dataset']
         self.assertEquals(ds.nb_features, 4)
         self.assertEquals(ds.nb_targets, 1)
         self.assertEquals(ds.nb_instances, 150)
@@ -46,21 +36,22 @@ class TestImporter(IsolatedAsyncioTestCase):
         
 
     async def test_importer_no_head(self):
-        p0 = DatasetLoader(instance_name="p0")
+        GTest.print("Dataset import without header")
         settings = Settings.retrieve()
-
         test_dir = settings.get_variable("gws_gaia:testdata_dir")
-        p0.set_param("file_path", os.path.join(test_dir, "./iris_no_head.csv"))
-        p0.set_param("header", None)
-        p0.set_param("delimiter", ",")
-        p0.set_param("targets", [4])
-
-        experiment: Experiment = ExperimentService.create_experiment_from_task_model(process=p0)
-        experiment.save()
-        experiment = await ExperimentService.run_experiment(
-            experiment=experiment, user=GTest.user)
-        
-        ds = p0.output['dataset']
+        # run trainer
+        tester = TaskTester(
+            params = ConfigParams({
+                "file_path": os.path.join(test_dir, "./iris_no_head.csv"),
+                "delimiter": ",",
+                "header": None,
+                "targets": [4]
+            }),
+            inputs = TaskInputs(),
+            task = DatasetLoader()
+        )
+        outputs = await tester.run()
+        ds = outputs['dataset']
         self.assertEquals(ds.nb_features, 4)
         self.assertEquals(ds.nb_targets, 1)
         self.assertEquals(ds.nb_instances, 150)

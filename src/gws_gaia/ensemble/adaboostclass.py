@@ -7,15 +7,16 @@ from numpy import ravel
 from sklearn.ensemble import AdaBoostClassifier
 from pandas import DataFrame
 
-from gws_core import (Task, Resource, task_decorator, resource_decorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator,
+                        ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam)
 from ..data.core import Tuple
 from ..data.dataset import Dataset
+from ..base.base_resource import BaseResource
 
 @resource_decorator("AdaBoostClassifierResult", hide=True)
-class AdaBoostClassifierResult(Resource):
-    def __init__(self, *args, abc: AdaBoostClassifier = None, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.kv_store['abc'] = abc
+class AdaBoostClassifierResult(BaseResource):
+    """AdaBoostClassifierResult"""
+    pass
 
 #==============================================================================
 #==============================================================================
@@ -30,17 +31,15 @@ class AdaBoostClassifierTrainer(Task):
     input_specs = {'dataset' : Dataset}
     output_specs = {'result' : AdaBoostClassifierResult}
     config_specs = {
-        'nb_estimators': {"type": 'int', "default": 50, "min": 0}
+        'nb_estimators': IntParam(default_value=50, min_value=0)
     }
 
-    async def task(self):
-        dataset = self.input['dataset']
-        abc = AdaBoostClassifier(n_estimators=self.get_param("nb_estimators"))
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
+        abc = AdaBoostClassifier(n_estimators=params["nb_estimators"])
         abc.fit(dataset.features.values, ravel(dataset.targets.values))
-        
-        t = self.output_specs["result"]
-        result = t(abc=abc)
-        self.output['result'] = result
+        result = AdaBoostClassifierResult.from_result(abc)
+        return {"result" : result}
 
 #==============================================================================
 #==============================================================================
@@ -54,19 +53,19 @@ class AdaBoostClassifierTester(Task):
     """
     input_specs = {'dataset' : Dataset, 'learned_model': AdaBoostClassifierResult}
     output_specs = {'result' : Tuple}
-    config_specs = {   
-    }
+    config_specs = {}
 
-    async def task(self):
-        dataset = self.input['dataset']
-        learned_model = self.input['learned_model']
-        abc = learned_model.kv_store['abc']
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
+        learned_model = inputs['learned_model']
+
+        print(inputs)
+        
+        abc = learned_model.get_result()
         y = abc.score(dataset.features.values,ravel(dataset.targets.values))
         z = tuple([y])
-
-        t = self.output_specs["result"]
-        result_dataset = t(tuple = z)
-        self.output['result'] = result_dataset
+        result_dataset = Tuple(tup=z)
+        return {'result': result_dataset}
 
 #==============================================================================
 #==============================================================================
@@ -81,15 +80,12 @@ class AdaBoostClassifierPredictor(Task):
     """
     input_specs = {'dataset' : Dataset, 'learned_model': AdaBoostClassifierResult}
     output_specs = {'result' : Dataset}
-    config_specs = {   
-    }
+    config_specs = {   }
 
-    async def task(self):
-        dataset = self.input['dataset']
-        learned_model = self.input['learned_model']
-        abc = learned_model.kv_store['abc']
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
+        learned_model = inputs['learned_model']
+        abc = learned_model.get_result()
         y = abc.predict(dataset.features.values)
-
-        t = self.output_specs["result"]
-        result_dataset = t(targets = DataFrame(y))
-        self.output['result'] = result_dataset
+        result_dataset = Dataset(targets=DataFrame(y))
+        return {'result' : result_dataset}

@@ -7,19 +7,19 @@ from numpy import ravel
 from pandas import DataFrame
 from sklearn.linear_model import LinearRegression
 
-from gws_core import (Task, Resource, task_decorator, resource_decorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator,
+                        ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam)
 
 from ..data.core import Tuple
 from ..data.dataset import Dataset
+from ..base.base_resource import BaseResource
 
 #==============================================================================
 #==============================================================================
 
 @resource_decorator("LinearRegressionResult", hide=True)
-class LinearRegressionResult(Resource):
-    def __init__(self, lir: LinearRegression = None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.kv_store['lir'] = lir
+class LinearRegressionResult(BaseResource):
+    pass
 
 #==============================================================================
 #==============================================================================
@@ -33,17 +33,14 @@ class LinearRegressionTrainer(Task):
     """
     input_specs = {'dataset' : Dataset}
     output_specs = {'result' : LinearRegressionResult}
-    config_specs = {
-    }
+    config_specs = {}
 
-    async def task(self):
-        dataset = self.input['dataset']
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
         lir = LinearRegression()
         lir.fit(dataset.features.values, ravel(dataset.targets.values))
-        
-        t = self.output_specs["result"]
-        result = t(lir=lir)
-        self.output['result'] = result
+        result = LinearRegressionResult.from_result(result=lir)
+        return {'result': result}
 
 #==============================================================================
 #==============================================================================
@@ -57,19 +54,16 @@ class LinearRegressionTester(Task):
     """
     input_specs = {'dataset' : Dataset, 'learned_model': LinearRegressionResult}
     output_specs = {'result' : Tuple}
-    config_specs = {   
-    }
+    config_specs = {   }
 
-    async def task(self):
-        dataset = self.input['dataset']
-        learned_model = self.input['learned_model']
-        lir = learned_model.kv_store['lir']
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
+        learned_model = inputs['learned_model']
+        lir = learned_model.binary_store['result']
         y = lir.score(dataset.features.values, dataset.targets.values)
         z = tuple([y])
-        
-        t = self.output_specs["result"]
-        result_dataset = t(tuple = z)
-        self.output['result'] = result_dataset
+        result_dataset = Tuple(tup = z)
+        return {'result': result_dataset}
 
 #==============================================================================
 #==============================================================================
@@ -83,15 +77,12 @@ class LinearRegressionPredictor(Task):
     """
     input_specs = {'dataset' : Dataset, 'learned_model': LinearRegressionResult}
     output_specs = {'result' : Dataset}
-    config_specs = {   
-    }
+    config_specs = {   }
 
-    async def task(self):
-        dataset = self.input['dataset']
-        learned_model = self.input['learned_model']
-        lir = learned_model.kv_store['lir']
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
+        learned_model = inputs['learned_model']
+        lir = learned_model.binary_store['result']
         y = lir.predict(dataset.features.values)
-
-        t = self.output_specs["result"]
-        result_dataset = t(targets = DataFrame(y))
-        self.output['result'] = result_dataset
+        result_dataset = Dataset(targets = DataFrame(y))
+        return {'result': result_dataset}

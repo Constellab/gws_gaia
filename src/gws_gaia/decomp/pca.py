@@ -5,18 +5,18 @@
 
 from sklearn.decomposition import PCA
 
-from gws_core import (Task, Resource, task_decorator, resource_decorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator,
+                        ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam)
 from ..data.dataset import Dataset
 from ..data.core import Tuple
+from ..base.base_resource import BaseResource
 
 #==============================================================================
 #==============================================================================
 
 @resource_decorator("PCAResult", hide=True)
-class PCAResult(Resource):
-    def __init__(self, pca: PCA = None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.kv_store['pca'] = pca
+class PCAResult(BaseResource):
+    pass
 
 #==============================================================================
 #==============================================================================
@@ -31,17 +31,15 @@ class PCATrainer(Task):
     input_specs = {'dataset' : Dataset}
     output_specs = {'result' : PCAResult}
     config_specs = {
-        'nb_components': {"type": 'int', "default": 2, "min": 0}
+        'nb_components':IntParam(default_value=2, min_value=0)
     }
 
-    async def task(self):
-        dataset = self.input['dataset']
-        pca = PCA(n_components=self.get_param("nb_components"))
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
+        pca = PCA(n_components=params["nb_components"])
         pca.fit(dataset.features.values)
-
-        t = self.output_specs["result"]
-        result = t(pca=pca)
-        self.output['result'] = result
+        result = PCAResult.from_result(result=pca)
+        return {'result': result}
         
 #==============================================================================
 #==============================================================================
@@ -56,16 +54,12 @@ class PCATransformer(Task):
     """
     input_specs = {'dataset' : Dataset, 'learned_model': PCAResult}
     output_specs = {'result' : Tuple}
-    config_specs = {
-    }
+    config_specs = {}
 
-    async def task(self):
-        dataset = self.input['dataset']
-        learned_model = self.input['learned_model']
-        pca = learned_model.kv_store['pca']
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
+        learned_model = inputs['learned_model']
+        pca = learned_model.binary_store['result']
         x = pca.transform(dataset.features.values)
-
-        t = self.output_specs["result"]
-        result = t(tuple=x)
-        #a = result.kv_store['pca']
-        self.output['result'] = result
+        result = Tuple(tup=x)
+        return {'result': result}

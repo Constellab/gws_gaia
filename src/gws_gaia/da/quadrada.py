@@ -7,18 +7,18 @@ from numpy import ravel
 from pandas import DataFrame
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
 
-from gws_core import (Task, Resource, task_decorator, resource_decorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator,
+                        ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam)
 from ..data.core import Tuple
 from ..data.dataset import Dataset
+from ..base.base_resource import BaseResource
 
 #==============================================================================
 #==============================================================================
 
 @resource_decorator("QDAResult")
-class QDAResult(Resource):
-    def __init__(self, qda: QuadraticDiscriminantAnalysis = None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.kv_store['qda'] = qda
+class QDAResult(BaseResource):
+    pass
 
 #==============================================================================
 #==============================================================================
@@ -33,17 +33,15 @@ class QDATrainer(Task):
     input_specs = {'dataset' : Dataset}
     output_specs = {'result' : QDAResult}
     config_specs = {
-        'reg_param': {"type": 'float', "default": 0},
+        'reg_param': FloatParam(default_value=0),
     }
 
-    async def task(self):
-        dataset = self.input['dataset']
-        qda = QuadraticDiscriminantAnalysis(reg_param=self.get_param("reg_param"))
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
+        qda = QuadraticDiscriminantAnalysis(reg_param=params["reg_param"])
         qda.fit(dataset.features.values, ravel(dataset.targets.values))
-        
-        t = self.output_specs["result"]
-        result = t(qda=qda)
-        self.output['result'] = result
+        result = QDAResult.from_result(result=qda)
+        return {'result': result}
 
 #==============================================================================
 #==============================================================================
@@ -57,19 +55,16 @@ class QDATester(Task):
     """
     input_specs = {'dataset' : Dataset, 'learned_model': QDAResult}
     output_specs = {'result' : Tuple}
-    config_specs = {   
-    }
+    config_specs = {   }
 
-    async def task(self):
-        dataset = self.input['dataset']
-        learned_model = self.input['learned_model']
-        qda = learned_model.kv_store['qda']
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
+        learned_model = inputs['learned_model']
+        qda = learned_model.binary_store['result']
         y = qda.score(dataset.features.values, dataset.targets.values)
         z = tuple([y])
-        
-        t = self.output_specs["result"]
-        result_dataset = t(tuple = z)
-        self.output['result'] = result_dataset
+        result_dataset = Tuple(tup = z)
+        return {'result': result_dataset}
 
 #==============================================================================
 #==============================================================================
@@ -83,15 +78,12 @@ class QDAPredictor(Task):
     """
     input_specs = {'dataset' : Dataset, 'learned_model': QDAResult}
     output_specs = {'result' : Dataset}
-    config_specs = {   
-    }
+    config_specs = {   }
 
-    async def task(self):
-        dataset = self.input['dataset']
-        learned_model = self.input['learned_model']
-        qda = learned_model.kv_store['qda']
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
+        learned_model = inputs['learned_model']
+        qda = learned_model.binary_store['result']
         y = qda.predict(dataset.features.values)
-
-        t = self.output_specs["result"]
-        result_dataset = t(targets = DataFrame(y))
-        self.output['result'] = result_dataset
+        result_dataset = Dataset(targets = DataFrame(y))
+        return {'result': result_dataset}

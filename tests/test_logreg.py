@@ -1,23 +1,14 @@
 
 import os
 import asyncio
-from unittest import IsolatedAsyncioTestCase
+
 
 from gws_gaia import Dataset, DatasetLoader
 from gws_gaia import LogisticRegressionTrainer, LogisticRegressionPredictor, LogisticRegressionTester
-from gws_core import Settings, GTest, Protocol, Experiment, ExperimentService
+from gws_core import Settings, GTest, BaseTestCase, TaskTester, TaskInputs, ConfigParams
 
-class TestTrainer(IsolatedAsyncioTestCase):
-    
-    @classmethod
-    def setUpClass(cls):
-        GTest.drop_tables()
-        GTest.create_tables()
-        GTest.init()
-        
-    @classmethod
-    def tearDownClass(cls):
-        GTest.drop_tables()
+class TestTrainer(BaseTestCase):
+
         
     async def test_process(self):
         GTest.print("Logistic regression classifier")

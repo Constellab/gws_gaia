@@ -7,20 +7,19 @@ from numpy import ravel
 from pandas import DataFrame
 from sklearn.linear_model import LogisticRegression
 
-from gws_core import (Task, Resource, task_decorator, resource_decorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator,
+                        ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam)
 
 from ..data.core import Tuple
 from ..data.dataset import Dataset
+from ..base.base_resource import BaseResource
 
 #==============================================================================
 #==============================================================================
 
 @resource_decorator("LogisticRegressionResult", hide=True)
-class LogisticRegressionResult(Resource):
-    def __init__(self, logreg: LogisticRegression = None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.kv_store['logreg'] = logreg
-
+class LogisticRegressionResult(BaseResource):
+    pass
 #==============================================================================
 #==============================================================================
 
@@ -34,17 +33,15 @@ class LogisticRegressionTrainer(Task):
     input_specs = {'dataset' : Dataset}
     output_specs = {'result' : LogisticRegressionResult}
     config_specs = {
-        'inv_reg_strength': {"type": 'float', "default": 1, "min": 0}
+        'inv_reg_strength': FloatParam(default_value=1, min_value=0)
     }
 
-    async def task(self):
-        dataset = self.input['dataset']
-        logreg = LogisticRegression(C=self.get_param("inv_reg_strength"))
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
+        logreg = LogisticRegression(C=params["inv_reg_strength"])
         logreg.fit(dataset.features.values, ravel(dataset.targets.values))
-        
-        t = self.output_specs["result"]
-        result = t(logreg=logreg)
-        self.output['result'] = result
+        result = LogisticRegressionResult.from_result(logreg=logreg)
+        return {'result': result}
 
 #==============================================================================
 #==============================================================================
@@ -58,19 +55,16 @@ class LogisticRegressionTester(Task):
     """
     input_specs = {'dataset' : Dataset, 'learned_model': LogisticRegressionResult}
     output_specs = {'result' : Tuple}
-    config_specs = {   
-    }
+    config_specs = {   }
 
-    async def task(self):
-        dataset = self.input['dataset']
-        learned_model = self.input['learned_model']
-        logreg = learned_model.kv_store['logreg']
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
+        learned_model = inputs['learned_model']
+        logreg = learned_model.binary_store['result']
         y = logreg.score(dataset.features.values, dataset.targets.values)
         z = tuple([y])
-        
-        t = self.output_specs["result"]
-        result_dataset = t(tuple = z)
-        self.output['result'] = result_dataset
+        result_dataset = Tuple(tup = z)
+        return {'result': result_dataset}
 
 #==============================================================================
 #==============================================================================
@@ -84,15 +78,12 @@ class LogisticRegressionPredictor(Task):
     """
     input_specs = {'dataset' : Dataset, 'learned_model': LogisticRegressionResult}
     output_specs = {'result' : Dataset}
-    config_specs = {   
-    }
+    config_specs = {   }
 
-    async def task(self):
-        dataset = self.input['dataset']
-        learned_model = self.input['learned_model']
-        logreg = learned_model.kv_store['logreg']
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
+        learned_model = inputs['learned_model']
+        logreg = learned_model.binary_store['result']
         y = logreg.predict(dataset.features.values)
-
-        t = self.output_specs["result"]
-        result_dataset = t(targets = DataFrame(y))
-        self.output['result'] = result_dataset
+        result_dataset = Dataset(targets = DataFrame(y))
+        return {'result': result_dataset}

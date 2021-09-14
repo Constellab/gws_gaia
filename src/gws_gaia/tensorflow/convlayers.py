@@ -11,7 +11,8 @@ from tensorflow.keras.layers import Conv2D as Kerasconv2d
 from tensorflow.keras.layers import Conv3D as Kerasconv3d
 from pandas import DataFrame
 
-from gws_core import (Task, Resource, task_decorator, resource_decorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator,
+                        ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam, ListParam)
 
 from ..data.dataset import Dataset
 from .data import Tensor
@@ -29,19 +30,17 @@ class Conv1D(Task):
     input_specs = {'tensor' : Tensor}
     output_specs = {'result' : Tensor}
     config_specs = {
-        'nb_filters': {"type": 'int', "default": 32, "min": 0},
-        'kernel_size': {"type": 'int', "default": 3, "min": 0},
-        'activation_type': {"type": 'str', "default": None}
+        'nb_filters': IntParam(default_value=32, min_value=0),
+        'kernel_size': IntParam(default_value=3, min_value=0),
+        'activation_type': StrParam(default_value=None)
     }
 
-    async def task(self):
-        x = self.input['tensor']
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        x = inputs['tensor']
         y = x._data
-        z = Kerasconv1d(filters=self.get_param('nb_filters'), kernel_size=self.get_param('kernel_size'), activation=self.get_param('activation_type'))(y)
-        
-        t = self.output_specs["result"]
-        result = t(tensor=z)
-        self.output['result'] = result
+        z = Kerasconv1d(filters=params['nb_filters'], kernel_size=params['kernel_size'], activation=params['activation_type'])(y)        
+        result = Tensor(tensor=z)
+        return {'result': result}
 
 #================================================================================
 #================================================================================
@@ -56,20 +55,18 @@ class Conv2D(Task):
     input_specs = {'tensor' : Tensor}
     output_specs = {'result' : Tensor}
     config_specs = {
-        'nb_filters': {"type": 'int', "default": 32, "min": 0},
-        'kernel_size': {"type": 'list', "default": [2, 2]},
-        'activation_type': {"type": 'str', "default": None}
+        'nb_filters': IntParam(default_value=32, min_value=0),
+        'kernel_size': ListParam(default_value=[2, 2]),
+        'activation_type': StrParam(default_value=None)
     }
 
-    async def task(self):
-        x = self.input['tensor']
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        x = inputs['tensor']
         y = x._data
-        kernel_size = tuple(self.get_param('kernel_size'))
-        z = Kerasconv2d(filters=self.get_param('nb_filters'), kernel_size=kernel_size, activation=self.get_param('activation_type'))(y)
-        
-        t = self.output_specs["result"]
-        result = t(tensor=z)
-        self.output['result'] = result
+        kernel_size = tuple(params['kernel_size'])
+        z = Kerasconv2d(filters=params['nb_filters'], kernel_size=kernel_size, activation=params['activation_type'])(y)        
+        result = Tensor(tensor=z)
+        return {'result': result}
 
 #================================================================================
 #================================================================================
@@ -84,17 +81,15 @@ class Conv3D(Task):
     input_specs = {'tensor' : Tensor}
     output_specs = {'result' : Tensor}
     config_specs = {
-        'nb_filters': {"type": 'int', "default": 32, "min": 0},
-        'kernel_size': {"type": 'list', "default": [2, 2, 2]},
-        'activation_type': {"type": 'str', "default": None}
+        'nb_filters': IntParam(default_value=32, min_value=0),
+        'kernel_size': ListParam(default_value=[2, 2, 2]),
+        'activation_type': StrParam(default_value=None)
     }
 
-    async def task(self):
-        x = self.input['tensor']
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        x = inputs['tensor']
         y = x._data
-        kernel_size = tuple(self.get_param('kernel_size'))
-        z = Kerasconv3d(filters=self.get_param('nb_filters'), kernel_size=kernel_size, activation=self.get_param('activation_type'))(y)
-        
-        t = self.output_specs["result"]
-        result = t(tensor=z)
-        self.output['result'] = result
+        kernel_size = tuple(params['kernel_size'])
+        z = Kerasconv3d(filters=params['nb_filters'], kernel_size=kernel_size, activation=params['activation_type'])(y)        
+        result = Tensor(tensor=z)
+        return {'result': result}

@@ -1,64 +1,59 @@
 import os
 import asyncio
-from unittest import IsolatedAsyncioTestCase
 
-from gws_core import Settings, GTest, Protocol, Experiment, ExperimentService
+
+from gws_core import Settings, GTest, BaseTestCase, TaskTester, TaskInputs, ConfigParams
 from gws_gaia import Dataset, DatasetLoader
 from gws_gaia import AdaBoostRegressorTrainer, AdaBoostRegressorPredictor, AdaBoostRegressorTester
 
-class TestTrainer(IsolatedAsyncioTestCase):
-    
-    @classmethod
-    def setUpClass(cls):
-        GTest.drop_tables()
-        GTest.create_tables()
-        GTest.init()
-        
-    @classmethod
-    def tearDownClass(cls):
-        GTest.drop_tables()
-        
+class TestTrainer(BaseTestCase):
+
     async def test_process(self):
         GTest.print("AdaBoost regressor")
         settings = Settings.retrieve()
         test_dir = settings.get_variable("gws_gaia:testdata_dir")
-
-        p0 = DatasetLoader()
-        p1 = AdaBoostRegressorTrainer()
-        p2 = AdaBoostRegressorPredictor()
-        p3 = AdaBoostRegressorTester()
-
-        proto = Protocol(
-            processes = {
-                'p0' : p0,
-                'p1' : p1,
-                'p2' : p2,
-                'p3' : p3
-            },
-            connectors = [
-                p0>>'dataset' | p1<<'dataset',
-                p0>>'dataset' | p2<<'dataset',
-                p1>>'result' | p2<<'learned_model',
-                p0>>'dataset' | p3<<'dataset',
-                p1>>'result' | p3<<'learned_model'
-            ]
-        )
-
-        p0.set_param("delimiter", ",")
-        p0.set_param("header", 0)
-        p0.set_param('targets', ['target']) 
-        p0.set_param("file_path", os.path.join(test_dir, "./dataset2.csv"))
-
-        experiment: Experiment = Experiment(
-            protocol=proto, study=GTest.study, user=GTest.user)
-        experiment.save()
-        experiment = await ExperimentService.run_experiment(
-            experiment=experiment, user=GTest.user)
         
-        r1 = p1.output['result']
-        r2 = p2.output['result']
-        r3 = p3.output['result']
+        #import data
+        dataset = Dataset.import_from_path(os.path.join(
+            test_dir, "./dataset2.csv"), 
+            delimiter=",", 
+            header=0, 
+            targets=['target']
+        )
+        
+        # run trainer
+        tester = TaskTester(
+            params = ConfigParams({'nb_estimators': 30}),
+            inputs = TaskInputs({'dataset': dataset}),
+            task = AdaBoostRegressorTrainer()
+        )
+        outputs = await tester.run()
+        trainer_result = outputs['result']
 
-        # print(r1)
-        # print(r2)            
-        # print(r3.tuple)
+        # run predictior
+        tester = TaskTester(
+            params = ConfigParams(),
+            inputs = TaskInputs({
+                'dataset': dataset, 
+                'learned_model': trainer_result
+            }),
+            task = AdaBoostRegressorPredictor()
+        )
+        outputs = await tester.run()
+        predictor_result = outputs['result']
+
+        # run tester
+        tester = TaskTester(
+            params = ConfigParams(),
+            inputs = TaskInputs({
+                'dataset': dataset, 
+                'learned_model': trainer_result
+            }),
+            task = AdaBoostRegressorTester()
+        )
+        outputs = await tester.run()
+        tester_result = outputs['result']
+
+        print(trainer_result)
+        print(tester_result)
+        print(predictor_result)

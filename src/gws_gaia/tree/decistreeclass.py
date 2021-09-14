@@ -7,19 +7,19 @@ from numpy import ravel
 from pandas import DataFrame
 from sklearn.tree import DecisionTreeClassifier
 
-from gws_core import (Task, Resource, task_decorator, resource_decorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator,
+                        ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam)
 
 from ..data.core import Tuple
 from ..data.dataset import Dataset
+from ..base.base_resource import BaseResource
 
 #========================================================================================
 #========================================================================================
 
 @resource_decorator("DecisionTreeClassifierResult")
-class DecisionTreeClassifierResult(Resource):
-    def __init__(self, dtc: DecisionTreeClassifier = None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.kv_store['dtc'] = dtc
+class DecisionTreeClassifierResult(BaseResource):
+    pass
 
 #========================================================================================
 #========================================================================================
@@ -33,17 +33,15 @@ class DecisionTreeClassifierTrainer(Task):
     input_specs = {'dataset' : Dataset}
     output_specs = {'result' : DecisionTreeClassifierResult}
     config_specs = {
-        'max_depth': {"type": 'int', "default": None, "min": 0}
+        'max_depth':IntParam(default_value=None, min_value=0)
     }
 
-    async def task(self):
-        dataset = self.input['dataset']
-        dtc = DecisionTreeClassifier(max_depth=self.get_param("max_depth"))
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
+        dtc = DecisionTreeClassifier(max_depth=params["max_depth"])
         dtc.fit(dataset.features.values, ravel(dataset.targets.values))
-        
-        t = self.output_specs["result"]
-        result = t(dtc=dtc)
-        self.output['result'] = result
+        result = DecisionTreeClassifierResult.from_result(result=dtc)
+        return {'result': result}
 
 #========================================================================================
 #========================================================================================
@@ -57,19 +55,16 @@ class DecisionTreeClassifierTester(Task):
     """
     input_specs = {'dataset' : Dataset, 'learned_model': DecisionTreeClassifierResult}
     output_specs = {'result' : Tuple}
-    config_specs = {   
-    }
+    config_specs = {   }
 
-    async def task(self):
-        dataset = self.input['dataset']
-        learned_model = self.input['learned_model']
-        dtc = learned_model.kv_store['dtc']
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
+        learned_model = inputs['learned_model']
+        dtc = learned_model.binary_store['result']
         y = dtc.score(dataset.features.values,ravel(dataset.targets.values))
         z = tuple([y])
-
-        t = self.output_specs["result"]
-        result_dataset = t(tuple = z)
-        self.output['result'] = result_dataset
+        result_dataset = Tuple(tup = z)
+        return {'result': result_dataset}
 
 #========================================================================================
 #========================================================================================
@@ -82,15 +77,12 @@ class DecisionTreeClassifierPredictor(Task):
     """
     input_specs = {'dataset' : Dataset, 'learned_model': DecisionTreeClassifierResult}
     output_specs = {'result' : Dataset}
-    config_specs = {   
-    }
+    config_specs = {   }
 
-    async def task(self):
-        dataset = self.input['dataset']
-        learned_model = self.input['learned_model']
-        dtc = learned_model.kv_store['dtc']
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
+        learned_model = inputs['learned_model']
+        dtc = learned_model.binary_store['result']
         y = dtc.predict(dataset.features.values)
-
-        t = self.output_specs["result"]
-        result_dataset = t(targets = DataFrame(y))
-        self.output['result'] = result_dataset
+        result_dataset = Dataset(targets = DataFrame(y))
+        return {'result': result_dataset}

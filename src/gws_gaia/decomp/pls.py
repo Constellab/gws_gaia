@@ -7,18 +7,18 @@
 from pandas import DataFrame
 from sklearn.cross_decomposition import PLSRegression
 
-from gws_core import (Task, Resource, task_decorator, resource_decorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator,
+                        ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam)
 from ..data.core import Tuple
 from ..data.dataset import Dataset
+from ..base.base_resource import BaseResource
 
 #==============================================================================
 #==============================================================================
 
 @resource_decorator("PLSResult", hide=True)
-class PLSResult(Resource):
-    def __init__(self, pls: PLSRegression = None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.kv_store['pls'] = pls
+class PLSResult(BaseResource):
+    pass
 
 #==============================================================================
 #==============================================================================
@@ -33,17 +33,15 @@ class PLSTrainer(Task):
     input_specs = {'dataset' : Dataset}
     output_specs = {'result' : PLSResult}
     config_specs = {
-        'nb_components': {"type": 'int', "default": 2, "min": 0}
+        'nb_components': IntParam(default_value=2, min_value=0)
     }
 
-    async def task(self):
-        dataset = self.input['dataset']
-        pls = PLSRegression(n_components=self.get_param("nb_components"))
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
+        pls = PLSRegression(n_components=params["nb_components"])
         pls.fit(dataset.features.values, dataset.targets.values)
-        
-        t = self.output_specs["result"]
-        result = t(pls=pls)
-        self.output['result'] = result
+        result = PLSResult.from_result(result=pls)
+        return {'result': result}
 
 #==============================================================================
 #==============================================================================
@@ -57,19 +55,16 @@ class PLSTester(Task):
     """
     input_specs = {'dataset' : Dataset, 'learned_model': PLSResult}
     output_specs = {'result' : Tuple}
-    config_specs = {   
-    }
+    config_specs = {  }
 
-    async def task(self):
-        dataset = self.input['dataset']
-        learned_model = self.input['learned_model']
-        pls = learned_model.kv_store['pls']
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
+        learned_model = inputs['learned_model']
+        pls = learned_model.binary_store['result']
         y = pls.score(dataset.features.values, dataset.targets.values)
         z = tuple([y])
-        
-        t = self.output_specs["result"]
-        result_dataset = t(tuple = z)
-        self.output['result'] = result_dataset
+        result_dataset = Tuple(tup = z)
+        return {'result': result_dataset}
 
 #==============================================================================
 #==============================================================================
@@ -83,15 +78,12 @@ class PLSPredictor(Task):
     """
     input_specs = {'dataset' : Dataset, 'learned_model': PLSResult}
     output_specs = {'result' : Dataset}
-    config_specs = {   
-    }
+    config_specs = {   }
 
-    async def task(self):
-        dataset = self.input['dataset']
-        learned_model = self.input['learned_model']
-        pls = learned_model.kv_store['pls']
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
+        learned_model = inputs['learned_model']
+        pls = learned_model.binary_store['result']
         y = pls.predict(dataset.features.values)
-
-        t = self.output_specs["result"]
-        result_dataset = t(targets = DataFrame(y))
-        self.output['result'] = result_dataset
+        result_dataset = Dataset(targets = DataFrame(y))
+        return {'result': result_dataset}

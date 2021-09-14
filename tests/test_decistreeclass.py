@@ -1,68 +1,60 @@
 
 import os
 import asyncio
-from unittest import IsolatedAsyncioTestCase
+
 
 from gws_gaia import Dataset, DatasetLoader
 from gws_gaia import DecisionTreeClassifierTrainer, DecisionTreeClassifierPredictor, DecisionTreeClassifierTester
-from gws_core import Settings, GTest, Protocol, Experiment, ExperimentService
+from gws_core import Settings, GTest, BaseTestCase, TaskTester, TaskInputs, ConfigParams
 
-class TestTrainer(IsolatedAsyncioTestCase):
-    
-    @classmethod
-    def setUpClass(cls):
-        GTest.drop_tables()
-        GTest.create_tables()
-        GTest.init()
-        
-    @classmethod
-    def tearDownClass(cls):
-        GTest.drop_tables()
-        
+class TestTrainer(BaseTestCase):
+
     async def test_process(self):
-        GTest.print("Decision tree classifier")
+        GTest.print("Decision Tree Classifier")
         settings = Settings.retrieve()
         test_dir = settings.get_variable("gws_gaia:testdata_dir")
 
-        p0 = DatasetLoader()
-        p1 = DecisionTreeClassifierTrainer()
-        p2 = DecisionTreeClassifierPredictor()
-        p3 = DecisionTreeClassifierTester()
-
-        proto = Protocol(
-            processes = {
-                'p0' : p0,
-                'p1' : p1,
-                'p2' : p2,
-                'p3' : p3
-            },
-            connectors = [
-        p0>>'dataset' | p1<<'dataset',
-        p0>>'dataset' | p2<<'dataset',
-        p1>>'result' | p2<<'learned_model',
-        p0>>'dataset' | p3<<'dataset',
-        p1>>'result' | p3<<'learned_model'
-
-            ]
+        #import data
+        dataset = Dataset.import_from_path(os.path.join(
+            test_dir, "./iris.csv"), 
+            delimiter=",", 
+            header=0, 
+            targets=['variety']
         )
 
-        p0.set_param("delimiter", ",")
-        p0.set_param("header", 0)
-        p0.set_param('targets', ['variety'])
-        p0.set_param("file_path", os.path.join(test_dir, "./iris.csv"))
-        p1.set_param('max_depth', 4)
-  
-        experiment: Experiment = Experiment(
-            protocol=proto, study=GTest.study, user=GTest.user)
-        experiment.save()
-        experiment = await ExperimentService.run_experiment(
-            experiment=experiment, user=GTest.user)        
+        # run trainer
+        tester = TaskTester(
+            params = ConfigParams({'max_depth': 4}),
+            inputs = TaskInputs({'dataset': dataset}),
+            task = DecisionTreeClassifierTrainer()
+        )
+        outputs = await tester.run()
+        trainer_result = outputs['result']
 
-        r1 = p1.output['result']
-        r2 = p2.output['result']
-        r3 = p3.output['result']
+        # run predictior
+        tester = TaskTester(
+            params = ConfigParams(),
+            inputs = TaskInputs({
+                'dataset': dataset, 
+                'learned_model': trainer_result
+            }),
+            task = DecisionTreeClassifierPredictor()
+        )
+        outputs = await tester.run()
+        predictor_result = outputs['result']
 
-        # print(r1)
-        # print(r2)
-        # print(r3.tuple)
-        
+        # run tester
+        tester = TaskTester(
+            params = ConfigParams(),
+            inputs = TaskInputs({
+                'dataset': dataset, 
+                'learned_model': trainer_result
+            }),
+            task = DecisionTreeClassifierTester()
+        )
+        outputs = await tester.run()
+        tester_result = outputs['result']
+
+        print(trainer_result)
+        print(tester_result)
+        print(predictor_result)

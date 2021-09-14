@@ -5,17 +5,17 @@
 
 from sklearn.decomposition import FastICA
 
-from gws_core import (Task, Resource, task_decorator, resource_decorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator,
+                        ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam)
 from ..data.dataset import Dataset
+from ..base.base_resource import BaseResource
 
 #==============================================================================
 #==============================================================================
 
 @resource_decorator("ICAResult", hide=True)
-class ICAResult(Resource):
-    def __init__(self, ica: FastICA = None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.kv_store['ica'] = ica
+class ICAResult(BaseResource):
+    pass
 
 #==============================================================================
 #==============================================================================
@@ -30,14 +30,12 @@ class ICATrainer(Task):
     input_specs = {'dataset' : Dataset}
     output_specs = {'result' : ICAResult}
     config_specs = {
-        'nb_components': {"type": 'int', "default": 2, "min": 0}
+        'nb_components':IntParam(default_value=2, min_value=0)
     }
 
-    async def task(self):
-        dataset = self.input['dataset']
-        ica = FastICA(n_components=self.get_param("nb_components"))
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
+        ica = FastICA(n_components=params["nb_components"])
         ica.fit(dataset.features.values)
-
-        t = self.output_specs["result"]
-        result = t(ica=ica)
-        self.output['result'] = result
+        result = ICAResult.from_result(result=ica)
+        return {'result': result}

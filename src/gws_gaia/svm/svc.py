@@ -8,19 +8,19 @@ from numpy import ravel
 from pandas import DataFrame
 from sklearn.svm import SVC
 
-from gws_core import (Task, Resource, task_decorator, resource_decorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator,
+                        ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam, BoolParam)
 
 from ..data.core import Tuple
 from ..data.dataset import Dataset
+from ..base.base_resource import BaseResource
 
 #==============================================================================
 #==============================================================================
 
 @resource_decorator("SVCResult", hide=True)
-class SVCResult(Resource):
-    def __init__(self, svc: SVC = None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.kv_store['svc'] = svc
+class SVCResult(BaseResource):
+    pass
 
 #==============================================================================
 #==============================================================================
@@ -35,18 +35,16 @@ class SVCTrainer(Task):
     input_specs = {'dataset' : Dataset}
     output_specs = {'result' : SVCResult}
     config_specs = {
-        'probability': {"type": 'bool', "default": False},
-        'kernel': {"type": 'str', "default": 'rbf'}
+        'probability': BoolParam(default_value=False),
+        'kernel':StrParam(default_value='rbf')
     }
 
-    async def task(self):
-        dataset = self.input['dataset']
-        svc = SVC(probability=self.get_param("probability"),kernel=self.get_param("kernel"))
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
+        svc = SVC(probability=params["probability"],kernel=params["kernel"])
         svc.fit(dataset.features.values, ravel(dataset.targets.values))
-        
-        t = self.output_specs["result"]
-        result = t(svc=svc)
-        self.output['result'] = result
+        result = SVCResult.from_result(svc=svc)
+        return {'result': result}
 
 #==============================================================================
 #==============================================================================
@@ -60,19 +58,16 @@ class SVCTester(Task):
     """
     input_specs = {'dataset' : Dataset, 'learned_model': SVCResult}
     output_specs = {'result' : Tuple}
-    config_specs = {   
-    }
+    config_specs = {   }
 
-    async def task(self):
-        dataset = self.input['dataset']
-        learned_model = self.input['learned_model']
-        svc = learned_model.kv_store['svc']
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
+        learned_model = inputs['learned_model']
+        svc = learned_model.binary_store['result']
         y = svc.score(dataset.features.values, dataset.targets.values)
         z = tuple([y])
-        
-        t = self.output_specs["result"]
-        result_dataset = t(tuple = z)
-        self.output['result'] = result_dataset
+        result_dataset = Tuple(tup = z)
+        return {'result': result_dataset}
 
 #==============================================================================
 #==============================================================================
@@ -86,15 +81,12 @@ class SVCPredictor(Task):
     """    
     input_specs = {'dataset' : Dataset, 'learned_model': SVCResult}
     output_specs = {'result' : Dataset}
-    config_specs = {   
-    }
+    config_specs = {   }
 
-    async def task(self):
-        dataset = self.input['dataset']
-        learned_model = self.input['learned_model']
-        svc = learned_model.kv_store['svc']
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
+        learned_model = inputs['learned_model']
+        svc = learned_model.binary_store['result']
         y = svc.predict(dataset.features.values)
-
-        t = self.output_specs["result"]
-        result_dataset = t(targets = DataFrame(y))
-        self.output['result'] = result_dataset
+        result_dataset = Dataset(targets = DataFrame(y))
+        return {'result': result_dataset}

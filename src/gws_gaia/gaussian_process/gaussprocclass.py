@@ -7,19 +7,19 @@ from numpy import ravel
 from pandas import DataFrame
 from sklearn.gaussian_process import GaussianProcessClassifier
 
-from gws_core import (Task, Resource, task_decorator, resource_decorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator,
+                        ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam)
 
 from ..data.core import Tuple
 from ..data.dataset import Dataset
+from ..base.base_resource import BaseResource
 
 #==============================================================================
 #==============================================================================
 
 @resource_decorator("GaussianProcessClassifierResult", hide=True)
-class GaussianProcessClassifierResult(Resource):
-    def __init__(self, gpc: GaussianProcessClassifier = None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.kv_store['gpc'] = gpc
+class GaussianProcessClassifierResult(BaseResource):
+    pass
 
 #==============================================================================
 #==============================================================================
@@ -34,17 +34,15 @@ class GaussianProcessClassifierTrainer(Task):
     input_specs = {'dataset' : Dataset}
     output_specs = {'result' : GaussianProcessClassifierResult}
     config_specs = {
-        'random_state': {"type": 'int', "default": None, "min": 0}
+        'random_state':IntParam(default_value=None, min_value=0)
     }
 
-    async def task(self):
-        dataset = self.input['dataset']
-        gpc = GaussianProcessClassifier(random_state=self.get_param("random_state"))
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
+        gpc = GaussianProcessClassifier(random_state=params["random_state"])
         gpc.fit(dataset.features.values, ravel(dataset.targets.values))
-        
-        t = self.output_specs["result"]
-        result = t(gpc=gpc)
-        self.output['result'] = result
+        result = GaussianProcessClassifierResult.from_result(result=gpc)
+        return {'result': result}
 
 #==============================================================================
 #==============================================================================
@@ -58,19 +56,16 @@ class GaussianProcessClassifierTester(Task):
     """
     input_specs = {'dataset' : Dataset, 'learned_model': GaussianProcessClassifierResult}
     output_specs = {'result' : Tuple}
-    config_specs = {   
-    }
+    config_specs = {   }
 
-    async def task(self):
-        dataset = self.input['dataset']
-        learned_model = self.input['learned_model']
-        gpc = learned_model.kv_store['gpc']
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
+        learned_model = inputs['learned_model']
+        gpc = learned_model.binary_store['result']
         y = gpc.score(dataset.features.values, dataset.targets.values)
         z = tuple([y])
-
-        t = self.output_specs["result"]
-        result_dataset = t(tuple = z)
-        self.output['result'] = result_dataset
+        result_dataset = Tuple(tup = z)
+        return {'result': result_dataset}
 
 #==============================================================================
 #==============================================================================
@@ -84,15 +79,12 @@ class GaussianProcessClassifierPredictor(Task):
     """
     input_specs = {'dataset' : Dataset, 'learned_model': GaussianProcessClassifierResult}
     output_specs = {'result' : Dataset}
-    config_specs = {   
-    }
+    config_specs = {   }
 
-    async def task(self):
-        dataset = self.input['dataset']
-        learned_model = self.input['learned_model']
-        gpc = learned_model.kv_store['gpc']
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
+        learned_model = inputs['learned_model']
+        gpc = learned_model.binary_store['result']
         y = gpc.predict(dataset.features.values)
-
-        t = self.output_specs["result"]
-        result_dataset = t(targets = DataFrame(y))
-        self.output['result'] = result_dataset
+        result_dataset = Dataset(targets = DataFrame(y))
+        return {'result': result_dataset}

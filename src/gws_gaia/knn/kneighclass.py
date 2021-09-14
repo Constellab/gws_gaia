@@ -7,19 +7,19 @@ from numpy import ravel
 from pandas import DataFrame
 from sklearn.neighbors import KNeighborsClassifier
 
-from gws_core import (Task, Resource, task_decorator, resource_decorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator,
+                        ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam)
 
 from ..data.core import Tuple
 from ..data.dataset import Dataset
+from ..base.base_resource import BaseResource
 
 #==============================================================================
 #==============================================================================
 
 @resource_decorator("KNNClassifierResult", hide=True)
 class KNNClassifierResult(Resource):
-    def __init__(self, neigh: KNeighborsClassifier = None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.kv_store['neigh'] = neigh
+    pass
 
 #==============================================================================
 #==============================================================================
@@ -34,17 +34,15 @@ class KNNClassifierTrainer(Task):
     input_specs = {'dataset' : Dataset}
     output_specs = {'result' : KNNClassifierResult}
     config_specs = {
-        'nb_neighbors': {"type": 'int', "default": 5, "min": 0}
+        'nb_neighbors': IntParam(default_value=5, min_value=0)
     }
 
-    async def task(self):
-        dataset = self.input['dataset']
-        neigh = KNeighborsClassifier(n_neighbors=self.get_param("nb_neighbors"))
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
+        neigh = KNeighborsClassifier(n_neighbors=params["nb_neighbors"])
         neigh.fit(dataset.features.values, ravel(dataset.targets.values))
-        
-        t = self.output_specs["result"]
-        result = t(neigh=neigh)
-        self.output['result'] = result
+        result = KNNClassifierResult.from_result(result=neigh)
+        return {'result': result}
 
 #==============================================================================
 #==============================================================================
@@ -58,19 +56,16 @@ class KNNClassifierTester(Task):
     """
     input_specs = {'dataset' : Dataset, 'learned_model': KNNClassifierResult}
     output_specs = {'result' : Tuple}
-    config_specs = {   
-    }
+    config_specs = {   }
 
-    async def task(self):
-        dataset = self.input['dataset']
-        learned_model = self.input['learned_model']
-        neigh = learned_model.kv_store['neigh']
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
+        learned_model = inputs['learned_model']
+        neigh = learned_model.binary_store['result']
         y = neigh.score(dataset.features.values, dataset.targets.values)
         z = tuple([y])
-
-        t = self.output_specs["result"]
-        result_dataset = t(tuple = z)
-        self.output['result'] = result_dataset
+        result_dataset = Tuple(tup = z)
+        return {'result': result_dataset}
 
 #==============================================================================
 #==============================================================================
@@ -84,15 +79,12 @@ class KNNClassifierPredictor(Task):
     """
     input_specs = {'dataset' : Dataset, 'learned_model': KNNClassifierResult}
     output_specs = {'result' : Dataset}
-    config_specs = {   
-    }
+    config_specs = {   }
 
-    async def task(self):
-        dataset = self.input['dataset']
-        learned_model = self.input['learned_model']
-        neigh = learned_model.kv_store['neigh']
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
+        learned_model = inputs['learned_model']
+        neigh = learned_model.binary_store['result']
         y = neigh.predict(dataset.features.values)
-        
-        t = self.output_specs["result"]
-        result_dataset = t(targets = DataFrame(y))
-        self.output['result'] = result_dataset
+        result_dataset = Dataset(targets = DataFrame(y))
+        return {'result': result_dataset}

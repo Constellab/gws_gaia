@@ -10,7 +10,8 @@ from tensorflow.keras.layers import GRU as KerasGRU
 from tensorflow.keras.layers import SimpleRNN as KerasSimpleRNN
 from pandas import DataFrame
 
-from gws_core import (Task, Resource, task_decorator, resource_decorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator,
+                        ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam, BoolParam)
 
 from .data import Tensor
 from ..data.dataset import Dataset
@@ -28,20 +29,18 @@ class LSTM(Task):
     input_specs = {'tensor' : Tensor}
     output_specs = {'result' : Tensor}
     config_specs = {
-        'units': {"type": 'int', "default": 10},
-        'activation_type': {"type": 'str', "default": 'tanh'},
-        'recurrent_activation_type': {"type": 'str', "default": 'sigmoid'},
-        'use_bias': {"type": 'bool', "default": True}
+        'units': IntParam(default_value=10),
+        'activation_type': StrParam(default_value='tanh'),
+        'recurrent_activation_type': StrParam(default_value='sigmoid'),
+        'use_bias': BoolParam(default_value=True)
     }
 
-    async def task(self):
-        x = self.input['tensor']
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        x = inputs['tensor']
         y = x._data
-        z = KerasLSTM(self.get_param('units'), activation=self.get_param('activation_type'), recurrent_activation=self.get_param('recurrent_activation_type'), use_bias=self.get_param('use_bias'))(y)
-
-        t = self.output_specs["result"]
-        result = t(tensor=z)
-        self.output['result'] = result
+        z = KerasLSTM(params['units'], activation=params['activation_type'], recurrent_activation=params['recurrent_activation_type'], use_bias=params['use_bias'])(y)
+        result = Tensor(tensor=z)
+        return {'result': result}
 
 #==================================================================================
 #==================================================================================
@@ -56,20 +55,18 @@ class GRU(Task):
     input_specs = {'tensor' : Tensor}
     output_specs = {'result' : Tensor}
     config_specs = {
-        'units': {"type": 'int', "default": 10},
-        'activation_type': {"type": 'str', "default": 'tanh'},
-        'recurrent_activation_type': {"type": 'str', "default": 'sigmoid'},
-        'use_bias': {"type": 'bool', "default": True}
+        'units': IntParam(default_value=10),
+        'activation_type': StrParam(default_value='tanh'),
+        'recurrent_activation_type': StrParam(default_value='sigmoid'),
+        'use_bias': BoolParam(default_value=True)
     }
 
-    async def task(self):
-        x = self.input['tensor']
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        x = inputs['tensor']
         y = x._data
-        z = KerasGRU(self.get_param('units'), activation=self.get_param('activation_type'), recurrent_activation=self.get_param('recurrent_activation_type'), use_bias=self.get_param('use_bias'))(y)        
-
-        t = self.output_specs["result"]
-        result = t(tensor=z)
-        self.output['result'] = result
+        z = KerasGRU(params['units'], activation=params['activation_type'], recurrent_activation=params['recurrent_activation_type'], use_bias=params['use_bias'])(y)        
+        result = Tensor(tensor=z)
+        return {'result': result}
 
 #==================================================================================
 #==================================================================================
@@ -84,16 +81,14 @@ class SimpleRNN(Task):
     input_specs = {'tensor' : Tensor}
     output_specs = {'result' : Tensor}
     config_specs = {
-        'units': {"type": 'int', "default": 10},
-        'activation_type': {"type": 'str', "default": 'tanh'},
-        'use_bias': {"type": 'bool', "default": True}
+        'units': IntParam(default_value=10),
+        'activation_type': StrParam(default_value='tanh'),
+        'use_bias': BoolParam(default_value=True)
     }
 
-    async def task(self):
-        x = self.input['tensor']
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        x = inputs['tensor']
         y = x._data
-        z = KerasSimpleRNN(self.get_param('units'), activation=self.get_param('activation_type'), use_bias=self.get_param('use_bias'))(y)
-
-        t = self.output_specs["result"]
-        result = t(tensor=z)
-        self.output['result'] = result
+        z = KerasSimpleRNN(params['units'], activation=params['activation_type'], use_bias=params['use_bias'])(y)
+        result = Tensor(tensor=z)
+        return {'result': result}

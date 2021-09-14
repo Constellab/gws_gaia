@@ -10,7 +10,8 @@ from tensorflow.keras.layers import MaxPooling2D as Kerasmaxpooling2d
 from tensorflow.keras.layers import MaxPooling3D as Kerasmaxpooling3d
 from pandas import DataFrame
 
-from gws_core import (Task, Resource, task_decorator, resource_decorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator,
+                        ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam, ListParam)
 
 from .data import Tensor
 from ..data.dataset import Dataset
@@ -26,17 +27,15 @@ class MaxPooling1D(Task):
     input_specs = {'tensor' : Tensor}
     output_specs = {'result' : Tensor}
     config_specs = {
-        'pool_size': {"type": 'int', "default": 2, "min": 0}
+        'pool_size':IntParam(default_value=2, min_value=0)
     }
 
-    async def task(self):
-        x = self.input['tensor']
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        x = inputs['tensor']
         y = x._data
-        z = Kerasmaxpooling1d(pool_size=self.get_param('pool_size'))(y)
- 
-        t = self.output_specs["result"]
-        result = t(tensor=z)
-        self.output['result'] = result
+        z = Kerasmaxpooling1d(pool_size=params['pool_size'])(y)
+        result = Tensor(tensor=z)
+        return {'result': result}
 
 #==================================================================================
 #==================================================================================
@@ -49,18 +48,16 @@ class MaxPooling2D(Task):
     input_specs = {'tensor' : Tensor}
     output_specs = {'result' : Tensor}
     config_specs = {
-        'pool_size': {"type": 'list', "default": [2, 2]}
+        'pool_size': ListParam(default_value=[2, 2])
     }
 
-    async def task(self):
-        x = self.input['tensor']
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        x = inputs['tensor']
         y = x._data
-        pool_size = tuple(self.get_param('pool_size'))
+        pool_size = tuple(params['pool_size'])
         z = Kerasmaxpooling2d(pool_size=pool_size)(y)
-        
-        t = self.output_specs["result"]
-        result = t(tensor=z)
-        self.output['result'] = result
+        result = Tensor(tensor=z)
+        return {'result': result}
 
 #==================================================================================
 #==================================================================================
@@ -73,15 +70,13 @@ class MaxPooling3D(Task):
     input_specs = {'tensor' : Tensor}
     output_specs = {'result' : Tensor}
     config_specs = {
-        'pool_size': {"type": 'list', "default": [2, 2, 2]}
+        'pool_size': ListParam(default_value=[2, 2, 2])
     }
 
-    async def task(self):
-        x = self.input['tensor']
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        x = inputs['tensor']
         y = x._data
-        pool_size = tuple(self.get_param('pool_size'))
+        pool_size = tuple(params['pool_size'])
         z = Kerasmaxpooling3d(pool_size=pool_size)(y)
-        
-        t = self.output_specs["result"]
-        result = t(tensor=z)
-        self.output['result'] = result
+        result = Tensor(tensor=z)
+        return {'result': result}

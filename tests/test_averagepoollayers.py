@@ -1,68 +1,71 @@
 import os
 import asyncio
-from unittest import IsolatedAsyncioTestCase
 
 from gws_gaia import Tuple
 from gws_gaia.tf import InputConverter, AveragePooling1D, AveragePooling2D, AveragePooling3D
-from gws_core import GTest, Protocol, Experiment, ExperimentService
+from gws_core import GTest, BaseTestCase, TaskTester, TaskInputs, ConfigParams
 
-class TestTrainer(IsolatedAsyncioTestCase):
+class TestTrainer(BaseTestCase):
     
-    @classmethod
-    def setUpClass(cls):
-        GTest.drop_tables()
-        GTest.create_tables()
-        GTest.init()
-        
-    @classmethod
-    def tearDownClass(cls):
-        GTest.drop_tables()
-        
-    async def test_process(self):
+    async def test_process_1D(self):
         GTest.print("Average pooling operation for 1D data")
-        p1 = InputConverter()
-        p2 = InputConverter()
-        p3 = InputConverter()
-        p4 = AveragePooling1D()
-        p5 = AveragePooling2D()
-        p6 = AveragePooling3D()
-        
-        proto = Protocol(
-            processes = {
-                'p1' : p1,
-                'p2' : p2,
-                'p3' : p3,
-                'p4' : p4,
-                'p5' : p5,
-                'p6' : p6
-            },
-            connectors = [
-        p1>>'result' | p4<<'tensor',
-        p2>>'result' | p5<<'tensor',
-        p3>>'result' | p6<<'tensor'
-            ]
+        # run InputConverter
+        tester = TaskTester(
+            params = ConfigParams({'input_shape': [None, 3]}),
+            inputs = TaskInputs(),
+            task = InputConverter()
         )
+        outputs = await tester.run()
+        in1 = outputs['result']
 
-        p1.set_param('input_shape', [None, 3])
-        p2.set_param('input_shape', [None, 3, 3])
-        p3.set_param('input_shape', [None, 3, 3 ,3])
-        p4.set_param('pool_size', 2)
-        p5.set_param('pool_size', [2, 2])
-        p6.set_param('pool_size', [2, 2, 2])
+        # run AveragePooling1D
+        tester = TaskTester(
+            params = ConfigParams({'pool_size': 2}),
+            inputs = TaskInputs({'tensor': in1}),
+            task = AveragePooling1D()
+        )
+        outputs = await tester.run()
+        result = outputs['result']
+        print(result)
 
-        experiment: Experiment = Experiment(
-            protocol=proto, study=GTest.study, user=GTest.user)
-        experiment.save()
-        experiment = await ExperimentService.run_experiment(
-            experiment=experiment, user=GTest.user)                
+    async def test_process_2D(self):
+        GTest.print("Average pooling operation for 2D data")
+        # run InputConverter
+        tester = TaskTester(
+            params = ConfigParams({'input_shape': [None, 3, 3]}),
+            inputs = TaskInputs(),
+            task = InputConverter()
+        )
+        outputs = await tester.run()
+        in2 = outputs['result']
 
-        r1 = p4.output['result']
-        r2 = p5.output['result']
-        r3 = p6.output['result']            
+        # run AveragePooling2D
+        tester = TaskTester(
+            params = ConfigParams({'pool_size': [2, 2]}),
+            inputs = TaskInputs({'tensor': in2}),
+            task = AveragePooling2D()
+        )
+        outputs = await tester.run()
+        result = outputs['result']
+        print(result)
 
-        print(r1)
-        print(r2)
-        print(r3)
+    async def test_process_3D(self):
+        GTest.print("Average pooling operation for 3D data")
+        # run InputConverter
+        tester = TaskTester(
+            params = ConfigParams({'input_shape': [None, 3, 3, 3]}),
+            inputs = TaskInputs(),
+            task = InputConverter()
+        )
+        outputs = await tester.run()
+        in3 = outputs['result']
 
-        
-        
+        # run AveragePooling3D
+        tester = TaskTester(
+            params = ConfigParams({'pool_size': [2, 2, 3]}),
+            inputs = TaskInputs({'tensor': in3}),
+            task = AveragePooling3D()
+        )
+        outputs = await tester.run()
+        result = outputs['result']
+        print(result)

@@ -7,18 +7,18 @@ from numpy import ravel
 from pandas import DataFrame
 from sklearn.ensemble import ExtraTreesRegressor
 
-from gws_core import (Task, Resource, task_decorator, resource_decorator)
+from gws_core import (Task, Resource, task_decorator, resource_decorator,
+                        ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam)
 from ..data.core import Tuple
 from ..data.dataset import Dataset
+from ..base.base_resource import BaseResource
 
 #==============================================================================
 #==============================================================================
 
 @resource_decorator("ExtraTreesRegressorResult", hide=True)
-class ExtraTreesRegressorResult(Resource):
-    def __init__(self, etr: ExtraTreesRegressor = None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.kv_store['etr'] = etr
+class ExtraTreesRegressorResult(BaseResource):
+    pass
 
 #==============================================================================
 #==============================================================================
@@ -33,17 +33,15 @@ class ExtraTreesRegressorTrainer(Task):
     input_specs = {'dataset' : Dataset}
     output_specs = {'result' : ExtraTreesRegressorResult}
     config_specs = {
-        'nb_estimators': {"type": 'int', "default": 100, "min": 0}
+        'nb_estimators':IntParam(default_value=100, min_value=0)
     }
 
-    async def task(self):
-        dataset = self.input['dataset']
-        etr = ExtraTreesRegressor(n_estimators=self.get_param("nb_estimators"))
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
+        etr = ExtraTreesRegressor(n_estimators=params["nb_estimators"])
         etr.fit(dataset.features.values, ravel(dataset.targets.values))
-        
-        t = self.output_specs["result"]
-        result = t(etr=etr)
-        self.output['result'] = result
+        result = ExtraTreesRegressorResult.from_result(result=etr)
+        return {'result': result}
 
 #==============================================================================
 #==============================================================================
@@ -57,19 +55,16 @@ class ExtraTreesRegressorTester(Task):
     """
     input_specs = {'dataset' : Dataset, 'learned_model': ExtraTreesRegressorResult}
     output_specs = {'result' : Tuple}
-    config_specs = {   
-    }
+    config_specs = {   }
 
-    async def task(self):
-        dataset = self.input['dataset']
-        learned_model = self.input['learned_model']
-        etr = learned_model.kv_store['etr']
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
+        learned_model = inputs['learned_model']
+        etr = learned_model.binary_store['result']
         y = etr.score(dataset.features.values, dataset.targets.values)
         z = tuple([y])
-
-        t = self.output_specs["result"]
-        result_dataset = t(tuple = z)
-        self.output['result'] = result_dataset
+        result_dataset = Tuple(tup = z)
+        return {'result': result_dataset}
 
 #==============================================================================
 #==============================================================================
@@ -83,15 +78,12 @@ class ExtraTreesRegressorPredictor(Task):
     """
     input_specs = {'dataset' : Dataset, 'learned_model': ExtraTreesRegressorResult}
     output_specs = {'result' : Dataset}
-    config_specs = {   
-    }
+    config_specs = {   }
 
-    async def task(self):
-        dataset = self.input['dataset']
-        learned_model = self.input['learned_model']
-        etr = learned_model.kv_store['etr']
+    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+        dataset = inputs['dataset']
+        learned_model = inputs['learned_model']
+        etr = learned_model.binary_store['result']
         y = etr.predict(dataset.features.values)
-
-        t = self.output_specs["result"]
-        result_dataset = t(targets = DataFrame(y))
-        self.output['result'] = result_dataset
+        result_dataset = Dataset(targets = DataFrame(y))
+        return {'result': result_dataset}

@@ -23,10 +23,4 @@ echo "Installing dlib ..."
 
 cd $build_dir
 make install
-<<<<<<< HEAD
 ldconfig
-
-touch $ready_file
-=======
-ldconfig
->>>>>>> [refactoring] simplify post-install hook

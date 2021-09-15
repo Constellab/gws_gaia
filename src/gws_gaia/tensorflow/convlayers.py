@@ -64,7 +64,11 @@ class Conv2D(Task):
         x = inputs['tensor']
         y = x._data
         kernel_size = tuple(params['kernel_size'])
-        z = Kerasconv2d(filters=params['nb_filters'], kernel_size=kernel_size, activation=params['activation_type'])(y)        
+        z = Kerasconv2d(
+            filters=params['nb_filters'], 
+            kernel_size=kernel_size, 
+            activation=params['activation_type']
+        )(y)        
         result = Tensor(tensor=z)
         return {'result': result}
 

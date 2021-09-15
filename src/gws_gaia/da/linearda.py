@@ -30,16 +30,15 @@ class LDATrainer(Task):
     input_specs = {'dataset' : Dataset}
     output_specs = {'result' : LDAResult}
     config_specs = {
-        'solver':StrParam(default_value='svd'),
-        'nb_components':IntParam(default_value=None, min_value=0)
+        'solver': StrParam(default_value='svd'),
+        'nb_components': IntParam(default_value=None, min_value=0)
     }
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         lda = LinearDiscriminantAnalysis(solver=params["solver"],n_components=params["nb_components"])
         lda.fit(dataset.features.values, ravel(dataset.targets.values))
-
-        result = t(lda=lda)
+        result = LDAResult.from_result(result=lda)
         return {'result': result}
         
 #==============================================================================
@@ -62,10 +61,7 @@ class LDATransformer(Task):
         learned_model = inputs['learned_model']
         lda = learned_model.binary_store['result']
         x = lda.transform(dataset.features.values)
-
-        
         result = Tuple(tup=x)
-        #a = result.binary_store['result']
         return {'result': result}
         
 #==============================================================================
@@ -88,8 +84,6 @@ class LDATester(Task):
         lda = learned_model.binary_store['result']
         y = lda.score(dataset.features.values, dataset.targets.values)
         z = tuple([y])
-
-        
         result_dataset = Tuple(tup = z)
         return {'result': result_dataset}
 
@@ -112,6 +106,5 @@ class LDAPredictor(Task):
         learned_model = inputs['learned_model']
         lda = learned_model.binary_store['result']
         y = lda.predict(dataset.features.values)
-
         result_dataset = Dataset(targets = DataFrame(y))
         return {'result': result_dataset}

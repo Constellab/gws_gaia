@@ -88,7 +88,10 @@ class Embedding(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['tensor']
         y = x._data
-        z = Kerasembedding(input_dim=params["input_dimension"], output_dim=params["output_dimension"], input_length=params["input_length"])(y)
+        z = Kerasembedding(
+            input_dim=params["input_dimension"], 
+            output_dim=params["output_dimension"], 
+            input_length=params["input_length"])(y)
         result = Tensor(tensor=z)
         return {'result': result}
 
@@ -149,7 +152,6 @@ class Flatten(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['tensor']
         y = x._data
-        print(np.shape(y))
         z = Kerasflatten()(y)
         result = Tensor(tensor=z)
         return {'result': result}

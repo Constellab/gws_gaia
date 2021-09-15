@@ -5,7 +5,7 @@ import asyncio
 
 from gws_gaia.tf import Conv1D, Conv2D, Conv3D
 from gws_gaia.tf import InputConverter
-from gws_core import Settings, GTest, BaseTestCase, TaskTester
+from gws_core import Settings, GTest, BaseTestCase, TaskTester, ConfigParams
 
 class TestTrainer(BaseTestCase):
 

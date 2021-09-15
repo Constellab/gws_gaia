@@ -24,15 +24,20 @@ class DeepModelerBuilder(Task):
     """
     Build the model from layers specifications
     """
-    input_specs = {'inputs[' : Tensor, 'outputs': Tensor}
+    input_specs = {'inputs' : Tensor, 'outputs': Tensor}
     output_specs = {'result' : DeepModel}
     config_specs = {}
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
-        x = inputs['inputs[']
+        x = inputs['inputs']
         y = inputs['outputs']
         x1 = x._data
         y1 = y._data
+
+        print("xxxx")
+        print(x1)
+        print(y1)
+
         z = KerasModel(inputs=x1, outputs=y1)
         result = DeepModel(model=z)
         return {'result': result}

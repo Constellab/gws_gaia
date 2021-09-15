@@ -22,7 +22,7 @@ class ImporterPKL(Task):
     input_specs = {}
     output_specs = {'result': Tuple}
     config_specs = {
-        'file_path':StrParam(default_value=""),
+        'file_path': StrParam(default_value=""),
     }
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
@@ -49,6 +49,7 @@ class Preprocessor(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['data']
         data = x._data
+
         (x_train, y_train), (x_test, y_test) = data  
         x_train = x_train.astype("float32") / 255
         x_test = x_test.astype("float32") / 255

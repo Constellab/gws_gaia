@@ -5,7 +5,7 @@ import asyncio
 
 from gws_gaia import Dataset, DatasetLoader
 from gws_gaia import  RandomForestClassifierTrainer, RandomForestClassifierPredictor, RandomForestClassifierTester
-from gws_core import Settings, GTest, BaseTestCase, TaskTester, TaskInputs, ConfigParams
+from gws_core import Settings, GTest, BaseTestCase, TaskTester
 
 class TestTrainer(BaseTestCase):
 

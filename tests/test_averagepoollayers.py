@@ -3,7 +3,7 @@ import asyncio
 
 from gws_gaia import Tuple
 from gws_gaia.tf import InputConverter, AveragePooling1D, AveragePooling2D, AveragePooling3D
-from gws_core import GTest, BaseTestCase, TaskTester, TaskInputs, ConfigParams
+from gws_core import GTest, BaseTestCase, TaskTester
 
 class TestTrainer(BaseTestCase):
     
@@ -11,18 +11,18 @@ class TestTrainer(BaseTestCase):
         GTest.print("Average pooling operation for 1D data")
         # run InputConverter
         tester = TaskTester(
-            params = ConfigParams({'input_shape': [None, 3]}),
-            inputs = TaskInputs(),
-            task = InputConverter()
+            params = {'input_shape': [None, 3]},
+            inputs = {},
+            task_type = InputConverter
         )
         outputs = await tester.run()
         in1 = outputs['result']
 
         # run AveragePooling1D
         tester = TaskTester(
-            params = ConfigParams({'pool_size': 2}),
-            inputs = TaskInputs({'tensor': in1}),
-            task = AveragePooling1D()
+            params = {'pool_size': 2},
+            inputs = {'tensor': in1},
+            task_type = AveragePooling1D
         )
         outputs = await tester.run()
         result = outputs['result']
@@ -32,18 +32,18 @@ class TestTrainer(BaseTestCase):
         GTest.print("Average pooling operation for 2D data")
         # run InputConverter
         tester = TaskTester(
-            params = ConfigParams({'input_shape': [None, 3, 3]}),
-            inputs = TaskInputs(),
-            task = InputConverter()
+            params = {'input_shape': [None, 3, 3]},
+            inputs = {},
+            task_type = InputConverter
         )
         outputs = await tester.run()
         in2 = outputs['result']
 
         # run AveragePooling2D
         tester = TaskTester(
-            params = ConfigParams({'pool_size': [2, 2]}),
-            inputs = TaskInputs({'tensor': in2}),
-            task = AveragePooling2D()
+            params = {'pool_size': [2, 2]},
+            inputs = {'tensor': in2},
+            task_type = AveragePooling2D
         )
         outputs = await tester.run()
         result = outputs['result']
@@ -53,18 +53,18 @@ class TestTrainer(BaseTestCase):
         GTest.print("Average pooling operation for 3D data")
         # run InputConverter
         tester = TaskTester(
-            params = ConfigParams({'input_shape': [None, 3, 3, 3]}),
-            inputs = TaskInputs(),
-            task = InputConverter()
+            params = {'input_shape': [None, 3, 3, 3]},
+            inputs = {},
+            task_type = InputConverter
         )
         outputs = await tester.run()
         in3 = outputs['result']
 
         # run AveragePooling3D
         tester = TaskTester(
-            params = ConfigParams({'pool_size': [2, 2, 3]}),
-            inputs = TaskInputs({'tensor': in3}),
-            task = AveragePooling3D()
+            params = {'pool_size': [2, 2, 3]},
+            inputs = {'tensor': in3},
+            task_type = AveragePooling3D
         )
         outputs = await tester.run()
         result = outputs['result']

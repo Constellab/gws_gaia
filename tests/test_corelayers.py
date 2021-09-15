@@ -5,7 +5,7 @@ import asyncio
 
 from gws_gaia.tf import Dense, Activation, Embedding, Masking
 from gws_gaia.tf import InputConverter
-from gws_core import Settings, GTest, BaseTestCase, TaskTester, TaskInputs, ConfigParams
+from gws_core import Settings, GTest, BaseTestCase, TaskTester
 
 class TestTrainer(BaseTestCase):
     
@@ -13,57 +13,53 @@ class TestTrainer(BaseTestCase):
         GTest.print("Neural network layers")
         # run InputConverter
         tester = TaskTester(
-            params = ConfigParams({'input_shape': [3, 3, 3]}),
-            inputs = TaskInputs(),
-            task = InputConverter()
+            params = {'input_shape': [3, 3, 3]},
+            inputs = {},
+            task_type = InputConverter
         )
         outputs = await tester.run()
         result = outputs['result']
 
         # run Dense
         tester = TaskTester(
-            params = ConfigParams({
+            params = {
                 'units': 32,
                 'activation': 'relu',   
                 'use_bias': True
-            }),
-            inputs = TaskInputs({'tensor': result}),
-            task = Dense()
+            },
+            inputs = {'tensor': result},
+            task_type = Dense
         )
         outputs = await tester.run()
         result = outputs['result']
 
         # run Activation
         tester = TaskTester(
-            params = ConfigParams({
-                'activation_type': 'relu'
-            }),
-            inputs = TaskInputs({'tensor': result}),
-            task = Activation()
+            params = {'activation_type': 'relu'},
+            inputs = {'tensor': result},
+            task_type = Activation
         )
         outputs = await tester.run()
         result = outputs['result']
 
         # run Embedding
         tester = TaskTester(
-            params = ConfigParams({
+            params = {
                 'input_dimension': 1000,
                 'output_dimension': 64,
                 'input_length': 10
-            }),
-            inputs = TaskInputs({'tensor': result}),
-            task = Embedding()
+            },
+            inputs = {'tensor': result},
+            task_type = Embedding
         )
         outputs = await tester.run()
         result = outputs['result']
 
         # run Masking
         tester = TaskTester(
-            params = ConfigParams({
-                'mask_value': 0.0
-            }),
-            inputs = TaskInputs({'tensor': result}),
-            task = Masking()
+            params = { 'mask_value': 0.0},
+            inputs = {'tensor': result},
+            task_type = Masking
         )
         outputs = await tester.run()
         result = outputs['result']

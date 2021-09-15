@@ -4,7 +4,7 @@ from unittest import BaseTestCase
 
 from gws_gaia import Dataset, DatasetLoader
 from gws_gaia import ElasticNetTrainer, ElasticNetPredictor, ElasticNetTester
-from gws_core import Settings, GTest, BaseTestCase, TaskTester, TaskInputs, ConfigParams
+from gws_core import Settings, GTest, BaseTestCase, TaskTester
 
 class TestTrainer(IsolatedAsyncioTestCase):
 

@@ -3,8 +3,7 @@ import os
 import asyncio
 
 from gws_gaia import Dataset, DatasetLoader
-from gws_core import (Settings, GTest, TaskTester, 
-                        ConfigParams, TaskInputs, BaseTestCase)
+from gws_core import (Settings, GTest, TaskTester, BaseTestCase)
 
 class TestImporter(BaseTestCase):
     
@@ -14,14 +13,14 @@ class TestImporter(BaseTestCase):
         test_dir = settings.get_variable("gws_gaia:testdata_dir")
         # run trainer
         tester = TaskTester(
-            params = ConfigParams({
+            params = {
                 "file_path": os.path.join(test_dir, "./iris.csv"),
                 "delimiter": ",",
                 "header": 0,
                 "targets": ["variety"]
-            }),
-            inputs = TaskInputs(),
-            task = DatasetLoader()
+            },
+            inputs = {},
+            task_type = DatasetLoader
         )
         outputs = await tester.run()
         ds = outputs['dataset']
@@ -41,14 +40,14 @@ class TestImporter(BaseTestCase):
         test_dir = settings.get_variable("gws_gaia:testdata_dir")
         # run trainer
         tester = TaskTester(
-            params = ConfigParams({
+            params = {
                 "file_path": os.path.join(test_dir, "./iris_no_head.csv"),
                 "delimiter": ",",
                 "header": None,
                 "targets": [4]
-            }),
-            inputs = TaskInputs(),
-            task = DatasetLoader()
+            },
+            inputs = {},
+            task_type = DatasetLoader
         )
         outputs = await tester.run()
         ds = outputs['dataset']

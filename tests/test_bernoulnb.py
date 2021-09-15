@@ -5,7 +5,7 @@ import asyncio
 from gws_gaia import Dataset
 from gws_gaia import (BernoulliNaiveBayesClassifierTrainer, BernoulliNaiveBayesClassifierPredictor, 
                         BernoulliNaiveBayesClassifierTester)
-from gws_core import Settings, GTest, BaseTestCase, TaskTester, TaskInputs, ConfigParams
+from gws_core import Settings, GTest, BaseTestCase, TaskTester
 
 class TestTrainer(BaseTestCase):
 
@@ -24,33 +24,33 @@ class TestTrainer(BaseTestCase):
 
         # run trainer
         tester = TaskTester(
-            params = ConfigParams({'alpha': 1}),
-            inputs = TaskInputs({'dataset': dataset}),
-            task = BernoulliNaiveBayesClassifierTrainer()
+            params = {'alpha': 1},
+            inputs = {'dataset': dataset},
+            task_type = BernoulliNaiveBayesClassifierTrainer
         )
         outputs = await tester.run()
         trainer_result = outputs['result']
 
         # run predictior
         tester = TaskTester(
-            params = ConfigParams(),
-            inputs = TaskInputs({
+            params = {},
+            inputs = {
                 'dataset': dataset, 
                 'learned_model': trainer_result
-            }),
-            task = BernoulliNaiveBayesClassifierPredictor()
+            },
+            task_type = BernoulliNaiveBayesClassifierPredictor
         )
         outputs = await tester.run()
         predictor_result = outputs['result']
 
         # run tester
         tester = TaskTester(
-            params = ConfigParams(),
-            inputs = TaskInputs({
+            params = {},
+            inputs = {
                 'dataset': dataset, 
                 'learned_model': trainer_result
-            }),
-            task = BernoulliNaiveBayesClassifierTester()
+            },
+            task_type = BernoulliNaiveBayesClassifierTester
         )
         outputs = await tester.run()
         tester_result = outputs['result']

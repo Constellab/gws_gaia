@@ -20,7 +20,7 @@
             {
                 "source": "https://$GWS_GIT_LOGIN:$GWS_GIT_PWD@gitlab.com/gencovery/core",
                 "packages":[
-                    "gws_core[commit=latest, branch=djo]"
+                    "gws_core[commit=latest, branch=develop]"
                 ]
             },
             {

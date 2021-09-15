@@ -4,7 +4,7 @@ import asyncio
 
 from gws_gaia import Dataset, DatasetLoader
 from gws_gaia import GradientBoostingRegressorTrainer, GradientBoostingRegressorPredictor, GradientBoostingRegressorTester
-from gws_core import Settings, GTest, BaseTestCase, TaskTester, TaskInputs, ConfigParams
+from gws_core import Settings, GTest, BaseTestCase, TaskTester
 
 class TestTrainer(BaseTestCase):
 

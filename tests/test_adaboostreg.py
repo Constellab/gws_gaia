@@ -2,7 +2,7 @@ import os
 import asyncio
 
 
-from gws_core import Settings, GTest, BaseTestCase, TaskTester, TaskInputs, ConfigParams
+from gws_core import Settings, GTest, BaseTestCase, TaskTester
 from gws_gaia import Dataset, DatasetLoader
 from gws_gaia import AdaBoostRegressorTrainer, AdaBoostRegressorPredictor, AdaBoostRegressorTester
 
@@ -23,33 +23,33 @@ class TestTrainer(BaseTestCase):
         
         # run trainer
         tester = TaskTester(
-            params = ConfigParams({'nb_estimators': 30}),
-            inputs = TaskInputs({'dataset': dataset}),
-            task = AdaBoostRegressorTrainer()
+            params = {'nb_estimators': 30},
+            inputs = {'dataset': dataset},
+            task_type = AdaBoostRegressorTrainer
         )
         outputs = await tester.run()
         trainer_result = outputs['result']
 
         # run predictior
         tester = TaskTester(
-            params = ConfigParams(),
-            inputs = TaskInputs({
+            params = {},
+            inputs = {
                 'dataset': dataset, 
                 'learned_model': trainer_result
-            }),
-            task = AdaBoostRegressorPredictor()
+            },
+            task_type = AdaBoostRegressorPredictor
         )
         outputs = await tester.run()
         predictor_result = outputs['result']
 
         # run tester
         tester = TaskTester(
-            params = ConfigParams(),
-            inputs = TaskInputs({
+            params = {},
+            inputs = {
                 'dataset': dataset, 
                 'learned_model': trainer_result
-            }),
-            task = AdaBoostRegressorTester()
+            },
+            task_type = AdaBoostRegressorTester
         )
         outputs = await tester.run()
         tester_result = outputs['result']

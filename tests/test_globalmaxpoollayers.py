@@ -4,7 +4,7 @@ import asyncio
 
 from gws_gaia.tf import GlobalMaxPooling1D, GlobalMaxPooling2D, GlobalMaxPooling3D
 from gws_gaia.tf import InputConverter
-from gws_core import Settings, GTest, BaseTestCase, TaskTester, TaskInputs, ConfigParams
+from gws_core import Settings, GTest, BaseTestCase, TaskTester
 
 class TestTrainer(BaseTestCase):
 

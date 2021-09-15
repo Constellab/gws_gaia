@@ -4,7 +4,7 @@ import asyncio
 
 
 from gws_core import (Settings, GTest, ConfigParams, ExperimentService, 
-                        BaseTestCase, IntParam, ConfigParams, TaskInputs, TaskTester)
+                        BaseTestCase, IntParam, TaskTester)
 from gws_gaia import Dataset, DatasetLoader
 from gws_gaia import AgglomerativeClusteringTrainer
 
@@ -23,9 +23,9 @@ class TestTrainer(BaseTestCase):
         )
 
         tester = TaskTester(
-            task=AgglomerativeClusteringTrainer(),
-            params=ConfigParams({'nb_clusters': 2}),
-            inputs=TaskInputs({'dataset': dataset})
+            task_type = AgglomerativeClusteringTrainer,
+            params={'nb_clusters': 2},
+            inputs={'dataset': dataset}
         )
         outputs = await tester.run()
         r1 = outputs['result']

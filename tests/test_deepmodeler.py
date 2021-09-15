@@ -2,7 +2,7 @@ import os
 import asyncio
 
 
-from gws_core import Settings, GTest, BaseTestCase, TaskTester, TaskInputs, ConfigParams
+from gws_core import Settings, GTest, BaseTestCase, TaskTester
 from gws_gaia import Tuple
 from gws_gaia.tf import (Conv2D, MaxPooling2D, Flatten, Dropout, Dense, 
                             ImporterPKL, Preprocessor, AdhocExtractor, 

@@ -3,7 +3,7 @@ import os
 import asyncio
 
 
-from gws_core import Settings, GTest, BaseTestCase, TaskTester, TaskInputs, ConfigParams
+from gws_core import Settings, GTest, BaseTestCase, TaskTester
 from gws_gaia.tutorials.lda_pca import lda_pca_experiment
 
 class TestTrainer(BaseTestCase):

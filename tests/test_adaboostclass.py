@@ -23,33 +23,33 @@ class TestTrainer(BaseTestCase):
         
         # run trainer
         tester = TaskTester(
-            params = ConfigParams({'nb_estimators': 30}),
-            inputs = TaskInputs({'dataset': dataset}),
-            task = AdaBoostClassifierTrainer()
+            params = {'nb_estimators': 30},
+            inputs = {'dataset': dataset},
+            task_type = AdaBoostClassifierTrainer
         )
         outputs = await tester.run()
         trainer_result = outputs['result']
 
         # run predictior
         tester = TaskTester(
-            params = ConfigParams(),
-            inputs = TaskInputs({
+            params = {},
+            inputs = {
                 'dataset': dataset, 
                 'learned_model': trainer_result
-            }),
-            task = AdaBoostClassifierPredictor()
+            },
+            task_type = AdaBoostClassifierPredictor
         )
         outputs = await tester.run()
         predictor_result = outputs['result']
 
         # run tester
         tester = TaskTester(
-            params = ConfigParams(),
-            inputs = TaskInputs({
+            params = {},
+            inputs = {
                 'dataset': dataset, 
                 'learned_model': trainer_result
-            }),
-            task = AdaBoostClassifierTester()
+            },
+            task_type = AdaBoostClassifierTester
         )
         outputs = await tester.run()
         tester_result = outputs['result']

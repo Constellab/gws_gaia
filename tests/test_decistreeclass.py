@@ -5,7 +5,7 @@ import asyncio
 
 from gws_gaia import Dataset, DatasetLoader
 from gws_gaia import DecisionTreeClassifierTrainer, DecisionTreeClassifierPredictor, DecisionTreeClassifierTester
-from gws_core import Settings, GTest, BaseTestCase, TaskTester, TaskInputs, ConfigParams
+from gws_core import Settings, GTest, BaseTestCase, TaskTester
 
 class TestTrainer(BaseTestCase):
 
@@ -24,33 +24,33 @@ class TestTrainer(BaseTestCase):
 
         # run trainer
         tester = TaskTester(
-            params = ConfigParams({'max_depth': 4}),
-            inputs = TaskInputs({'dataset': dataset}),
-            task = DecisionTreeClassifierTrainer()
+            params = {'max_depth': 4},
+            inputs = {'dataset': dataset},
+            task_type = DecisionTreeClassifierTrainer
         )
         outputs = await tester.run()
         trainer_result = outputs['result']
 
         # run predictior
         tester = TaskTester(
-            params = ConfigParams(),
-            inputs = TaskInputs({
+            params = {},
+            inputs = {
                 'dataset': dataset, 
                 'learned_model': trainer_result
-            }),
-            task = DecisionTreeClassifierPredictor()
+            },
+            task_type = DecisionTreeClassifierPredictor
         )
         outputs = await tester.run()
         predictor_result = outputs['result']
 
         # run tester
         tester = TaskTester(
-            params = ConfigParams(),
-            inputs = TaskInputs({
+            params = {},
+            inputs = {
                 'dataset': dataset, 
                 'learned_model': trainer_result
-            }),
-            task = DecisionTreeClassifierTester()
+            },
+            task_type = DecisionTreeClassifierTester
         )
         outputs = await tester.run()
         tester_result = outputs['result']

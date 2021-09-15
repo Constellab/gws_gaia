@@ -20,63 +20,63 @@ class DeepMoldelTurorialProto(Protocol):
     def configure_protocol(self, config_params: ConfigParams) -> None:
         settings = Settings.retrieve()
         test_dir = settings.get_variable("gws_gaia:testdata_dir")
-        p0: ProcessSpec = self.add_process(ImporterPKL, 'p0')
-        p1: ProcessSpec = self.add_process(Preprocessor, 'p1')
-        p2: ProcessSpec = self.add_process(InputConverter, 'p2')
-        p3: ProcessSpec = self.add_process(Conv2D, 'p3')
-        p4: ProcessSpec = self.add_process(MaxPooling2D, 'p4')
-        p5: ProcessSpec = self.add_process(Conv2D, 'p5')
-        p6: ProcessSpec = self.add_process(MaxPooling2D, 'p6')
-        p7: ProcessSpec = self.add_process(Flatten, 'p7')
-        p8: ProcessSpec = self.add_process(Dropout, 'p8')
-        p9: ProcessSpec = self.add_process(Dense, 'p9')
-        p10: ProcessSpec = self.add_process(DeepModelerBuilder, 'p10')
-        p11: ProcessSpec = self.add_process(DeepModelerCompiler, 'p11')
-        p12: ProcessSpec = self.add_process(DeepModelerTrainer, 'p12')
-        p13: ProcessSpec = self.add_process(DeepModelerTester, 'p13')
-        p14: ProcessSpec = self.add_process(AdhocExtractor, 'p14')
-        p15: ProcessSpec = self.add_process(DeepModelerPredictor, 'p15')
+        pkl_importer: ProcessSpec = self.add_process(ImporterPKL, 'pkl_importer')
+        preprocessor: ProcessSpec = self.add_process(Preprocessor, 'preprocessor')
+        input_converter: ProcessSpec = self.add_process(InputConverter, 'input_converter')
+        conv_2d_1: ProcessSpec = self.add_process(Conv2D, 'conv_2d_1')
+        max_pooling_2d_1: ProcessSpec = self.add_process(MaxPooling2D, 'max_pooling_2d_1')
+        conv_2d_2: ProcessSpec = self.add_process(Conv2D, 'conv_2d_2')
+        max_pooling_2d_2: ProcessSpec = self.add_process(MaxPooling2D, 'max_pooling_2d_2')
+        flatten: ProcessSpec = self.add_process(Flatten, 'flatten')
+        dropout: ProcessSpec = self.add_process(Dropout, 'dropout')
+        dense: ProcessSpec = self.add_process(Dense, 'dense')
+        deep_modeler_builder: ProcessSpec = self.add_process(DeepModelerBuilder, 'deep_modeler_builder')
+        deep_modeler_compiler: ProcessSpec = self.add_process(DeepModelerCompiler, 'deep_modeler_compiler')
+        deep_modeler_trainer: ProcessSpec = self.add_process(DeepModelerTrainer, 'deep_modeler_trainer')
+        deep_modeler_tester: ProcessSpec = self.add_process(DeepModelerTester, 'deep_modeler_tester')
+        ad_hoc_extractor: ProcessSpec = self.add_process(AdhocExtractor, 'ad_hoc_extractor')
+        deep_modeler_predictor: ProcessSpec = self.add_process(DeepModelerPredictor, 'deep_modeler_predictor')
 
-        p0.set_param("file_path", os.path.join(test_dir, "./mnist.pkl"))
-        p1.set_param('number_classes', 10)
-        p2.set_param('input_shape', [28, 28, 1])
-        p3.set_param('nb_filters', 32)
-        p3.set_param('kernel_size', [3,3])
-        p3.set_param('activation_type', 'relu')    
-        p4.set_param('pool_size', [2, 2])
-        p5.set_param('nb_filters', 64)
-        p5.set_param('kernel_size', [3,3])
-        p5.set_param('activation_type', 'relu')    
-        p6.set_param('pool_size', [2, 2])
-        p8.set_param('rate', 0.5)
-        p9.set_param('units', 10)
-        p9.set_param('activation','softmax')
-        p11.set_param('loss', 'categorical_crossentropy')
-        p11.set_param('optimizer', 'adam')
-        p11.set_param('metrics', 'accuracy')    
-        p12.set_param('batch_size', 128)
-        p12.set_param('epochs', 2)
-        p12.set_param('validation_split', 0.1)    
-        p13.set_param('verbosity_mode', 1)    
-        p15.set_param('verbosity_mode', 1)
+        pkl_importer.set_param("file_path", os.path.join(test_dir, "./mnist.pkl"))
+        preprocessor.set_param('number_classes', 10)
+        input_converter.set_param('input_shape', [28, 28, 1])
+        conv_2d_1.set_param('nb_filters', 32)
+        conv_2d_1.set_param('kernel_size', [3,3])
+        conv_2d_1.set_param('activation_type', 'relu')    
+        max_pooling_2d_1.set_param('pool_size', [2, 2])
+        conv_2d_2.set_param('nb_filters', 64)
+        conv_2d_2.set_param('kernel_size', [3,3])
+        conv_2d_2.set_param('activation_type', 'relu')    
+        max_pooling_2d_2.set_param('pool_size', [2, 2])
+        dropout.set_param('rate', 0.5)
+        dense.set_param('units', 10)
+        dense.set_param('activation','softmax')
+        deep_modeler_compiler.set_param('loss', 'categorical_crossentropy')
+        deep_modeler_compiler.set_param('optimizer', 'adam')
+        deep_modeler_compiler.set_param('metrics', 'accuracy')    
+        deep_modeler_trainer.set_param('batch_size', 128)
+        deep_modeler_trainer.set_param('epochs', 2)
+        deep_modeler_trainer.set_param('validation_split', 0.1)    
+        deep_modeler_tester.set_param('verbosity_mode', 1)    
+        deep_modeler_predictor.set_param('verbosity_mode', 1)
 
         self.add_connectors([
-            (p0>>'result', p1<<'data'),
-            (p1>>'result', p14<<'data'),
-            (p2>>'result', p3<<'tensor'),
-            (p3>>'result', p4<<'tensor'),
-            (p4>>'result', p5<<'tensor'),
-            (p5>>'result', p6<<'tensor'),
-            (p6>>'result', p7<<'tensor'),
-            (p7>>'result', p8<<'tensor'),
-            (p8>>'result', p9<<'tensor'),
-            (p9>>'result', p10<<'outputs'),
-            (p2>>'result', p10<<'inputs'),
-            (p10>>'result', p11<<'builded_model'),            
-            (p11>>'result', p12<<'compiled_model'),
-            (p1>>'result', p12<<'dataset'),
-            (p12>>'result', p13<<'trained_model'),
-            (p1>>'result', p13<<'dataset'),
-            (p12>>'result', p15<<'trained_model'),
-            (p14>>'result', p15<<'dataset')
+            (pkl_importer>>'result', preprocessor<<'data'),
+            (preprocessor>>'result', ad_hoc_extractor<<'data'),
+            (input_converter>>'result', conv_2d_1<<'tensor'),
+            (conv_2d_1>>'result', max_pooling_2d_1<<'tensor'),
+            (max_pooling_2d_1>>'result', conv_2d_2<<'tensor'),
+            (conv_2d_2>>'result', max_pooling_2d_2<<'tensor'),
+            (max_pooling_2d_2>>'result', flatten<<'tensor'),
+            (flatten>>'result', dropout<<'tensor'),
+            (dropout>>'result', dense<<'tensor'),
+            (dense>>'result', deep_modeler_builder<<'outputs'),
+            (input_converter>>'result', deep_modeler_builder<<'inputs'),
+            (deep_modeler_builder>>'result', deep_modeler_compiler<<'builded_model'),            
+            (deep_modeler_compiler>>'result', deep_modeler_trainer<<'compiled_model'),
+            (preprocessor>>'result', deep_modeler_trainer<<'dataset'),
+            (deep_modeler_trainer>>'result', deep_modeler_tester<<'trained_model'),
+            (preprocessor>>'result', deep_modeler_tester<<'dataset'),
+            (deep_modeler_trainer>>'result', deep_modeler_predictor<<'trained_model'),
+            (ad_hoc_extractor>>'result', deep_modeler_predictor<<'dataset')
         ])

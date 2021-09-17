@@ -2,13 +2,48 @@ import os
 import asyncio
 import time
 
-from gws_core import Settings, GTest, ConfigParams, TaskInputs, TaskTester, BaseTestCase
+from gws_core import (Settings, GTest, ConfigParams, TaskInputs, TaskTester, BaseTestCase, 
+                        ProcessSpec, protocol_decorator, Protocol, IExperiment, IProtocol)
 from gws_gaia import Dataset, DatasetLoader
 from gws_gaia import AdaBoostClassifierTrainer, AdaBoostClassifierPredictor, AdaBoostClassifierTester
 
+@protocol_decorator("AdaBoostClassifierTestProto")
+class AdaBoostClassifierTestProto(Protocol):
+    def configure_protocol(self, config_params: ConfigParams) -> None:
+        p0: ProcessSpec = self.add_process(DatasetLoader, 'p0')
+        p1: ProcessSpec = self.add_process(AdaBoostClassifierTrainer, 'p1')
+        p2: ProcessSpec = self.add_process(AdaBoostClassifierPredictor, 'p2')
+        p3: ProcessSpec = self.add_process(AdaBoostClassifierTester, 'p3')
+        self.add_connectors([
+            (p0>>'dataset', p1<<'dataset'),
+            (p0>>'dataset', p2<<'dataset'),
+            (p1>>'result', p2<<'learned_model'),
+            (p1>>'result', p3<<'learned_model'),
+            (p0>>'dataset', p3<<'dataset')
+        ])
+
 class TestTrainer(BaseTestCase):
 
-    async def test_process(self):
+    async def test_adaboost_proto(self):
+        settings = Settings.retrieve()
+        test_dir = settings.get_variable("gws_gaia:testdata_dir")
+
+        experiment: IExperiment = IExperiment( AdaBoostClassifierTestProto )
+        proto: IProtocol = experiment.get_protocol()
+        p0 = proto.get_process("p0")
+        p1 = proto.get_process("p1")
+
+        p0.set_param("delimiter", ",")
+        p0.set_param("header", 0)
+        p0.set_param('targets', ['variety'])
+        p0.set_param("file_path", os.path.join(test_dir, "./iris.csv"))
+        p1.set_param('nb_estimators', 30)
+
+        await experiment.run()
+        predictor_result = p1.get_output("result")
+        print(predictor_result)
+
+    async def test_adaboost_process(self):
         GTest.print("AdaBoost classifier")
         settings = Settings.retrieve()
         test_dir = settings.get_variable("gws_gaia:testdata_dir")

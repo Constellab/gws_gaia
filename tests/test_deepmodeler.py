@@ -12,9 +12,7 @@ from gws_gaia.tf import (Conv2D, MaxPooling2D, Flatten, Dropout, Dense,
                             DeepModelerBuilder, DeepModelerCompiler, DeepModelerTrainer,
                             DeepModelerTester, DeepModelerPredictor)
 
-@protocol_decorator("DeepMoldelTurorialProto", 
-                    human_name="Deep Moldel Proto", 
-                    short_description="Turorial: Deep moldel protocol")
+@protocol_decorator("DeepMoldelTurorialProto")
 class DeepMoldelTurorialProto(Protocol):
     def configure_protocol(self, config_params: ConfigParams) -> None:
         settings = Settings.retrieve()

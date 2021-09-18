@@ -30,9 +30,9 @@ class GlobalAveragePooling1D(Task):
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['tensor']
-        y = x._data
+        y = x.get_result()
         z = Kerasglobalaveragepooling1d()(y)
-        result = Tensor(tensor=z)
+        result = Tensor.from_result(result=z)
         return {'result': result}
 
 #================================================================================
@@ -49,9 +49,9 @@ class GlobalAveragePooling2D(Task):
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['tensor']
-        y = x._data
+        y = x.get_result()
         z = Kerasglobalaveragepooling2d()(y)
-        result = Tensor(tensor=z)
+        result = Tensor.from_result(result=z)
         return {'result': result}
 
 #================================================================================
@@ -68,7 +68,7 @@ class GlobalAveragePooling3D(Task):
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['tensor']
-        y = x._data
+        y = x.get_result()
         z = Kerasglobalaveragepooling3d()(y)
-        result = Tensor(tensor=z)
+        result = Tensor.from_result(result=z)
         return {'result': result}

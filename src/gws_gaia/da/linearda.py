@@ -9,11 +9,14 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 
 from gws_core import (Task, Resource, task_decorator, resource_decorator,
                         ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam)
-from ..data.core import Tuple
+from ..data.core import GenericResult
 from ..data.dataset import Dataset
 from ..base.base_resource import BaseResource
 
-@resource_decorator("LDAResult", hide=True)
+@resource_decorator("LDAResult", 
+                    human_name="LDA Result", 
+                    short_description = "Linear Discriminant Analysis result", 
+                    hide=True)
 class LDAResult(BaseResource):
     pass
 
@@ -53,7 +56,7 @@ class LDATransformer(Task):
 
     """
     input_specs = {'dataset' : Dataset, 'learned_model': LDAResult}
-    output_specs = {'result' : Tuple}
+    output_specs = {'result' : GenericResult}
     config_specs = {}
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
@@ -61,7 +64,7 @@ class LDATransformer(Task):
         learned_model = inputs['learned_model']
         lda = learned_model.binary_store['result']
         x = lda.transform(dataset.features.values)
-        result = Tuple(tup=x)
+        result = GenericResult.from_result(result=x)
         return {'result': result}
         
 #==============================================================================
@@ -75,7 +78,7 @@ class LDATester(Task):
     See https://scikit-learn.org/stable/modules/generated/sklearn.discriminant_analysis.LinearDiscriminantAnalysis.html for more details
     """
     input_specs = {'dataset' : Dataset, 'learned_model': LDAResult}
-    output_specs = {'result' : Tuple}
+    output_specs = {'result' : GenericResult}
     config_specs = { }
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
@@ -84,7 +87,7 @@ class LDATester(Task):
         lda = learned_model.binary_store['result']
         y = lda.score(dataset.features.values, dataset.targets.values)
         z = tuple([y])
-        result_dataset = Tuple(tup = z)
+        result_dataset = GenericResult.from_result(result = z)
         return {'result': result_dataset}
 
 #==============================================================================

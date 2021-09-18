@@ -11,7 +11,7 @@ from pandas import DataFrame
 
 from gws_core import (Task, Resource, task_decorator, resource_decorator,
                         ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam)
-from ..data.core import Tuple
+from ..data.core import GenericResult
 from ..data.dataset import Dataset
 from .data import Tensor, DeepModel
 
@@ -31,8 +31,8 @@ class DeepModelerBuilder(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['inputs']
         y = inputs['outputs']
-        x1 = x._data
-        y1 = y._data
+        x1 = x.get_result()
+        y1 = y.get_result()
 
         print("xxxx")
         print(x1)
@@ -62,7 +62,7 @@ class DeepModelerCompiler(Task):
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['builded_model']
-        model = x._data
+        model = x.get_result()
         model.compile(optimizer=params["optimizer"], loss=params["loss"], metrics=params["metrics"])
         result = DeepModel(model=model)
         return {'result': result}
@@ -77,7 +77,7 @@ class DeepModelerTrainer(Task):
 
     See https://keras.io/api/models/model_training_apis/ for more details
     """
-    input_specs = {'dataset' : Tuple, 'compiled_model': DeepModel}
+    input_specs = {'dataset' : GenericResult, 'compiled_model': DeepModel}
     output_specs = {'result' : DeepModel}
     config_specs = {
         'batch_size':IntParam(default_value=32, min_value=0),
@@ -87,9 +87,9 @@ class DeepModelerTrainer(Task):
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['compiled_model']
-        model = x._data
+        model = x.get_result()
         y = inputs['dataset']
-        data = y._data
+        data = y.get_result()
         (x_train, y_train), (_, _) = data
         model.fit(x_train, y_train, batch_size=params["batch_size"], epochs=params["epochs"], validation_split=params["validation_split"])
         result = DeepModel(model=model)
@@ -105,20 +105,20 @@ class DeepModelerTester(Task):
 
     See https://keras.io/api/models/model_training_apis/ for more details
     """
-    input_specs = {'dataset' : Tuple, 'trained_model': DeepModel}
-    output_specs = {'result' : Tuple}
+    input_specs = {'dataset' : GenericResult, 'trained_model': DeepModel}
+    output_specs = {'result' : GenericResult}
     config_specs = {
         'verbosity_mode':IntParam(default_value=0),
     }
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['trained_model']
-        model = x._data
+        model = x.get_result()
         y = inputs['dataset']
-        data = y._data
+        data = y.get_result()
         (_, _), (x_test, y_test) = data
         score = model.evaluate(x_test, y_test, verbose=params['verbosity_mode'])
-        result = Tuple(tup=score)
+        result = GenericResult.from_result(result=score)
         return {'result': result}
 
 #==================================================================================
@@ -131,17 +131,17 @@ class DeepModelerPredictor(Task):
 
     See https://keras.io/api/models/model_training_apis/ for more details
     """
-    input_specs = {'dataset' : Tuple, 'trained_model': DeepModel}
-    output_specs = {'result' : Tuple}
+    input_specs = {'dataset' : GenericResult, 'trained_model': DeepModel}
+    output_specs = {'result' : GenericResult}
     config_specs = {
         'verbosity_mode':IntParam(default_value=0),
     }
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['trained_model']
-        model = x._data
+        model = x.get_result()
         y = inputs['dataset']
-        data = y._data
+        data = y.get_result()
         result = model.predict(data, verbose=params['verbosity_mode'])
-        result = Tuple(tup=result)
+        result = GenericResult.from_result(result=result)
         return {'result': result}

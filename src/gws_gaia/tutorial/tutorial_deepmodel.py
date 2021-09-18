@@ -6,7 +6,7 @@
 import os
 from gws_core import (Protocol, Settings, GTest, BaseTestCase, 
                         TaskTester, protocol_decorator, ProcessSpec, ConfigParams)
-from gws_gaia import Tuple
+from gws_gaia import GenericResult
 from gws_gaia.tf import (Conv2D, MaxPooling2D, Flatten, Dropout, Dense, 
                             ImporterPKL, Preprocessor, AdhocExtractor, 
                             Tensor, DeepModel, InputConverter, 

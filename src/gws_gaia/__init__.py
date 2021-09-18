@@ -7,7 +7,7 @@ from .da.linearda import LDAResult, LDATrainer, LDATransformer, LDATester, LDAPr
 from .da.quadrada import QDAResult, QDATrainer, QDATester, QDAPredictor
 # dataset
 
-from .data.core import Tuple
+from .data.core import GenericResult
 from .data.dataset import Dataset, DatasetExporter, DatasetImporter, DatasetLoader, DatasetDumper
 # decomposition
 from .decomp.ica import ICAResult, ICATrainer

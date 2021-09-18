@@ -10,7 +10,7 @@ from sklearn.ensemble import AdaBoostRegressor
 from gws_core import (Task, Resource, task_decorator, resource_decorator,
                         ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam)
 from ..data.dataset import Dataset
-from ..data.core import Tuple
+from ..data.core import GenericResult
 from ..base.base_resource import BaseResource
 
 @resource_decorator("AdaBoostRegressorResult", hide=True)
@@ -51,7 +51,7 @@ class AdaBoostRegressorTester(Task):
     See https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.AdaBoostRegressor.html for more details
     """
     input_specs = {'dataset' : Dataset, 'learned_model': AdaBoostRegressorResult}
-    output_specs = {'result' : Tuple}
+    output_specs = {'result' : GenericResult}
     config_specs = {   }
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
@@ -60,7 +60,7 @@ class AdaBoostRegressorTester(Task):
         abr = learned_model.binary_store['result']
         y = abr.score(dataset.features.values,ravel(dataset.targets.values))
         z = tuple([y])
-        result_dataset = Tuple(tup = z)
+        result_dataset = GenericResult.from_result(result = z)
         return {'result': result_dataset}
 
 #==============================================================================

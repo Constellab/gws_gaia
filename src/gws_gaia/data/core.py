@@ -5,31 +5,27 @@
 # About us: https://gencovery.com
 
 import os
+from typing import Any
 from tensorflow.keras import Model as KerasModel
 from tensorflow.keras.models import save_model, load_model
+from dill import load, dump
 
-from gws_core import (Resource, resource_decorator)
+from gws_core import Serializer, resource_decorator
+from ..base.base_resource import BaseResource
 
 #==============================================================================
 #==============================================================================
 
-@resource_decorator("Tuple")
-class Tuple(Resource):
+@resource_decorator("GenericResult")
+class GenericResult(BaseResource):
     def __init__(self, *args, tup: tuple = None, **kwargs):
         super().__init__(*args, **kwargs)
-        #self._data = tup
-        if tup is not None:
-            if isinstance(tup, KerasModel):
-                path = os.path.join(self.binary_store.full_file_dir, "keras_model")
-                save_model(tup, path)
-                self.binary_store['keras_model_path'] = path
-            else:
-                self.binary_store["tuple"] = tup
 
-    @property
-    def _data(self):
-        if 'keras_model_path' in self.binary_store:
-            path = self.binary_store['keras_model_path']
-            return load_model(path)
-        else:
-            return self.binary_store["tuple"]
+    def get_result(self) -> Any:
+        return self.binary_store.load('result', Serializer.load)
+
+    @classmethod
+    def from_result(cls, result: Any) -> 'BaseResource':
+        resource = cls()
+        resource.binary_store.dump('result', result, Serializer.dump)
+        return resource

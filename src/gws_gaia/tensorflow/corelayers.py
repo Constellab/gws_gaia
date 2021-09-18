@@ -39,9 +39,9 @@ class Dense(Task):
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['tensor']
-        y = x._data
+        y = x.get_result()
         z = Kerasdense(params["units"],activation=params["activation"],use_bias=params["use_bias"])(y)        
-        result = Tensor(tensor=z)
+        result = Tensor.from_result(result=z)
         return {'result': result}
 
 #========================================================================================
@@ -62,9 +62,9 @@ class Activation(Task):
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['tensor']
-        y = x._data
+        y = x.get_result()
         z = Kerasactivation(params["activation_type"])(y)
-        result = Tensor(tensor=z)
+        result = Tensor.from_result(result=z)
         return {'result': result}
 
 #========================================================================================
@@ -87,12 +87,12 @@ class Embedding(Task):
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['tensor']
-        y = x._data
+        y = x.get_result()
         z = Kerasembedding(
             input_dim=params["input_dimension"], 
             output_dim=params["output_dimension"], 
             input_length=params["input_length"])(y)
-        result = Tensor(tensor=z)
+        result = Tensor.from_result(result=z)
         return {'result': result}
 
 #========================================================================================
@@ -113,9 +113,9 @@ class Masking(Task):
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['tensor']
-        y = x._data
+        y = x.get_result()
         z = Kerasmasking(mask_value=params["mask_value"])(y)
-        result = Tensor(tensor=z)
+        result = Tensor.from_result(result=z)
         return {'result': result}
 
 @task_decorator("Dropout")
@@ -133,9 +133,9 @@ class Dropout(Task):
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['tensor']
-        y = x._data
+        y = x.get_result()
         z = Kerasdropout(params["rate"])(y)
-        result = Tensor(tensor=z)
+        result = Tensor.from_result(result=z)
         return {'result': result}
 
 @task_decorator("Flatten")
@@ -151,7 +151,7 @@ class Flatten(Task):
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['tensor']
-        y = x._data
+        y = x.get_result()
         z = Kerasflatten()(y)
-        result = Tensor(tensor=z)
+        result = Tensor.from_result(result=z)
         return {'result': result}

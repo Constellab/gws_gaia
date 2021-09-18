@@ -5,7 +5,7 @@ import asyncio
 from gws_core import (Protocol, Settings, GTest, BaseTestCase, 
                         ConfigParams, ProcessSpec, protocol_decorator,
                         IExperiment)
-from gws_gaia import Tuple
+from gws_gaia import GenericResult
 from gws_gaia.tf import (Conv2D, MaxPooling2D, Flatten, Dropout, Dense, 
                             ImporterPKL, Preprocessor, AdhocExtractor, 
                             Tensor, DeepModel, InputConverter, 

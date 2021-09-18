@@ -8,7 +8,7 @@ from gws_core import (Protocol, Study, User, Experiment,
                         protocol_decorator, ProcessSpec, 
                         ConfigParams, Settings)
 
-from gws_gaia import Tuple
+from gws_gaia import GenericResult
 from gws_gaia import Dataset, DatasetLoader
 from gws_gaia import  LDATrainer, LDAPredictor, LDATester, LDATransformer
 from gws_gaia import PCATrainer, PCATransformer

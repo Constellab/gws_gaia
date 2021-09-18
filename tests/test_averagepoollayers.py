@@ -1,7 +1,7 @@
 import os
 import asyncio
 
-from gws_gaia import Tuple
+from gws_gaia import GenericResult
 from gws_gaia.tf import InputConverter, AveragePooling1D, AveragePooling2D, AveragePooling3D
 from gws_core import GTest, BaseTestCase, TaskTester
 

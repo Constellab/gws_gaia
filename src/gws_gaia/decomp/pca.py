@@ -8,7 +8,7 @@ from sklearn.decomposition import PCA
 from gws_core import (Task, Resource, task_decorator, resource_decorator,
                         ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam)
 from ..data.dataset import Dataset
-from ..data.core import Tuple
+from ..data.core import GenericResult
 from ..base.base_resource import BaseResource
 
 #==============================================================================
@@ -53,7 +53,7 @@ class PCATransformer(Task):
 
     """
     input_specs = {'dataset' : Dataset, 'learned_model': PCAResult}
-    output_specs = {'result' : Tuple}
+    output_specs = {'result' : GenericResult}
     config_specs = {}
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
@@ -61,5 +61,5 @@ class PCATransformer(Task):
         learned_model = inputs['learned_model']
         pca = learned_model.binary_store['result']
         x = pca.transform(dataset.features.values)
-        result = Tuple(tup=x)
+        result = GenericResult.from_result(result=x)
         return {'result': result}

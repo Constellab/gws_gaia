@@ -30,9 +30,9 @@ class GlobalMaxPooling1D(Task):
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['tensor']
-        y = x._data
+        y = x.get_result()
         z = Kerasglobalmaxpooling1d()(y)
-        result = Tensor(tensor=z)
+        result = Tensor.from_result(result=z)
         return {'result': result}
 
 #================================================================================
@@ -49,9 +49,9 @@ class GlobalMaxPooling2D(Task):
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['tensor']
-        y = x._data
+        y = x.get_result()
         z = Kerasglobalmaxpooling2d()(y)
-        result = Tensor(tensor=z)
+        result = Tensor.from_result(result=z)
         return {'result': result}
 
 #================================================================================
@@ -68,7 +68,7 @@ class GlobalMaxPooling3D(Task):
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['tensor']
-        y = x._data
+        y = x.get_result()
         z = Kerasglobalmaxpooling3d()(y)
-        result = Tensor(tensor=z)
+        result = Tensor.from_result(result=z)
         return {'result': result}

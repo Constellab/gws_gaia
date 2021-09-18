@@ -5,56 +5,37 @@
 # About us: https://gencovery.com
 
 import os
+from typing import Any
 import tensorflow as tf
 from tensorflow.python.framework.ops import Tensor as KerasTensor
 from tensorflow.keras import Model as KerasModel
 from tensorflow.keras.models import save_model, load_model
 
-from gws_core import (Task, Resource, task_decorator, resource_decorator, BadRequestException,
-                        ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam, ListParam)
-
-from dill import dumps, loads
-
+from gws_core import (Task, Resource, task_decorator, resource_decorator, 
+                        BadRequestException, ConfigParams, TaskInputs, 
+                        TaskOutputs, IntParam, FloatParam, StrParam, ListParam)
+from ..data.core import GenericResult
 #==============================================================================
 #==============================================================================
 
 @resource_decorator("Tensor", hide=True)
-class Tensor(Resource):
-    def __init__(self, *args, tensor: KerasTensor = None, **kwargs):
-        super().__init__(*args, **kwargs)
-        # if tensor is not None:
-        #     self.binary_store['keras_tensor'] = tensor
-        #     #self._data = tensor
-        if tensor is not None:
-            # dumps(tensor, path)
-            self.binary_store['keras_tensor'] = dumps(tensor)
-
-    @property
-    def _data(self):
-        return loads(self.binary_store['keras_tensor'])
-        # return self.binary_store['keras_tensor']
+class Tensor(GenericResult):
+    pass
 
 #==============================================================================
 #==============================================================================
 
 @resource_decorator("DeepModel", hide=True)
 class DeepModel(Resource):
-    def __init__(self, *args, model: KerasModel = None,  **kwargs):
-        super().__init__(*args, **kwargs)
-        
-        if not isinstance(model, KerasModel):
-            raise BadRequestException(f"The model must an instance of tensorflow.keras.Model. The given model is {model}")
-        
-        if model is not None:
-            path = os.path.join(self.binary_store.full_file_dir, "keras_model")
-            save_model(model, path)
-            self.binary_store['keras_model_path'] = path
-            #self._data = model
 
-    @property
-    def _data(self):
-        path = self.binary_store['keras_model_path']
-        return load_model(path)
+    def get_result(self) -> Any:
+        return self.binary_store.load('result', load_model)
+
+    @classmethod
+    def from_result(cls, result: Any) -> 'BaseResource':
+        resource = cls()
+        resource.binary_store.dump('result', result, save_model)
+        return resource
 
 #==============================================================================
 #==============================================================================
@@ -70,5 +51,5 @@ class InputConverter(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         input_shape = tuple(params['input_shape'])
         y = tf.keras.Input(shape=input_shape)
-        result = Tensor(tensor=y)
+        result = Tensor.from_result(result=y)
         return {'result': result}

@@ -11,7 +11,7 @@ from sklearn.tree import DecisionTreeRegressor
 from gws_core import (Task, Resource, task_decorator, resource_decorator,
                         ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam)
 
-from ..data.core import Tuple
+from ..data.core import GenericResult
 from ..data.dataset import Dataset
 from ..base.base_resource import BaseResource
 
@@ -55,7 +55,7 @@ class DecisionTreeRegressorTester(Task):
     See https://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeRegressor.html for more details
     """
     input_specs = {'dataset' : Dataset, 'learned_model': DecisionTreeRegressorResult}
-    output_specs = {'result' : Tuple}
+    output_specs = {'result' : GenericResult}
     config_specs = {   }
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
@@ -64,7 +64,7 @@ class DecisionTreeRegressorTester(Task):
         dtr = learned_model.binary_store['result']
         y = dtr.score(dataset.features.values,ravel(dataset.targets.values))
         z = tuple([y])
-        result_dataset = Tuple(tup = z)
+        result_dataset = GenericResult.from_result(result = z)
         return {'result': result_dataset}
 
 #==============================================================================

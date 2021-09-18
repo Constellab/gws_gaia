@@ -9,7 +9,7 @@ from sklearn.ensemble import RandomForestClassifier
 
 from gws_core import (Task, Resource, task_decorator, resource_decorator,
                         ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam)
-from ..data.core import Tuple
+from ..data.core import GenericResult
 from ..data.dataset import Dataset
 from ..base.base_resource import BaseResource
 
@@ -54,7 +54,7 @@ class RandomForestClassifierTester(Task):
     See https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html for more details
     """
     input_specs = {'dataset' : Dataset, 'learned_model': RandomForestClassifierResult}
-    output_specs = {'result' : Tuple}
+    output_specs = {'result' : GenericResult}
     config_specs = {   }
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
@@ -63,7 +63,7 @@ class RandomForestClassifierTester(Task):
         rfc = learned_model.binary_store['result']
         y = rfc.score(dataset.features.values, dataset.targets.values)
         z = tuple([y])
-        result_dataset = Tuple(tup = z)
+        result_dataset = GenericResult.from_result(result = z)
         return {'result': result_dataset}
 
 #==============================================================================

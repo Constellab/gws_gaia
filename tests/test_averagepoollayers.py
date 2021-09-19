@@ -3,12 +3,12 @@ import asyncio
 
 from gws_gaia import GenericResult
 from gws_gaia.tf import InputConverter, AveragePooling1D, AveragePooling2D, AveragePooling3D
-from gws_core import GTest, BaseTestCase, TaskTester
+from gws_core import BaseTestCase, TaskTester
 
 class TestTrainer(BaseTestCase):
     
     async def test_process_1D(self):
-        GTest.print("Average pooling operation for 1D data")
+        self.print("Average pooling operation for 1D data")
         # run InputConverter
         tester = TaskTester(
             params = {'input_shape': [None, 3]},
@@ -29,7 +29,7 @@ class TestTrainer(BaseTestCase):
         print(result)
 
     async def test_process_2D(self):
-        GTest.print("Average pooling operation for 2D data")
+        self.print("Average pooling operation for 2D data")
         # run InputConverter
         tester = TaskTester(
             params = {'input_shape': [None, 3, 3]},
@@ -50,7 +50,7 @@ class TestTrainer(BaseTestCase):
         print(result)
 
     async def test_process_3D(self):
-        GTest.print("Average pooling operation for 3D data")
+        self.print("Average pooling operation for 3D data")
         # run InputConverter
         tester = TaskTester(
             params = {'input_shape': [None, 3, 3, 3]},

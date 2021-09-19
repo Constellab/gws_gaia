@@ -10,7 +10,7 @@ class TestTrainer(BaseTestCase):
 
         
     async def test_process(self):
-        GTest.print("Gaussian process classifier")
+        self.print("Gaussian process classifier")
         settings = Settings.retrieve()
         test_dir = settings.get_variable("gws_gaia:testdata_dir")
 

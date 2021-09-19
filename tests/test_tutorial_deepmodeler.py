@@ -12,7 +12,7 @@ from gws_gaia.tutorial.tutorial_deepmodel import DeepMoldelTurorialProto
 class TestDeepMoldelTurorialProto(BaseTestCase):
 
     async def test_tutorial_deepmodeler(self):
-        GTest.print("DeepMoldeler tutorial")
+        self.print("DeepMoldeler tutorial")
         experiment: IExperiment = IExperiment( DeepMoldelTurorialProto )
         await experiment.run()
 

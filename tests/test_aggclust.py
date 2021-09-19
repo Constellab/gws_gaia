@@ -3,7 +3,7 @@ import os
 import asyncio
 
 
-from gws_core import (Settings, GTest, ConfigParams, ExperimentService, 
+from gws_core import (Settings, ConfigParams, ExperimentService, 
                         BaseTestCase, IntParam, TaskTester)
 from gws_gaia import Dataset, DatasetLoader
 from gws_gaia import AgglomerativeClusteringTrainer
@@ -11,7 +11,7 @@ from gws_gaia import AgglomerativeClusteringTrainer
 class TestTrainer(BaseTestCase):
 
     async def test_process(self):
-        GTest.print("Agglomerative clustering")
+        self.print("Agglomerative clustering")
         settings = Settings.retrieve()
         test_dir = settings.get_variable("gws_gaia:testdata_dir")
 

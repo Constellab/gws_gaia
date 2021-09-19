@@ -3,12 +3,12 @@ import os
 import asyncio
 
 from gws_gaia import Dataset, DatasetLoader
-from gws_core import (Settings, GTest, TaskTester, BaseTestCase)
+from gws_core import (Settings, TaskTester, BaseTestCase)
 
 class TestImporter(BaseTestCase):
     
     async def test_importer(self):
-        GTest.print("Dataset import")
+        self.print("Dataset import")
         settings = Settings.retrieve()
         test_dir = settings.get_variable("gws_gaia:testdata_dir")
         # run trainer
@@ -35,7 +35,7 @@ class TestImporter(BaseTestCase):
         
 
     async def test_importer_no_head(self):
-        GTest.print("Dataset import without header")
+        self.print("Dataset import without header")
         settings = Settings.retrieve()
         test_dir = settings.get_variable("gws_gaia:testdata_dir")
         # run trainer

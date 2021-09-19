@@ -10,7 +10,7 @@ class TestTrainer(BaseTestCase):
 
         
     async def test_process(self):
-        GTest.print("Independant Component Analysis (ICA)")
+        self.print("Independant Component Analysis (ICA)")
         settings = Settings.retrieve()
         test_dir = settings.get_variable("gws_gaia:testdata_dir")
 

@@ -2,7 +2,7 @@ import os
 import asyncio
 import time
 
-from gws_core import (Settings, GTest, ConfigParams, TaskInputs, TaskTester, BaseTestCase, 
+from gws_core import (Settings, ConfigParams, TaskInputs, TaskTester, BaseTestCase, 
                         ProcessSpec, protocol_decorator, Protocol, IExperiment, IProtocol)
 from gws_gaia import Dataset, DatasetLoader
 from gws_gaia import AdaBoostClassifierTrainer, AdaBoostClassifierPredictor, AdaBoostClassifierTester
@@ -44,7 +44,7 @@ class TestTrainer(BaseTestCase):
         print(predictor_result)
 
     async def test_adaboost_process(self):
-        GTest.print("AdaBoost classifier")
+        self.print("AdaBoost classifier")
         settings = Settings.retrieve()
         test_dir = settings.get_variable("gws_gaia:testdata_dir")
 

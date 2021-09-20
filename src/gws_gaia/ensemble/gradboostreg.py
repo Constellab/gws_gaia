@@ -42,7 +42,7 @@ class GradientBoostingRegressorTrainer(Task):
         dataset = inputs['dataset']
         gbr = GradientBoostingRegressor(n_estimators=params["nb_estimators"])
         gbr.fit(dataset.features.values, ravel(dataset.targets.values))
-        result = GradientBoostingRegressorResult.from_result(result=gbr)
+        result = GradientBoostingRegressorResult(result = gbr)
         return {'result': result}
 
 #==============================================================================
@@ -62,10 +62,10 @@ class GradientBoostingRegressorTester(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
-        gbr = learned_model.binary_store['result']
+        gbr = learned_model.result
         y = gbr.score(dataset.features.values, dataset.targets.values)
         z = tuple([y])
-        result_dataset = GenericResult.from_result(result = z)
+        result_dataset = GenericResult(result = z)
         return {'result': result_dataset}
 
 #==============================================================================
@@ -85,7 +85,7 @@ class GradientBoostingRegressorPredictor(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
-        gbr = learned_model.binary_store['result']
+        gbr = learned_model.result
         y = gbr.predict(dataset.features.values)
         result_dataset = Dataset(targets = DataFrame(y))
         return {'result': result_dataset}

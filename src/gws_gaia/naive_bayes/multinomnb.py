@@ -41,7 +41,7 @@ class MultinomialNaiveBayesClassifierTrainer(Task):
         dataset = inputs['dataset']
         mnb = MultinomialNB(alpha=params["alpha"])
         mnb.fit(dataset.features.values, ravel(dataset.targets.values))
-        result = MultinomialNaiveBayesClassifierResult.from_result(result=mnb)
+        result = MultinomialNaiveBayesClassifierResult(result = mnb)
         return {'result': result}
 
 #==============================================================================
@@ -61,10 +61,10 @@ class MultinomialNaiveBayesClassifierTester(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
-        mnb = learned_model.binary_store['result']
+        mnb = learned_model.result
         y = mnb.score(dataset.features.values, dataset.targets.values)
         z = tuple([y])
-        result_dataset = GenericResult.from_result(result = z)
+        result_dataset = GenericResult(result = z)
         return {'result': result_dataset}
 
 #==============================================================================
@@ -84,7 +84,7 @@ class MultinomialNaiveBayesClassifierPredictor(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
-        mnb = learned_model.binary_store['result']
+        mnb = learned_model.result
         y = mnb.predict(dataset.features.values)
         result_dataset = Dataset(targets = DataFrame(y))
         return {'result': result_dataset}

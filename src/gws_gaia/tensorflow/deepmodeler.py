@@ -31,13 +31,8 @@ class DeepModelerBuilder(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['inputs']
         y = inputs['outputs']
-        x1 = x.get_result()
-        y1 = y.get_result()
-
-        print("xxxx")
-        print(x1)
-        print(y1)
-
+        x1 = x.result
+        y1 = y.result
         z = KerasModel(inputs=x1, outputs=y1)
         result = DeepModel(model=z)
         return {'result': result}
@@ -62,7 +57,7 @@ class DeepModelerCompiler(Task):
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['builded_model']
-        model = x.get_result()
+        model = x.result
         model.compile(optimizer=params["optimizer"], loss=params["loss"], metrics=params["metrics"])
         result = DeepModel(model=model)
         return {'result': result}
@@ -87,9 +82,9 @@ class DeepModelerTrainer(Task):
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['compiled_model']
-        model = x.get_result()
+        model = x.result
         y = inputs['dataset']
-        data = y.get_result()
+        data = y.result
         (x_train, y_train), (_, _) = data
         model.fit(x_train, y_train, batch_size=params["batch_size"], epochs=params["epochs"], validation_split=params["validation_split"])
         result = DeepModel(model=model)
@@ -113,12 +108,12 @@ class DeepModelerTester(Task):
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['trained_model']
-        model = x.get_result()
+        model = x.result
         y = inputs['dataset']
-        data = y.get_result()
+        data = y.result
         (_, _), (x_test, y_test) = data
         score = model.evaluate(x_test, y_test, verbose=params['verbosity_mode'])
-        result = GenericResult.from_result(result=score)
+        result = GenericResult(result = score)
         return {'result': result}
 
 #==================================================================================
@@ -139,9 +134,9 @@ class DeepModelerPredictor(Task):
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['trained_model']
-        model = x.get_result()
+        model = x.result
         y = inputs['dataset']
-        data = y.get_result()
+        data = y.result
         result = model.predict(data, verbose=params['verbosity_mode'])
-        result = GenericResult.from_result(result=result)
+        result = GenericResult(result = result)
         return {'result': result}

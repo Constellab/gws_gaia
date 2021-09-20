@@ -21,7 +21,7 @@ from ..data.dataset import Dataset
 
 #     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
 #         x = inputs['tensor']
-#         y = x.get_result()
+#         y = x.result
 #         z = Kerasaveragepooling1d(pool_size=params['pool_size'])(y)
         
 #         

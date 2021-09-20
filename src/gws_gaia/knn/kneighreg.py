@@ -40,7 +40,7 @@ class KNNRegressorTrainer(Task):
         dataset = inputs['dataset']
         neigh = KNeighborsRegressor(n_neighbors=params["nb_neighbors"])
         neigh.fit(dataset.features.values, ravel(dataset.targets.values))
-        result = KNNRegressorResult.from_result(result=neigh)
+        result = KNNRegressorResult(result = neigh)
         return {'result': result}
 
 #==============================================================================
@@ -60,10 +60,10 @@ class KNNRegressorTester(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
-        neigh = learned_model.binary_store['result']
+        neigh = learned_model.result
         y = neigh.score(dataset.features.values, dataset.targets.values)
         z = tuple([y])
-        result_dataset = GenericResult.from_result(result = z)
+        result_dataset = GenericResult(result = z)
         return {'result': result_dataset}
 
 #==============================================================================
@@ -83,7 +83,7 @@ class KNNRegressorPredictor(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
-        neigh = learned_model.binary_store['result']
+        neigh = learned_model.result
         y = neigh.predict(dataset.features.values)
         result_dataset = Dataset(targets = DataFrame(y))
         return {'result': result_dataset}

@@ -40,7 +40,7 @@ class PLSTrainer(Task):
         dataset = inputs['dataset']
         pls = PLSRegression(n_components=params["nb_components"])
         pls.fit(dataset.features.values, dataset.targets.values)
-        result = PLSResult.from_result(result=pls)
+        result = PLSResult(result = pls)
         return {'result': result}
 
 #==============================================================================
@@ -60,10 +60,10 @@ class PLSTester(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
-        pls = learned_model.binary_store['result']
+        pls = learned_model.result
         y = pls.score(dataset.features.values, dataset.targets.values)
         z = tuple([y])
-        result_dataset = GenericResult.from_result(result = z)
+        result_dataset = GenericResult(result = z)
         return {'result': result_dataset}
 
 #==============================================================================
@@ -83,7 +83,7 @@ class PLSPredictor(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
-        pls = learned_model.binary_store['result']
+        pls = learned_model.result
         y = pls.predict(dataset.features.values)
         result_dataset = Dataset(targets = DataFrame(y))
         return {'result': result_dataset}

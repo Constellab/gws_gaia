@@ -33,9 +33,9 @@ class AveragePooling1D(Task):
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['tensor']
-        y = x.get_result()
+        y = x.result
         z = Kerasaveragepooling1d(pool_size=params['pool_size'])(y)
-        result = Tensor.from_result(result=z)
+        result = Tensor(result = z)
         return {'result': result}
 
 #================================================================================
@@ -55,10 +55,10 @@ class AveragePooling2D(Task):
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['tensor']
-        y = x.get_result()
+        y = x.result
         pool_size = tuple(params['pool_size'])
         z = Kerasaveragepooling2d(pool_size=pool_size)(y)
-        result = Tensor.from_result(result=z)
+        result = Tensor(result = z)
         return {'result': result}
 
 #================================================================================
@@ -78,8 +78,8 @@ class AveragePooling3D(Task):
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['tensor']
-        y = x.get_result()
+        y = x.result
         pool_size = tuple(params['pool_size'])
         z = Kerasaveragepooling3d(pool_size=pool_size)(y)
-        result = Tensor.from_result(result=z)
+        result = Tensor(result = z)
         return {'result': result}

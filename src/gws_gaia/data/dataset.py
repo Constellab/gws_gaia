@@ -13,7 +13,7 @@ from pathlib import Path
 from gws_core import (task_decorator, 
                         resource_decorator, BadRequestException, 
                         CSVTable, File, CSVExporter, CSVImporter, CSVLoader, CSVDumper, 
-                        StrParam, IntParam, ListParam, BoolParam)
+                        StrParam, IntParam, ListParam, BoolParam, RField)
 
 #====================================================================================================================
 #====================================================================================================================
@@ -23,47 +23,44 @@ class Dataset(CSVTable):
     """
     Dataset class
     """
+    
+    features: DataFrame = RField(default_value=DataFrame())
+    targets: DataFrame = RField(default_value=DataFrame())
 
     def __init__(self, *args, features: Union[DataFrame, np.ndarray] = None, 
                     targets: Union[DataFrame, np.ndarray] = None, 
                     feature_names: List[str]=None, target_names: List[str]=None, row_names: List[str]=None, **kwargs):
         super().__init__(*args, **kwargs)
 
-        if 'features' not in self.binary_store:
-            if features is None:
-                features = DataFrame()
+        if features is not None:
+            if isinstance(features, DataFrame):
+                # OK!
+                pass
+            elif isinstance(features, (np.ndarray, list)):
+                features = DataFrame(features)
+                if feature_names:
+                    features.columns = feature_names
+                if row_names:
+                    features.index = row_names
             else:
-                if isinstance(features, DataFrame):
-                    # OK!
-                    pass
-                elif isinstance(features, (np.ndarray, list)):
-                    features = DataFrame(features)
-                    if feature_names:
-                        features.columns = feature_names
-                    if row_names:
-                        features.index = row_names
-                else:
-                    raise BadRequestException(
-                        "The table mus be an instance of DataFrame or Numpy array")
-            self.binary_store['features'] = features
+                raise BadRequestException(
+                    "The table mus be an instance of DataFrame or Numpy array")
+            self.features = features
 
-        if 'targets' not in self.binary_store:
-            if targets is None:
-                targets = DataFrame()
+        if targets is not None:
+            if isinstance(targets, DataFrame):
+                # OK!
+                pass
+            elif isinstance(targets, (np.ndarray, list)):
+                targets = DataFrame(targets)
+                if target_names:
+                    targets.columns = target_names
+                if row_names:
+                    targets.index = row_names
             else:
-                if isinstance(targets, DataFrame):
-                    # OK!
-                    pass
-                elif isinstance(targets, (np.ndarray, list)):
-                    targets = DataFrame(targets)
-                    if target_names:
-                        targets.columns = target_names
-                    if row_names:
-                        targets.index = row_names
-                else:
-                    raise BadRequestException(
-                        "The table mus be an instance of DataFrame or Numpy array")
-            self.binary_store['targets'] = targets
+                raise BadRequestException(
+                    "The table mus be an instance of DataFrame or Numpy array")
+            self.targets = targets
 
     # -- C --
 
@@ -94,16 +91,6 @@ class Dataset(CSVTable):
 
 
     # -- F --
-
-    @property
-    def features(self) -> DataFrame:
-        """ 
-        Returns the inner DataFrame.Alias of :property:`Dataset.features`.
-
-        :return: The inner DataFrame
-        :rtype: pandas.DataFrame
-        """
-        return self.binary_store["features"]
 
     @property
     def feature_names(self) -> list:
@@ -241,16 +228,6 @@ class Dataset(CSVTable):
         return f"Features: \n{self.features.__str__()} \n\nTargets: \n{self.targets.__str__()} "
 
     # -- T --
-
-    @property
-    def targets(self) -> DataFrame:
-        """ 
-        Returns the inner DataFrame.Alias of :property:`Dataset.targets`.
-
-        :return: The inner DataFrame
-        :rtype: pandas.DataFrame
-        """
-        return self.binary_store["targets"]
 
     @property
     def target_names(self) -> list:

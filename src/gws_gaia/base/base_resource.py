@@ -4,7 +4,7 @@
 # About us: https://gencovery.com
 
 from typing import Any
-from gws_core import (Resource, resource_decorator)
+from gws_core import (Resource, resource_decorator, RField)
 
 
 #==============================================================================
@@ -12,12 +12,9 @@ from gws_core import (Resource, resource_decorator)
 
 @resource_decorator("BaseResource", hide=True)
 class BaseResource(Resource):
+    result: Any = RField(default_value=None)
 
-    def get_result(self) -> Any:
-        return self.binary_store.get('result')
-
-    @classmethod
-    def from_result(cls, result: Any) -> 'BaseResource':
-        resource = cls()
-        resource.binary_store['result'] = result
-        return resource
+    def __init__(self, result=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if result is not None:
+            self.result = result

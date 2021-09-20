@@ -32,9 +32,9 @@ class MaxPooling1D(Task):
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['tensor']
-        y = x.get_result()
+        y = x.result
         z = Kerasmaxpooling1d(pool_size=params['pool_size'])(y)
-        result = Tensor.from_result(result=z)
+        result = Tensor(result = z)
         return {'result': result}
 
 #==================================================================================
@@ -53,10 +53,10 @@ class MaxPooling2D(Task):
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['tensor']
-        y = x.get_result()
+        y = x.result
         pool_size = tuple(params['pool_size'])
         z = Kerasmaxpooling2d(pool_size=pool_size)(y)
-        result = Tensor.from_result(result=z)
+        result = Tensor(result = z)
         return {'result': result}
 
 #==================================================================================
@@ -75,8 +75,8 @@ class MaxPooling3D(Task):
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['tensor']
-        y = x.get_result()
+        y = x.result
         pool_size = tuple(params['pool_size'])
         z = Kerasmaxpooling3d(pool_size=pool_size)(y)
-        result = Tensor.from_result(result=z)
+        result = Tensor(result = z)
         return {'result': result}

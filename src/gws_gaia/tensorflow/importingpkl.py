@@ -32,7 +32,7 @@ class ImporterPKL(Task):
         else:
             data = pickle.load(f, encoding='bytes')
         f.close()
-        result = GenericResult.from_result(result=data)
+        result = GenericResult(result = data)
         return {'result': result}
 
 #==============================================================================
@@ -48,7 +48,7 @@ class Preprocessor(Task):
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['data']
-        data = x.get_result()
+        data = x.result
 
         (x_train, y_train), (x_test, y_test) = data  
         x_train = x_train.astype("float32") / 255
@@ -56,7 +56,7 @@ class Preprocessor(Task):
         y_train = tf.keras.utils.to_categorical(y_train, params['number_classes'])
         y_test = tf.keras.utils.to_categorical(y_test, params['number_classes'])
         data = (x_train, y_train), (x_test, y_test)
-        result = GenericResult.from_result(result=data)
+        result = GenericResult(result = data)
         return {'result': result}
 
 #==============================================================================
@@ -70,8 +70,8 @@ class AdhocExtractor(Task):
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['data']
-        data = x.get_result()
+        data = x.result
         (x_train, _), (_, _) = data  
         data = x_train
-        result = GenericResult.from_result(result=data)
+        result = GenericResult(result = data)
         return {'result': result}

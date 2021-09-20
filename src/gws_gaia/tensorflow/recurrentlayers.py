@@ -37,9 +37,9 @@ class LSTM(Task):
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['tensor']
-        y = x.get_result()
+        y = x.result
         z = KerasLSTM(params['units'], activation=params['activation_type'], recurrent_activation=params['recurrent_activation_type'], use_bias=params['use_bias'])(y)
-        result = Tensor.from_result(result=z)
+        result = Tensor(result = z)
         return {'result': result}
 
 #==================================================================================
@@ -63,9 +63,9 @@ class GRU(Task):
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['tensor']
-        y = x.get_result()
+        y = x.result
         z = KerasGRU(params['units'], activation=params['activation_type'], recurrent_activation=params['recurrent_activation_type'], use_bias=params['use_bias'])(y)        
-        result = Tensor.from_result(result=z)
+        result = Tensor(result = z)
         return {'result': result}
 
 #==================================================================================
@@ -88,7 +88,7 @@ class SimpleRNN(Task):
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['tensor']
-        y = x.get_result()
+        y = x.result
         z = KerasSimpleRNN(params['units'], activation=params['activation_type'], use_bias=params['use_bias'])(y)
-        result = Tensor.from_result(result=z)
+        result = Tensor(result = z)
         return {'result': result}

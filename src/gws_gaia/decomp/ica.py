@@ -37,5 +37,5 @@ class ICATrainer(Task):
         dataset = inputs['dataset']
         ica = FastICA(n_components=params["nb_components"])
         ica.fit(dataset.features.values)
-        result = ICAResult.from_result(result=ica)
+        result = ICAResult(result = ica)
         return {'result': result}

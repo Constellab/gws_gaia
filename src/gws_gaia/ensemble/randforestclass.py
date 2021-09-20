@@ -40,7 +40,7 @@ class RandomForestClassifierTrainer(Task):
         dataset = inputs['dataset']
         rfc = RandomForestClassifier(n_estimators=params["nb_estimators"])
         rfc.fit(dataset.features.values, ravel(dataset.targets.values))
-        result = RandomForestClassifierResult.from_result(result=rfc)
+        result = RandomForestClassifierResult(result = rfc)
         return {'result': result}
 
 #==============================================================================
@@ -60,10 +60,10 @@ class RandomForestClassifierTester(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
-        rfc = learned_model.binary_store['result']
+        rfc = learned_model.result
         y = rfc.score(dataset.features.values, dataset.targets.values)
         z = tuple([y])
-        result_dataset = GenericResult.from_result(result = z)
+        result_dataset = GenericResult(result = z)
         return {'result': result_dataset}
 
 #==============================================================================
@@ -83,7 +83,7 @@ class RandomForestClassifierPredictor(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
-        rfc = learned_model.binary_store['result']
+        rfc = learned_model.result
         y = rfc.predict(dataset.features.values)
         result_dataset = Dataset(targets = DataFrame(y))
         return {'result': result_dataset}

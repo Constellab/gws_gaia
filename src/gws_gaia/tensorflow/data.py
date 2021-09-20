@@ -13,7 +13,7 @@ from tensorflow.keras.models import save_model, load_model
 
 from gws_core import (Task, Resource, task_decorator, resource_decorator, 
                         BadRequestException, ConfigParams, TaskInputs, 
-                        TaskOutputs, IntParam, FloatParam, StrParam, ListParam)
+                        TaskOutputs, IntParam, FloatParam, StrParam, ListParam, RField)
 from ..data.core import GenericResult
 #==============================================================================
 #==============================================================================
@@ -27,15 +27,8 @@ class Tensor(GenericResult):
 
 @resource_decorator("DeepModel", hide=True)
 class DeepModel(Resource):
+    result = RField(loader=save_model, dumper=load_model)
 
-    def get_result(self) -> Any:
-        return self.binary_store.load('result', load_model)
-
-    @classmethod
-    def from_result(cls, result: Any) -> 'BaseResource':
-        resource = cls()
-        resource.binary_store.dump('result', result, save_model)
-        return resource
 
 #==============================================================================
 #==============================================================================
@@ -51,5 +44,5 @@ class InputConverter(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         input_shape = tuple(params['input_shape'])
         y = tf.keras.Input(shape=input_shape)
-        result = Tensor.from_result(result=y)
+        result = Tensor(result = y)
         return {'result': result}

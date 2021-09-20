@@ -38,7 +38,7 @@ class PCATrainer(Task):
         dataset = inputs['dataset']
         pca = PCA(n_components=params["nb_components"])
         pca.fit(dataset.features.values)
-        result = PCAResult.from_result(result=pca)
+        result = PCAResult(result = pca)
         return {'result': result}
         
 #==============================================================================
@@ -59,7 +59,7 @@ class PCATransformer(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
-        pca = learned_model.binary_store['result']
+        pca = learned_model.result
         x = pca.transform(dataset.features.values)
-        result = GenericResult.from_result(result=x)
+        result = GenericResult(result = x)
         return {'result': result}

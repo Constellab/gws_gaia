@@ -37,9 +37,9 @@ class Conv1D(Task):
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['tensor']
-        y = x.get_result()
+        y = x.result
         z = Kerasconv1d(filters=params['nb_filters'], kernel_size=params['kernel_size'], activation=params['activation_type'])(y)        
-        result = Tensor.from_result(result=z)
+        result = Tensor(result = z)
         return {'result': result}
 
 #================================================================================
@@ -62,14 +62,14 @@ class Conv2D(Task):
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['tensor']
-        y = x.get_result()
+        y = x.result
         kernel_size = tuple(params['kernel_size'])
         z = Kerasconv2d(
             filters=params['nb_filters'], 
             kernel_size=kernel_size, 
             activation=params['activation_type']
         )(y)        
-        result = Tensor.from_result(result=z)
+        result = Tensor(result = z)
         return {'result': result}
 
 #================================================================================
@@ -92,8 +92,8 @@ class Conv3D(Task):
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['tensor']
-        y = x.get_result()
+        y = x.result
         kernel_size = tuple(params['kernel_size'])
         z = Kerasconv3d(filters=params['nb_filters'], kernel_size=kernel_size, activation=params['activation_type'])(y)        
-        result = Tensor.from_result(result=z)
+        result = Tensor(result = z)
         return {'result': result}

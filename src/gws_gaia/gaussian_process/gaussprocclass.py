@@ -41,7 +41,7 @@ class GaussianProcessClassifierTrainer(Task):
         dataset = inputs['dataset']
         gpc = GaussianProcessClassifier(random_state=params["random_state"])
         gpc.fit(dataset.features.values, ravel(dataset.targets.values))
-        result = GaussianProcessClassifierResult.from_result(result=gpc)
+        result = GaussianProcessClassifierResult(result = gpc)
         return {'result': result}
 
 #==============================================================================
@@ -61,10 +61,10 @@ class GaussianProcessClassifierTester(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
-        gpc = learned_model.binary_store['result']
+        gpc = learned_model.result
         y = gpc.score(dataset.features.values, dataset.targets.values)
         z = tuple([y])
-        result_dataset = GenericResult.from_result(result = z)
+        result_dataset = GenericResult(result = z)
         return {'result': result_dataset}
 
 #==============================================================================
@@ -84,7 +84,7 @@ class GaussianProcessClassifierPredictor(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
-        gpc = learned_model.binary_store['result']
+        gpc = learned_model.result
         y = gpc.predict(dataset.features.values)
         result_dataset = Dataset(targets = DataFrame(y))
         return {'result': result_dataset}

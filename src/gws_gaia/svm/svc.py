@@ -43,7 +43,7 @@ class SVCTrainer(Task):
         dataset = inputs['dataset']
         svc = SVC(probability=params["probability"],kernel=params["kernel"])
         svc.fit(dataset.features.values, ravel(dataset.targets.values))
-        result = SVCResult.from_result(svc=svc)
+        result = SVCResult(result=svc)
         return {'result': result}
 
 #==============================================================================
@@ -63,10 +63,10 @@ class SVCTester(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
-        svc = learned_model.binary_store['result']
+        svc = learned_model.result
         y = svc.score(dataset.features.values, dataset.targets.values)
         z = tuple([y])
-        result_dataset = GenericResult.from_result(result = z)
+        result_dataset = GenericResult(result = z)
         return {'result': result_dataset}
 
 #==============================================================================
@@ -86,7 +86,7 @@ class SVCPredictor(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
-        svc = learned_model.binary_store['result']
+        svc = learned_model.result
         y = svc.predict(dataset.features.values)
         result_dataset = Dataset(targets = DataFrame(y))
         return {'result': result_dataset}

@@ -41,7 +41,7 @@ class GaussianNaiveBayesTrainer(Task):
         dataset = inputs['dataset']
         gnb = GaussianNB()
         gnb.fit(dataset.features.values, ravel(dataset.targets.values))
-        result = GaussianNaiveBayesResult.from_result(gnb=gnb)
+        result = GaussianNaiveBayesResult(result=gnb)
         return {'result': result}
 
 #==============================================================================
@@ -61,10 +61,10 @@ class GaussianNaiveBayesTester(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
-        gnb = learned_model.binary_store['result']
+        gnb = learned_model.result
         y = gnb.score(dataset.features.values, dataset.targets.values)
         z = tuple([y])
-        result_dataset = GenericResult.from_result(result = z)
+        result_dataset = GenericResult(result = z)
         return {'result': result_dataset}
 
 #==============================================================================
@@ -84,7 +84,7 @@ class GaussianNaiveBayesPredictor(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
-        gnb = learned_model.binary_store['result']
+        gnb = learned_model.result
         y = gnb.predict(dataset.features.values)
         result_dataset = Dataset(targets = DataFrame(y))
         return {'result': result_dataset}

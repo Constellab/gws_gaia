@@ -36,5 +36,5 @@ class AgglomerativeClusteringTrainer(Task):
         dataset = inputs['dataset']
         aggclust = AgglomerativeClustering(n_clusters=params["nb_clusters"])
         aggclust.fit(dataset.features.values)
-        result = AgglomerativeClusteringResult.from_result(result=aggclust)
+        result = AgglomerativeClusteringResult(result = aggclust)
         return {'result': result}

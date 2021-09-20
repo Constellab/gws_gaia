@@ -41,7 +41,7 @@ class DecisionTreeRegressorTrainer(Task):
         dataset = inputs['dataset']
         dtr = DecisionTreeRegressor(max_depth=params["max_depth"])
         dtr.fit(dataset.features.values, ravel(dataset.targets.values))
-        result = DecisionTreeRegressorResult.from_result(result=dtr)
+        result = DecisionTreeRegressorResult(result = dtr)
         return {'result': result}
 
 #==============================================================================
@@ -61,10 +61,10 @@ class DecisionTreeRegressorTester(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
-        dtr = learned_model.binary_store['result']
+        dtr = learned_model.result
         y = dtr.score(dataset.features.values,ravel(dataset.targets.values))
         z = tuple([y])
-        result_dataset = GenericResult.from_result(result = z)
+        result_dataset = GenericResult(result = z)
         return {'result': result_dataset}
 
 #==============================================================================
@@ -83,7 +83,7 @@ class DecisionTreeRegressorPredictor(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
-        dtr = learned_model.binary_store['result']
+        dtr = learned_model.result
         y = dtr.predict(dataset.features.values)
         result_dataset = Dataset(targets = DataFrame(y))
         return {'result': result_dataset}

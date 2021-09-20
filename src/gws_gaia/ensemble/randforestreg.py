@@ -40,7 +40,7 @@ class RandomForestRegressorTrainer(Task):
         dataset = inputs['dataset']
         rfr = RandomForestRegressor(n_estimators=params["nb_estimators"])
         rfr.fit(dataset.features.values, ravel(dataset.targets.values))
-        result = RandomForestRegressorResult.from_result(result=rfr)
+        result = RandomForestRegressorResult(result = rfr)
         return {'result': result}
 
 #==============================================================================
@@ -60,10 +60,10 @@ class RandomForestRegressorTester(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
-        rfr = learned_model.binary_store['result']
+        rfr = learned_model.result
         y = rfr.score(dataset.features.values, dataset.targets.values)
         z = tuple([y])
-        result_dataset = GenericResult.from_result(result = z)
+        result_dataset = GenericResult(result = z)
         return {'result': result_dataset}
 
 #==============================================================================
@@ -83,7 +83,7 @@ class RandomForestRegressorPredictor(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
-        rfr = learned_model.binary_store['result']
+        rfr = learned_model.result
         y = rfr.predict(dataset.features.values)
         result_dataset = Dataset(targets = DataFrame(y))
         return {'result': result_dataset}

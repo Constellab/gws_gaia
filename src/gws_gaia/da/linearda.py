@@ -41,7 +41,7 @@ class LDATrainer(Task):
         dataset = inputs['dataset']
         lda = LinearDiscriminantAnalysis(solver=params["solver"],n_components=params["nb_components"])
         lda.fit(dataset.features.values, ravel(dataset.targets.values))
-        result = LDAResult.from_result(result=lda)
+        result = LDAResult(result = lda)
         return {'result': result}
         
 #==============================================================================
@@ -62,9 +62,9 @@ class LDATransformer(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
-        lda = learned_model.binary_store['result']
+        lda = learned_model.result
         x = lda.transform(dataset.features.values)
-        result = GenericResult.from_result(result=x)
+        result = GenericResult(result = x)
         return {'result': result}
         
 #==============================================================================
@@ -84,10 +84,10 @@ class LDATester(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
-        lda = learned_model.binary_store['result']
+        lda = learned_model.result
         y = lda.score(dataset.features.values, dataset.targets.values)
         z = tuple([y])
-        result_dataset = GenericResult.from_result(result = z)
+        result_dataset = GenericResult(result = z)
         return {'result': result_dataset}
 
 #==============================================================================
@@ -107,7 +107,7 @@ class LDAPredictor(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
-        lda = learned_model.binary_store['result']
+        lda = learned_model.result
         y = lda.predict(dataset.features.values)
         result_dataset = Dataset(targets = DataFrame(y))
         return {'result': result_dataset}

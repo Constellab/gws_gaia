@@ -40,7 +40,7 @@ class GradientBoostingClassifierTrainer(Task):
         dataset = inputs['dataset']
         gbc = GradientBoostingClassifier(n_estimators=params["nb_estimators"])
         gbc.fit(dataset.features.values, ravel(dataset.targets.values))
-        result = GradientBoostingClassifierResult.from_result(result=gbc)
+        result = GradientBoostingClassifierResult(result = gbc)
         return {'result': result}
 
 #==============================================================================
@@ -60,10 +60,10 @@ class GradientBoostingClassifierTester(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
-        gbc = learned_model.binary_store['result']
+        gbc = learned_model.result
         y = gbc.score(dataset.features.values, dataset.targets.values)
         z = tuple([y])
-        result_dataset = GenericResult.from_result(result = z)
+        result_dataset = GenericResult(result = z)
         return {'result': result_dataset}
 
 #==============================================================================
@@ -83,7 +83,7 @@ class GradientBoostingClassifierPredictor(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
-        gbc = learned_model.binary_store['result']
+        gbc = learned_model.result
         y = gbc.predict(dataset.features.values)
         result_dataset = Dataset(targets = DataFrame(y))
         return {'result': result_dataset}

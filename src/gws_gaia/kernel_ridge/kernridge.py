@@ -42,7 +42,7 @@ class KernelRidgeTrainer(Task):
         dataset = inputs['dataset']
         krr = KernelRidge(gamma=params["gamma"],kernel=params["kernel"])
         krr.fit(dataset.features.values, ravel(dataset.targets.values))
-        result = KernelRidgeResult.from_result(result=krr)
+        result = KernelRidgeResult(result = krr)
         return {'result': result}
 
 #==============================================================================
@@ -62,10 +62,10 @@ class KernelRidgeTester(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
-        krr = learned_model.binary_store['result']
+        krr = learned_model.result
         y = krr.score(dataset.features.values, dataset.targets.values)
         z = tuple([y])
-        result_dataset = GenericResult.from_result(result = z)
+        result_dataset = GenericResult(result = z)
         return {'result': result_dataset}
 
 #==============================================================================
@@ -85,7 +85,7 @@ class KernelRidgePredictor(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
-        krr = learned_model.binary_store['result']
+        krr = learned_model.result
         y = krr.predict(dataset.features.values)
         result_dataset = Dataset(targets = DataFrame(y))
         return {'result': result_dataset}

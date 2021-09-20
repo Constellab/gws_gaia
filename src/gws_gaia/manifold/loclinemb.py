@@ -38,5 +38,5 @@ class LocallyLinearEmbeddingTrainer(Task):
         dataset = inputs['dataset']
         lle = LocallyLinearEmbedding(n_components=params["nb_components"])
         lle.fit(dataset.features.values)
-        result = LocallyLinearEmbeddingResult.from_result(result=lle)
+        result = LocallyLinearEmbeddingResult(result = lle)
         return {'result': result}

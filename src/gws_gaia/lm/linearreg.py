@@ -39,7 +39,7 @@ class LinearRegressionTrainer(Task):
         dataset = inputs['dataset']
         lir = LinearRegression()
         lir.fit(dataset.features.values, ravel(dataset.targets.values))
-        result = LinearRegressionResult.from_result(result=lir)
+        result = LinearRegressionResult(result = lir)
         return {'result': result}
 
 #==============================================================================
@@ -59,10 +59,10 @@ class LinearRegressionTester(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
-        lir = learned_model.binary_store['result']
+        lir = learned_model.result
         y = lir.score(dataset.features.values, dataset.targets.values)
         z = tuple([y])
-        result_dataset = GenericResult.from_result(result = z)
+        result_dataset = GenericResult(result = z)
         return {'result': result_dataset}
 
 #==============================================================================
@@ -82,7 +82,7 @@ class LinearRegressionPredictor(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
-        lir = learned_model.binary_store['result']
+        lir = learned_model.result
         y = lir.predict(dataset.features.values)
         result_dataset = Dataset(targets = DataFrame(y))
         return {'result': result_dataset}

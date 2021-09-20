@@ -10,7 +10,7 @@ from tensorflow.keras import Model as KerasModel
 from tensorflow.keras.models import save_model, load_model
 from dill import load, dump
 
-from gws_core import Serializer, resource_decorator
+from gws_core import Serializer, resource_decorator, RField
 from ..base.base_resource import BaseResource
 
 #==============================================================================
@@ -18,14 +18,9 @@ from ..base.base_resource import BaseResource
 
 @resource_decorator("GenericResult")
 class GenericResult(BaseResource):
-    def __init__(self, *args, tup: tuple = None, **kwargs):
+    result: Any = RField(default_value=None)
+
+    def __init__(self, result=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
-    def get_result(self) -> Any:
-        return self.binary_store.load('result', Serializer.load)
-
-    @classmethod
-    def from_result(cls, result: Any) -> 'BaseResource':
-        resource = cls()
-        resource.binary_store.dump('result', result, Serializer.dump)
-        return resource
+        if result is not None:
+            self.result = result

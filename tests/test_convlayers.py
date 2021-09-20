@@ -5,12 +5,12 @@ import asyncio
 
 from gws_gaia.tf import Conv1D, Conv2D, Conv3D
 from gws_gaia.tf import InputConverter
-from gws_core import Settings, GTest, BaseTestCase, TaskTester, ConfigParams
+from gws_core import Settings, BaseTestCase, TaskTester, ConfigParams
 
 class TestTrainer(BaseTestCase):
 
     async def test_process_1D(self):
-        GTest.print("Convolutional layers")
+        self.print("Convolutional layers")
         # run InputConverter
         tester = TaskTester(
             params = {'input_shape': [3, 3, 3]},
@@ -35,7 +35,7 @@ class TestTrainer(BaseTestCase):
         print(result)
 
     async def test_process_2D(self):
-        GTest.print("Average pooling operation for 2D data")
+        self.print("Average pooling operation for 2D data")
         # run InputConverter
         tester = TaskTester(
             params = {'input_shape': [3, 3, 3, 3]},
@@ -60,7 +60,7 @@ class TestTrainer(BaseTestCase):
         print(result)
 
     async def test_process_3D(self):
-        GTest.print("Average pooling operation for 3D data")
+        self.print("Average pooling operation for 3D data")
         # run InputConverter
         tester = TaskTester(
             params = {'input_shape': [3, 3, 3, 3,]},

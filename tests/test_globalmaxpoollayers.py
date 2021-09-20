@@ -10,7 +10,7 @@ class TestTrainer(BaseTestCase):
 
         
     async def test_process(self):
-        GTest.print("Global max pooling operation for 1D data")
+        self.print("Global max pooling operation for 1D data")
         p1 = InputConverter()
         p2 = InputConverter()
         p3 = InputConverter()

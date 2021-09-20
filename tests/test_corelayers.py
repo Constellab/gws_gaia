@@ -5,12 +5,12 @@ import asyncio
 
 from gws_gaia.tf import Dense, Activation, Embedding, Masking
 from gws_gaia.tf import InputConverter
-from gws_core import Settings, GTest, BaseTestCase, TaskTester
+from gws_core import Settings, BaseTestCase, TaskTester
 
 class TestTrainer(BaseTestCase):
     
     async def test_process_1D(self):
-        GTest.print("Neural network layers")
+        self.print("Neural network layers")
         # run InputConverter
         tester = TaskTester(
             params = {'input_shape': [3, 3, 3]},
@@ -67,7 +67,7 @@ class TestTrainer(BaseTestCase):
         print(result)
 
     # async def test_process(self):
-    #     GTest.print("Densely connected Neural Network layer")
+    #     self.print("Densely connected Neural Network layer")
     #     p1 = InputConverter()
     #     p2 = Dense()
     #     p3 = Activation()

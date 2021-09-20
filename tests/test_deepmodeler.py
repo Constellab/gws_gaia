@@ -2,7 +2,7 @@ import os
 import asyncio
 
 
-from gws_core import (Protocol, Settings, GTest, BaseTestCase, 
+from gws_core import (Protocol, Settings, BaseTestCase, 
                         ConfigParams, ProcessSpec, protocol_decorator,
                         IExperiment)
 from gws_gaia import GenericResult
@@ -89,7 +89,7 @@ class TestDeepModel(BaseTestCase):
 
         
 #     async def test_process(self): 
-#         GTest.print("Deep modeler")       
+#         self.print("Deep modeler")       
 #         settings = Settings.retrieve()
 #         test_dir = settings.get_variable("gws_gaia:testdata_dir")
 

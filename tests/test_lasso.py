@@ -11,7 +11,7 @@ class TestTrainer(BaseTestCase):
 
         
     async def test_process(self):
-        GTest.print("Lasso regression")
+        self.print("Lasso regression")
         settings = Settings.retrieve()
         test_dir = settings.get_variable("gws_gaia:testdata_dir")
 

@@ -10,7 +10,7 @@ class TestTrainer(BaseTestCase):
 
         
     async def test_process(self):
-        GTest.print("Long Short-Term Memory (LSTM) layer")
+        self.print("Long Short-Term Memory (LSTM) layer")
         p1 = InputConverter()
         p2 = SimpleRNN()
         p3 = LSTM()

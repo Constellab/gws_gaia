@@ -2,14 +2,14 @@ import os
 import asyncio
 
 
-from gws_core import Settings, GTest, BaseTestCase, TaskTester
+from gws_core import Settings, BaseTestCase, TaskTester
 from gws_gaia import Dataset, DatasetLoader
 from gws_gaia import AdaBoostRegressorTrainer, AdaBoostRegressorPredictor, AdaBoostRegressorTester
 
 class TestTrainer(BaseTestCase):
 
     async def test_process(self):
-        GTest.print("AdaBoost regressor")
+        self.print("AdaBoost regressor")
         settings = Settings.retrieve()
         test_dir = settings.get_variable("gws_gaia:testdata_dir")
         

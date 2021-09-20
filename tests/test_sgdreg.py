@@ -11,7 +11,7 @@ class TestTrainer(BaseTestCase):
 
         
     async def test_process(self):
-        GTest.print("Linear regressor with stochastic gradient descent (SGD)")
+        self.print("Linear regressor with stochastic gradient descent (SGD)")
         settings = Settings.retrieve()
         test_dir = settings.get_variable("gws_gaia:testdata_dir")
 

@@ -11,7 +11,7 @@ class TestTrainer(BaseTestCase):
 
         
     async def test_process(self):
-        GTest.print("Flatten layer")
+        self.print("Flatten layer")
         p1 = InputConverter()
         p2 = Flatten()
 

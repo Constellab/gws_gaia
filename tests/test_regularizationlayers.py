@@ -10,7 +10,7 @@ class TestTrainer(BaseTestCase):
 
         
     async def test_process(self):
-        GTest.print("Dropout layer")
+        self.print("Dropout layer")
         p1 = InputConverter()
         p2 = Dropout()
 

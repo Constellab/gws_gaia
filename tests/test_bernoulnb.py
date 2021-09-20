@@ -5,12 +5,12 @@ import asyncio
 from gws_gaia import Dataset
 from gws_gaia import (BernoulliNaiveBayesClassifierTrainer, BernoulliNaiveBayesClassifierPredictor, 
                         BernoulliNaiveBayesClassifierTester)
-from gws_core import Settings, GTest, BaseTestCase, TaskTester
+from gws_core import Settings, BaseTestCase, TaskTester
 
 class TestTrainer(BaseTestCase):
 
     async def test_process(self):
-        GTest.print("Naive Bayes classifier")
+        self.print("Naive Bayes classifier")
         settings = Settings.retrieve()
         test_dir = settings.get_variable("gws_gaia:testdata_dir")
 

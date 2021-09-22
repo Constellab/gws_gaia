@@ -16,6 +16,11 @@ from ..base.base_resource import BaseResource
 
 @resource_decorator("PCAResult", hide=True)
 class PCAResult(BaseResource):
+
+    # def view_score_as_table(self) ->  DataFrame:
+    #     pca = self.result
+    #     score = pca.score_samples(C)
+    #     return DataFrame( scores )
     pass
 
 #==============================================================================

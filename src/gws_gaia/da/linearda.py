@@ -17,8 +17,17 @@ from ..base.base_resource import BaseResource
                     human_name="LDA Result", 
                     short_description = "Linear Discriminant Analysis result", 
                     hide=True)
+
 class LDAResult(BaseResource):
     pass
+
+# class LDATrainerResult(BaseResource):
+#     pass
+
+# class LDAPredictorResult(Dataset):
+
+#     def view_as_table(self) -> DataFrame:
+#         pass
 
 #==============================================================================
 #==============================================================================
@@ -101,7 +110,7 @@ class LDAPredictor(Task):
     See https://scikit-learn.org/stable/modules/generated/sklearn.discriminant_analysis.LinearDiscriminantAnalysis.html for more details.
     """
     input_specs = {'dataset' : Dataset, 'learned_model': LDAResult}
-    output_specs = {'result' : Dataset}
+    output_specs = {'result' : GenericResult}
     config_specs = {   }
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:

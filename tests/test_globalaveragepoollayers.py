@@ -21,7 +21,7 @@ class TestTrainer(BaseTestCase):
 
         # run GlobalAveragePooling1D
         tester = TaskTester(
-            params = {},
+            params = {'pool_size': 2},
             inputs = {'tensor': in1},
             task_type = GlobalAveragePooling1D
         )
@@ -42,7 +42,7 @@ class TestTrainer(BaseTestCase):
 
         # run GlobalAveragePooling2D
         tester = TaskTester(
-            params = {},
+            params = {'pool_size': [2, 2]},
             inputs = {'tensor': in2},
             task_type = GlobalAveragePooling2D
         )
@@ -63,7 +63,7 @@ class TestTrainer(BaseTestCase):
 
         # run GlobalAveragePooling3D
         tester = TaskTester(
-            params = {},
+            params = {'pool_size': [2, 2, 2]},
             inputs = {'tensor': in3},
             task_type = GlobalAveragePooling3D
         )

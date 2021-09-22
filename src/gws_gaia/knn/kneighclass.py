@@ -18,7 +18,7 @@ from ..base.base_resource import BaseResource
 #==============================================================================
 
 @resource_decorator("KNNClassifierResult", hide=True)
-class KNNClassifierResult(Resource):
+class KNNClassifierResult(BaseResource):
     pass
 
 #==============================================================================

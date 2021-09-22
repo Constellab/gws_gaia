@@ -17,7 +17,7 @@ from ..base.base_resource import BaseResource
 #==============================================================================
 
 @resource_decorator("RandomForestRegressorResult", hide=True)
-class RandomForestRegressorResult(Resource):
+class RandomForestRegressorResult(BaseResource):
     pass
 
 #==============================================================================

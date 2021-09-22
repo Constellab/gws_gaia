@@ -18,7 +18,7 @@ from ..base.base_resource import BaseResource
 #==============================================================================
 
 @resource_decorator("GaussianNaiveBayesResult", hide=True)
-class GaussianNaiveBayesResult(Resource):
+class GaussianNaiveBayesResult(BaseResource):
     pass
 
 #==============================================================================

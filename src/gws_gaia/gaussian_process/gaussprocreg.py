@@ -18,7 +18,7 @@ from ..base.base_resource import BaseResource
 #==============================================================================
 
 @resource_decorator("GaussianProcessRegressorResult", hide=True)
-class GaussianProcessRegressorResult(Resource):
+class GaussianProcessRegressorResult(BaseResource):
     pass
 
 #==============================================================================

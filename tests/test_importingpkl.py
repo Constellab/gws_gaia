@@ -8,42 +8,79 @@ from gws_core import Settings, GTest, BaseTestCase, TaskTester
 
 class TestTrainer(BaseTestCase):
 
-
     async def test_process(self):
-        self.print("ImporterPKL")
+        self.print("Importing and Preprocessing of PKL files")
         settings = Settings.retrieve()
         test_dir = settings.get_variable("gws_gaia:testdata_dir")
         
-        p0 = ImporterPKL()
-        p1 = Preprocessor()
-        p2 = AdhocExtractor()
+        #run importerpkl
+        tester = TaskTester(
+           params = {'file_path': os.path.join(test_dir, "./mnist.pkl")},
+           inputs = {},
+           task_type = ImporterPKL
+         )
+        outputs = await tester.run()
+        dataset = outputs['result']
         
-        proto = Protocol(
-            processes = {
-                'p0' : p0,
-                'p1' : p1,
-                'p2' : p2
-            },
-            connectors = [
-                p0>>'result' | p1<<'data',
-                p0>>'result' | p2<<'data',
-            ]
+        # run preprocessor
+        tester = TaskTester(
+            params = {'number_classes': 10},
+            inputs = {'data': dataset},
+            task_type = Preprocessor
         )
-        
-        p0.set_param("file_path", os.path.join(test_dir, "./mnist.pkl"))
-        p1.set_param('number_classes', 10)
+        outputs = await tester.run()
+        preprocessor_result = outputs['result']
 
-        experiment: Experiment = Experiment(
-            protocol=proto, study=GTest.study, user=GTest.user)
-        experiment.save()
-        experiment = await ExperimentService.run_experiment(
-            experiment=experiment, user=GTest.user)
+        # run extractor
+        tester = TaskTester(
+            params = {},
+            inputs = {'data': dataset},
+            task_type = AdhocExtractor
+        )
+        outputs = await tester.run()
+        extractor_result = outputs['result']
+
+        print(preprocessor_result)
+        print(extractor_result)
+
+# class TestTrainer(BaseTestCase):
+
+
+#     async def test_process(self):
+#         self.print("ImporterPKL")
+#         settings = Settings.retrieve()
+#         test_dir = settings.get_variable("gws_gaia:testdata_dir")
         
-        r1 = p0.output['result']
-        r2 = p1.output['result']
-        r3 = p2.output['result']
+#         p0 = ImporterPKL()
+#         p1 = Preprocessor()
+#         p2 = AdhocExtractor()
         
-        print(r1)
-        print(r2)
-        print(r3)
+#         proto = Protocol(
+#             processes = {
+#                 'p0' : p0,
+#                 'p1' : p1,
+#                 'p2' : p2
+#             },
+#             connectors = [
+#                 p0>>'result' | p1<<'data',
+#                 p0>>'result' | p2<<'data',
+#             ]
+#         )
+        
+#         p0.set_param("file_path", os.path.join(test_dir, "./mnist.pkl"))
+#         p1.set_param('number_classes', 10)
+
+#         experiment: Experiment = Experiment(
+#             protocol=proto, study=GTest.study, user=GTest.user)
+#         experiment.save()
+#         experiment = await ExperimentService.run_experiment(
+#             experiment=experiment, user=GTest.user)
+        
+#         r1 = p0.output['result']
+#         r2 = p1.output['result']
+#         r3 = p2.output['result']
+        
+#         print(r1)
+#         print(r2)
+#         print(r3)
         

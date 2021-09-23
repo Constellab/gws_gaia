@@ -13,7 +13,7 @@ from pathlib import Path
 from gws_core import (task_decorator, 
                         resource_decorator, BadRequestException, 
                         CSVTable, File, CSVExporter, CSVImporter, CSVLoader, CSVDumper, 
-                        StrParam, IntParam, ListParam, BoolParam, RField)
+                        StrParam, IntParam, ListParam, BoolParam, DataFrameRField)
 
 #====================================================================================================================
 #====================================================================================================================
@@ -24,8 +24,8 @@ class Dataset(CSVTable):
     Dataset class
     """
     
-    features: DataFrame = RField(default_value=DataFrame())
-    targets: DataFrame = RField(default_value=DataFrame())
+    features: DataFrame = DataFrameRField()
+    targets: DataFrame = DataFrameRField()
 
     def __init__(self, *args, features: Union[DataFrame, np.ndarray] = None, 
                     targets: Union[DataFrame, np.ndarray] = None, 

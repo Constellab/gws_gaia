@@ -27,7 +27,8 @@ class Tensor(GenericResult):
 
 @resource_decorator("DeepModel", hide=True)
 class DeepModel(Resource):
-    result = RField(loader=save_model, dumper=load_model)
+    #result = RField(loader=save_model, dumper=load_model)
+    pass
 
 
 #==============================================================================

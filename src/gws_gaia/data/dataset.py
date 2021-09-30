@@ -12,14 +12,14 @@ from pathlib import Path
 
 from gws_core import (task_decorator, 
                         resource_decorator, BadRequestException, 
-                        CSVTable, File, CSVExporter, CSVImporter, CSVLoader, CSVDumper, 
+                        Table, File, TableExporter, TableImporter, TableLoader, TableDumper, 
                         StrParam, IntParam, ListParam, BoolParam, DataFrameRField)
 
 #====================================================================================================================
 #====================================================================================================================
 
 @resource_decorator("Dataset")
-class Dataset(CSVTable):
+class Dataset(Table):
     """
     Dataset class
     """
@@ -251,7 +251,7 @@ class Dataset(CSVTable):
 #====================================================================================================================
 
 @task_decorator("DatasetImporter")
-class DatasetImporter(CSVImporter):
+class DatasetImporter(TableImporter):
     input_specs = {'file': File}
     output_specs = {'dataset': Dataset}
     config_specs = {
@@ -263,7 +263,7 @@ class DatasetImporter(CSVImporter):
     }
 
 @task_decorator("DatasetExporter")
-class DatasetExporter(CSVExporter):
+class DatasetExporter(TableExporter):
     input_specs = {'dataset': Dataset}
     output_specs = {'file': File}
     config_specs = {
@@ -277,7 +277,7 @@ class DatasetExporter(CSVExporter):
 #====================================================================================================================
 
 @task_decorator("DatasetLoader")
-class DatasetLoader(CSVLoader):
+class DatasetLoader(TableLoader):
     input_specs = {}
     output_specs = {'dataset': Dataset}
     config_specs = {
@@ -290,7 +290,7 @@ class DatasetLoader(CSVLoader):
     }
 
 @task_decorator("DatasetDumper")
-class DatasetDumper(CSVDumper):
+class DatasetDumper(TableDumper):
     input_specs = {'dataset': Dataset}
     output_specs = {}
     config_specs = {

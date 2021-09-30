@@ -11,7 +11,7 @@ from tensorflow.keras.layers import GlobalAveragePooling3D as Kerasglobalaverage
 from pandas import DataFrame
 
 from gws_core import (Task, Resource, task_decorator, resource_decorator,
-                        ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam)
+                        ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam, ListParam)
 
 from .data import Tensor
 from ..data.dataset import Dataset
@@ -26,7 +26,7 @@ class GlobalAveragePooling1D(Task):
     """
     input_specs = {'tensor' : Tensor}
     output_specs = {'result' : Tensor}
-    config_specs = {}
+    config_specs = {'pool_size': IntParam(default_value=2, min_value=0)}
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['tensor']
@@ -45,7 +45,7 @@ class GlobalAveragePooling2D(Task):
     """
     input_specs = {'tensor' : Tensor}
     output_specs = {'result' : Tensor}
-    config_specs = {}
+    config_specs = {'pool_size': ListParam(default_value=[2,2])}
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['tensor']
@@ -64,7 +64,7 @@ class GlobalAveragePooling3D(Task):
     """
     input_specs = {'tensor' : Tensor}
     output_specs = {'result' : Tensor}
-    config_specs = {}
+    config_specs = {'pool_size': ListParam(default_value=[2,2,2])}
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['tensor']

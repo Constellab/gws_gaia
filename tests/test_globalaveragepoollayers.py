@@ -7,51 +7,117 @@ from gws_gaia.tf import InputConverter
 from gws_core import Settings, GTest, BaseTestCase, TaskTester
 
 class TestTrainer(BaseTestCase):
-
-        
-    async def test_process(self):
-        self.print("Global average pooling operation for 1D data")
-        p1 = InputConverter()
-        p2 = InputConverter()
-        p3 = InputConverter()
-        p4 = GlobalAveragePooling1D()
-        p5 = GlobalAveragePooling2D()
-        p6 = GlobalAveragePooling3D()
-        
-        proto = Protocol(
-            processes = {
-                'p1' : p1,
-                'p2' : p2,
-                'p3' : p3,
-                'p4' : p4,
-                'p5' : p5,
-                'p6' : p6
-            },
-            connectors = [
-        p1>>'result' | p4<<'tensor',
-        p2>>'result' | p5<<'tensor',
-        p3>>'result' | p6<<'tensor'
-            ]
+    
+    async def test_process_1D(self):
+        self.print("Global Average pooling operation for 1D data")
+        # run InputConverter
+        tester = TaskTester(
+            params = {'input_shape': [None, 3]},
+            inputs = {},
+            task_type = InputConverter
         )
+        outputs = await tester.run()
+        in1 = outputs['result']
 
-        p1.set_param('input_shape', [None, 3])
-        p2.set_param('input_shape', [None, 3, 3])
-        p3.set_param('input_shape', [None, 3, 3 ,3])
+        # run GlobalAveragePooling1D
+        tester = TaskTester(
+            params = {'pool_size': 2},
+            inputs = {'tensor': in1},
+            task_type = GlobalAveragePooling1D
+        )
+        outputs = await tester.run()
+        result = outputs['result']
+        print(result)
+
+    async def test_process_2D(self):
+        self.print("Global Average pooling operation for 2D data")
+        # run InputConverter
+        tester = TaskTester(
+            params = {'input_shape': [None, 3, 3]},
+            inputs = {},
+            task_type = InputConverter
+        )
+        outputs = await tester.run()
+        in2 = outputs['result']
+
+        # run GlobalAveragePooling2D
+        tester = TaskTester(
+            params = {'pool_size': [2, 2]},
+            inputs = {'tensor': in2},
+            task_type = GlobalAveragePooling2D
+        )
+        outputs = await tester.run()
+        result = outputs['result']
+        print(result)
+
+    async def test_process_3D(self):
+        self.print("Global Average pooling operation for 3D data")
+        # run InputConverter
+        tester = TaskTester(
+            params = {'input_shape': [None, 3, 3, 3]},
+            inputs = {},
+            task_type = InputConverter
+        )
+        outputs = await tester.run()
+        in3 = outputs['result']
+
+        # run GlobalAveragePooling3D
+        tester = TaskTester(
+            params = {'pool_size': [2, 2, 2]},
+            inputs = {'tensor': in3},
+            task_type = GlobalAveragePooling3D
+        )
+        outputs = await tester.run()
+        result = outputs['result']
+        print(result)
 
 
-        experiment: Experiment = Experiment(
-            protocol=proto, study=GTest.study, user=GTest.user)
-        experiment.save()
-        experiment = await ExperimentService.run_experiment(
-            experiment=experiment, user=GTest.user)                
+# class TestTrainer(BaseTestCase):
 
-        r1 = p4.output['result']
-        r2 = p5.output['result']
-        r3 = p6.output['result']            
+        
+#     async def test_process(self):
+#         self.print("Global average pooling operation for 1D data")
+#         p1 = InputConverter()
+#         p2 = InputConverter()
+#         p3 = InputConverter()
+#         p4 = GlobalAveragePooling1D()
+#         p5 = GlobalAveragePooling2D()
+#         p6 = GlobalAveragePooling3D()
+        
+#         proto = Protocol(
+#             processes = {
+#                 'p1' : p1,
+#                 'p2' : p2,
+#                 'p3' : p3,
+#                 'p4' : p4,
+#                 'p5' : p5,
+#                 'p6' : p6
+#             },
+#             connectors = [
+#         p1>>'result' | p4<<'tensor',
+#         p2>>'result' | p5<<'tensor',
+#         p3>>'result' | p6<<'tensor'
+#             ]
+#         )
 
-        print(r1)
-        print(r2)
-        print(r3)
+#         p1.set_param('input_shape', [None, 3])
+#         p2.set_param('input_shape', [None, 3, 3])
+#         p3.set_param('input_shape', [None, 3, 3 ,3])
+
+
+#         experiment: Experiment = Experiment(
+#             protocol=proto, study=GTest.study, user=GTest.user)
+#         experiment.save()
+#         experiment = await ExperimentService.run_experiment(
+#             experiment=experiment, user=GTest.user)                
+
+#         r1 = p4.output['result']
+#         r2 = p5.output['result']
+#         r3 = p6.output['result']            
+
+#         print(r1)
+#         print(r2)
+#         print(r3)
             
 
         

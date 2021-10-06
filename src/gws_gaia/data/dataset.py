@@ -255,11 +255,11 @@ class DatasetImporter(TableImporter):
     input_specs = {'file': File}
     output_specs = {'dataset': Dataset}
     config_specs = {
-        'file_format': StrParam(default_value=".csv", description="File format"),
-        'delimiter': StrParam(default_value='\t', description="Delimiter character. Only for parsing CSV files"),
-        'header': IntParam(optional=True, default_value=0, description="Row number to use as the column names. Use None to prevent parsing column names. Only for parsing CSV files"),
-        'index' : IntParam(optional=True, description="Column number to use as the row names. Use None to prevent parsing row names. Only for parsing CSV files"),
-        'targets': ListParam(default_value='[]', description="List of integers or strings (eg. ['name', 6, '7'])"),
+        'file_format': StrParam(default_value=".csv", short_description="File format"),
+        'delimiter': StrParam(default_value='\t', short_description="Delimiter character. Only for parsing CSV files"),
+        'header': IntParam(optional=True, default_value=0, short_description="Row number to use as the column names. Use None to prevent parsing column names. Only for parsing CSV files"),
+        'index' : IntParam(optional=True, short_description="Column number to use as the row names. Use None to prevent parsing row names. Only for parsing CSV files"),
+        'targets': ListParam(default_value='[]', short_description="List of integers or strings (eg. ['name', 6, '7'])"),
     }
 
 @task_decorator("DatasetExporter")
@@ -267,10 +267,10 @@ class DatasetExporter(TableExporter):
     input_specs = {'dataset': Dataset}
     output_specs = {'file': File}
     config_specs = {
-        'file_format': StrParam(default_value=".csv", description="File format"),
-        'delimiter': StrParam(default_value="\t", description="Delimiter character. Only for parsing CSV files"),
-        'header': BoolParam(optional=True, description= "Write column names (header)"),
-        'index': BoolParam(optional=True, description="Write row names (index)"),
+        'file_format': StrParam(default_value=".csv", short_description="File format"),
+        'delimiter': StrParam(default_value="\t", short_description="Delimiter character. Only for parsing CSV files"),
+        'header': BoolParam(optional=True, short_description= "Write column names (header)"),
+        'index': BoolParam(optional=True, short_description="Write row names (index)"),
     }
 
 #====================================================================================================================
@@ -281,12 +281,12 @@ class DatasetLoader(TableLoader):
     input_specs = {}
     output_specs = {'dataset': Dataset}
     config_specs = {
-        'file_path': StrParam(description="File path"),
-        'file_format': StrParam(default_value=".csv", description="File format"),
-        'delimiter': StrParam(default_value='\t', description="Delimiter character. Only for parsing CSV files"),
-        'header': IntParam(optional=True, default_value=0, description="Row number to use as the column names. Use None to prevent parsing column names. Only for parsing CSV files"),
-        'index' : IntParam(optional=True, description="Column number to use as the row names. Use None to prevent parsing row names. Only for parsing CSV files"),
-        'targets': ListParam(default_value='[]', description="List of integers or strings (eg. ['name', 6, '7'])"),
+        'file_path': StrParam(short_description="File path"),
+        'file_format': StrParam(default_value=".csv", short_description="File format"),
+        'delimiter': StrParam(default_value='\t', short_description="Delimiter character. Only for parsing CSV files"),
+        'header': IntParam(optional=True, default_value=0, short_description="Row number to use as the column names. Use None to prevent parsing column names. Only for parsing CSV files"),
+        'index' : IntParam(optional=True, short_description="Column number to use as the row names. Use None to prevent parsing row names. Only for parsing CSV files"),
+        'targets': ListParam(default_value='[]', short_description="List of integers or strings (eg. ['name', 6, '7'])"),
     }
 
 @task_decorator("DatasetDumper")
@@ -294,9 +294,9 @@ class DatasetDumper(TableDumper):
     input_specs = {'dataset': Dataset}
     output_specs = {}
     config_specs = {
-        'file_path': StrParam(description="File path"),
-        'file_format': StrParam(default_value=".csv", description="File format"),
-        'delimiter': StrParam(default_value="\t", description="Delimiter character. Only for parsing CSV files"),
-        'header': BoolParam(optional=True, description= "Write column names (header)"),
-        'index': BoolParam(optional=True, description="Write row names (index)"),
+        'file_path': StrParam(short_description="File path"),
+        'file_format': StrParam(default_value=".csv", short_description="File format"),
+        'delimiter': StrParam(default_value="\t", short_description="Delimiter character. Only for parsing CSV files"),
+        'header': BoolParam(optional=True, short_description= "Write column names (header)"),
+        'index': BoolParam(optional=True, short_description="Write row names (index)"),
     }

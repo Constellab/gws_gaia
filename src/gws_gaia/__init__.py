@@ -11,7 +11,7 @@ from .data.core import GenericResult
 from .data.dataset import Dataset, DatasetExporter, DatasetImporter, DatasetLoader, DatasetDumper
 # decomposition
 from .decomp.ica import ICAResult, ICATrainer
-from .decomp.pca import PCAResult, PCATrainer, PCATransformer
+from .decomp.pca import PCATrainerResult, PCATrainer, PCATransformer, PCATransformerResult
 from .decomp.pls import PLSResult, PLSTrainer, PLSPredictor, PLSTester
 # ensemble
 from .ensemble.adaboostclass import (AdaBoostClassifierPredictor, AdaBoostClassifierResult, 

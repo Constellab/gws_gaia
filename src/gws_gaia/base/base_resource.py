@@ -18,3 +18,6 @@ class BaseResource(Resource):
         super().__init__(*args, **kwargs)
         if result is not None:
             self.result = result
+
+    def get_result(self):
+        return self.result

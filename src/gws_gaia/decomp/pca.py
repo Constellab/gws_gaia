@@ -25,8 +25,8 @@ class PCATrainerResult(BaseResource):
         View 2D score plot
         """
 
-        scores = self.get_result()["scores"]
-        return TableView(data=scores, **kwargs)
+        x_transformed = self.get_result()["x_transformed"]
+        return TableView(data=x_transformed, **kwargs)
 
     @view(view_type=ScatterPlot2DView, human_name='2DScorePlot', short_description='2D score plot')
     def view_scores_as_2d_plot(self, **kwargs) -> dict:
@@ -34,8 +34,8 @@ class PCATrainerResult(BaseResource):
         View 2D score plot
         """
 
-        scores = self.get_result()["scores"]
-        return ScatterPlot2DView(data=scores, x_column_name="PC1", y_column_names=["PC2"], **kwargs)
+        x_transformed = self.get_result()["x_transformed"]
+        return ScatterPlot2DView(data=x_transformed, x_column_name="PC1", y_column_names=["PC2"], **kwargs)
 
     @view(view_type=ScatterPlot3DView, human_name='3DScorePlot', short_description='3D score plot')
     def view_scores_as_3d_plot(self, **kwargs) -> dict:
@@ -43,8 +43,8 @@ class PCATrainerResult(BaseResource):
         View 3D score plot
         """
 
-        scores = self.get_result()["scores"]
-        return ScatterPlot3DView(data=scores, x_column_name="PC1", y_column_name="PC2", z_column_names=["PC3"], **kwargs)
+        x_transformed = self.get_result()["x_transformed"]
+        return ScatterPlot3DView(data=x_transformed, x_column_name="PC1", y_column_name="PC2", z_column_names=["PC3"], **kwargs)
 
 #==============================================================================
 #==============================================================================
@@ -59,7 +59,7 @@ class PCATrainer(Task):
     input_specs = {'dataset' : Dataset}
     output_specs = {'result' : PCATrainerResult}
     config_specs = {
-        'nb_components':IntParam(default_value=2, min_value=1)
+        'nb_components':IntParam(default_value=2, min_value=2)
     }
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
@@ -68,13 +68,13 @@ class PCATrainer(Task):
         pca = PCA(n_components=ncomp)
         pca.fit(dataset.features.values)
         
-        scores: DataFrame = pca.transform(dataset.features.values)
+        x_transformed: DataFrame = pca.transform(dataset.features.values)
         columns = [f"PC{n+1}" for n in range(0,ncomp)]
-        scores = DataFrame(data=scores, columns=columns, index=dataset.instance_names)
+        x_transformed = DataFrame(data=x_transformed, columns=columns, index=dataset.instance_names)
 
         result = PCATrainerResult(result = {
             "pca": pca,
-            "scores": scores
+            "x_transformed": x_transformed
         })
         return {'result': result}
         

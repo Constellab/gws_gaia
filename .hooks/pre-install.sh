@@ -6,21 +6,21 @@
 
 # Pre-installation script executed before server installation
 
-echo "Building dlib ..."
-build_dir="/lab/.sys/lib/dlib-cpp/build"
+# echo "Building dlib ..."
+# build_dir="/lab/.sys/lib/dlib-cpp/build"
 
-if [ ! -d "$build_dir" ]; then
-    mkdir -p $build_dir
+# if [ ! -d "$build_dir" ]; then
+#     mkdir -p $build_dir
 
-    cd $build_dir
-    cmake -DUSE_AVX_INSTRUCTIONS=ON -DBUILD_SHARED_LIBS=1 ..
-    cmake --build . --config Release
-    make
-fi
+#     cd $build_dir
+#     cmake -DUSE_AVX_INSTRUCTIONS=ON -DBUILD_SHARED_LIBS=1 ..
+#     cmake --build . --config Release
+#     make
+# fi
 
-echo "Build done!"
-echo "Installing dlib ..."
+# echo "Build done!"
+# echo "Installing dlib ..."
 
-cd $build_dir
-make install
-ldconfig
+# cd $build_dir
+# make install
+# ldconfig

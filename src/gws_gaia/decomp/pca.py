@@ -19,7 +19,7 @@ from ..base.base_resource import BaseResource
 @resource_decorator("PCATrainerResult", hide=True)
 class PCATrainerResult(BaseResource):
 
-    @view(view_type=TableView, human_name="Scores' table", short_description="Scores' table")
+    @view(view_type=TableView, human_name="TransformedDataTable' table", short_description="Table of data in the score plot")
     def view_scores_as_table(self, **kwargs) -> dict:
         """
         View 2D score plot

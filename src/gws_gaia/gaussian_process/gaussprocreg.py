@@ -40,7 +40,7 @@ class GaussianProcessRegressorTrainer(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         gpr = GaussianProcessRegressor(alpha=params["alpha"])
-        gpr.fit(dataset.features.values, ravel(dataset.targets.values))
+        gpr.fit(dataset.get_features().values, ravel(dataset.get_targets().values))
         result = GaussianProcessRegressorResult(result=gpr)
         return {'result': result}
 
@@ -62,7 +62,7 @@ class GaussianProcessRegressorTester(Task):
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
         gpr = learned_model.result
-        y = gpr.score(dataset.features.values, dataset.targets.values)
+        y = gpr.score(dataset.get_features().values, dataset.get_targets().values)
         z = tuple([y])
         result_dataset = GenericResult(result = z)
         return {'result': result_dataset}
@@ -85,6 +85,6 @@ class GaussianProcessRegressorPredictor(Task):
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
         gpr = learned_model.result
-        y = gpr.predict(dataset.features.values)
+        y = gpr.predict(dataset.get_features().values)
         result_dataset = Dataset(targets = DataFrame(y))
         return {'result': result_dataset}

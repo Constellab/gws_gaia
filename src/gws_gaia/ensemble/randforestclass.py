@@ -39,7 +39,7 @@ class RandomForestClassifierTrainer(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         rfc = RandomForestClassifier(n_estimators=params["nb_estimators"])
-        rfc.fit(dataset.features.values, ravel(dataset.targets.values))
+        rfc.fit(dataset.get_features().values, ravel(dataset.get_targets().values))
         result = RandomForestClassifierResult(result = rfc)
         return {'result': result}
 
@@ -61,7 +61,7 @@ class RandomForestClassifierTester(Task):
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
         rfc = learned_model.result
-        y = rfc.score(dataset.features.values, dataset.targets.values)
+        y = rfc.score(dataset.get_features().values, dataset.get_targets().values)
         z = tuple([y])
         result_dataset = GenericResult(result = z)
         return {'result': result_dataset}
@@ -84,6 +84,6 @@ class RandomForestClassifierPredictor(Task):
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
         rfc = learned_model.result
-        y = rfc.predict(dataset.features.values)
+        y = rfc.predict(dataset.get_features().values)
         result_dataset = Dataset(targets = DataFrame(y))
         return {'result': result_dataset}

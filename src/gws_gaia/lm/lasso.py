@@ -41,7 +41,7 @@ class LassoTrainer(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         las = Lasso(alpha=params["alpha"])
-        las.fit(dataset.features.values, ravel(dataset.targets.values))
+        las.fit(dataset.get_features().values, ravel(dataset.get_targets().values))
         result = LassoResult(result = las)
         return {'result': result}
 
@@ -63,7 +63,7 @@ class LassoTester(Task):
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
         las = learned_model.result
-        y = las.score(dataset.features.values, dataset.targets.values)
+        y = las.score(dataset.get_features().values, dataset.get_targets().values)
         z = tuple([y])
         result_dataset = GenericResult(result = z)
         return {'result': result_dataset}
@@ -86,6 +86,6 @@ class LassoPredictor(Task):
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
         las = learned_model.result
-        y = las.predict(dataset.features.values)
+        y = las.predict(dataset.get_features().values)
         result_dataset = Dataset(targets = DataFrame(y))
         return {'result': result_dataset}

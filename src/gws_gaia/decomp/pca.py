@@ -8,9 +8,8 @@ from sklearn.decomposition import PCA
 
 from gws_core import (Task, Resource, task_decorator, resource_decorator,
                         ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, 
-                        StrParam, ScatterPlot2DView, ScatterPlot3DView, TableView, view)
+                        StrParam, ScatterPlot2DView, ScatterPlot3DView, TableView, view, ResourceRField, FloatRField, Resource)
 from ..data.dataset import Dataset
-from ..data.core import GenericResult
 from ..base.base_resource import BaseResource
 
 #==============================================================================
@@ -19,32 +18,77 @@ from ..base.base_resource import BaseResource
 @resource_decorator("PCATrainerResult", hide=True)
 class PCATrainerResult(BaseResource):
 
+    _training_set: Resource = ResourceRField()
+    _log_likelihood: int = FloatRField()
+
+    def _get_transformed_data(self) -> DataFrame:
+        pca: PCA = self.get_result()
+        ncomp = pca.n_components_
+        X_transformed: DataFrame = pca.transform(self._training_set.get_features().values)
+        columns = [f"PC{n+1}" for n in range(0,ncomp)]
+        X_transformed = DataFrame(data=X_transformed, columns=columns, index=self._training_set.instance_names)
+        return X_transformed
+
+    def _get_log_likelihood(self) -> float:
+        if not self._log_likelihood:
+            pca = self.get_result()
+            self._log_likelihood = pca.score(self._training_set.get_features().values)
+        return self._log_likelihood
+
     @view(view_type=TableView, human_name="TransformedDataTable' table", short_description="Table of data in the score plot")
-    def view_scores_as_table(self, **kwargs) -> dict:
+    def view_transformed_data_as_table(self, *args, **kwargs) -> dict:
+        """
+        View 2D score plot
+        """
+        x_transformed = self._get_transformed_data()
+        return TableView(
+            data=x_transformed, 
+            title="Transformed data", 
+            subtitle="log-likelihood = {:.2f}".format(self._get_log_likelihood()), 
+            *args, **kwargs
+        )
+
+    @view(view_type=TableView, human_name="VarianceTable", short_description="Table of explained variances")
+    def view_variance_as_table(self, *args, **kwargs) -> dict:
         """
         View 2D score plot
         """
 
-        x_transformed = self.get_result()["x_transformed"]
-        return TableView(data=x_transformed, **kwargs)
+        pca = self.get_result()
+        index = [f"PC{n+1}" for n in range(0,pca.n_components_)]
+        columns = ["ExplainedVariance"]
+        data = DataFrame(pca.explained_variance_ratio_, index=index, columns=columns)
+        return TableView(data=data, *args, **kwargs)
 
-    @view(view_type=ScatterPlot2DView, human_name='2DScorePlot', short_description='2D score plot')
-    def view_scores_as_2d_plot(self, **kwargs) -> dict:
+    @view(view_type=ScatterPlot2DView, human_name='ScorePlot3D', short_description='2D score plot')
+    def view_scores_as_2d_plot(self, *args, **kwargs) -> dict:
         """
         View 2D score plot
         """
 
-        x_transformed = self.get_result()["x_transformed"]
-        return ScatterPlot2DView(data=x_transformed, x_column_name="PC1", y_column_names=["PC2"], **kwargs)
+        x_transformed = self._get_transformed_data()
+        view_model = ScatterPlot2DView(
+            data=x_transformed, 
+            title="Transformed data", 
+            subtitle="log-likelihood = {:.2f}".format(self._get_log_likelihood()), 
+            *args, **kwargs
+        )
+        return view_model
 
-    @view(view_type=ScatterPlot3DView, human_name='3DScorePlot', short_description='3D score plot')
-    def view_scores_as_3d_plot(self, **kwargs) -> dict:
+    @view(view_type=ScatterPlot3DView, human_name='ScorePlot3D', short_description='3D score plot')
+    def view_scores_as_3d_plot(self, *args, **kwargs) -> dict:
         """
         View 3D score plot
         """
 
-        x_transformed = self.get_result()["x_transformed"]
-        return ScatterPlot3DView(data=x_transformed, x_column_name="PC1", y_column_name="PC2", z_column_names=["PC3"], **kwargs)
+        x_transformed = self._get_transformed_data()
+        view_model = ScatterPlot3DView(
+            data=x_transformed,
+            title="Transformed data", 
+            subtitle="log-likelihood = {:.2f}".format(self._get_log_likelihood()), 
+            *args, **kwargs
+        )
+        return view_model
 
 #==============================================================================
 #==============================================================================
@@ -66,24 +110,13 @@ class PCATrainer(Task):
         dataset = inputs['dataset']
         ncomp = params["nb_components"]
         pca = PCA(n_components=ncomp)
-        pca.fit(dataset.features.values)
-        
-        x_transformed: DataFrame = pca.transform(dataset.features.values)
-        columns = [f"PC{n+1}" for n in range(0,ncomp)]
-        x_transformed = DataFrame(data=x_transformed, columns=columns, index=dataset.instance_names)
-
-        result = PCATrainerResult(result = {
-            "pca": pca,
-            "x_transformed": x_transformed
-        })
+        pca.fit(dataset.get_features().values)
+        result = PCATrainerResult(result = pca)
+        result._training_set = dataset
         return {'result': result}
         
 #==============================================================================
 #==============================================================================
-
-@resource_decorator("PCATransformerResult", hide=True)
-class PCATransformerResult(BaseResource):
-    pass
 
 @task_decorator("PCATransformer")
 class PCATransformer(Task):
@@ -94,13 +127,13 @@ class PCATransformer(Task):
 
     """
     input_specs = {'dataset' : Dataset, 'learned_model': PCATrainerResult}
-    output_specs = {'result' : PCATransformerResult}
+    output_specs = {'result' : Dataset}
     config_specs = {}
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
-        pca = learned_model.get_result()["pca"]
-        X_transformed = pca.transform(dataset.features.values)
-        result = PCATransformerResult(result = X_transformed)
+        pca = learned_model.get_result()
+        X_transformed = pca.transform(dataset.get_features().values)
+        result = Dataset(features = X_transformed)
         return {'result': result}

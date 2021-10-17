@@ -43,7 +43,7 @@ class SGDClassifierTrainer(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         sgdc = SGDClassifier(max_iter=params["max_iter"],alpha=params["alpha"],loss=params["loss"])
-        sgdc.fit(dataset.features.values, ravel(dataset.targets.values))
+        sgdc.fit(dataset.get_features().values, ravel(dataset.get_targets().values))
         result = SGDClassifierResult(result = sgdc)
         return {'result': result}
 
@@ -65,7 +65,7 @@ class SGDClassifierTester(Task):
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
         sgdc = learned_model.result
-        y = sgdc.score(dataset.features.values, dataset.targets.values)
+        y = sgdc.score(dataset.get_features().values, dataset.get_targets().values)
         z = tuple([y])
         result_dataset = GenericResult(result = z)
         return {'result': result_dataset}
@@ -88,6 +88,6 @@ class SGDClassifierPredictor(Task):
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
         sgdc = learned_model.result
-        y = sgdc.predict(dataset.features.values)
+        y = sgdc.predict(dataset.get_features().values)
         result_dataset = Dataset(targets = DataFrame(y))
         return {'result': result_dataset}

@@ -37,6 +37,6 @@ class LocallyLinearEmbeddingTrainer(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         lle = LocallyLinearEmbedding(n_components=params["nb_components"])
-        lle.fit(dataset.features.values)
+        lle.fit(dataset.get_features().values)
         result = LocallyLinearEmbeddingResult(result = lle)
         return {'result': result}

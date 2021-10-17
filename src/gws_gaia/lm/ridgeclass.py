@@ -40,7 +40,7 @@ class RidgeClassifierTrainer(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         ric = RidgeClassifier(alpha=params["alpha"])
-        ric.fit(dataset.features.values, ravel(dataset.targets.values))
+        ric.fit(dataset.get_features().values, ravel(dataset.get_targets().values))
         result = RidgeClassifierResult(result = ric)
         return {'result': result}
 
@@ -62,7 +62,7 @@ class RidgeClassifierTester(Task):
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
         ric = learned_model.result
-        y = ric.score(dataset.features.values, dataset.targets.values)
+        y = ric.score(dataset.get_features().values, dataset.get_targets().values)
         z = tuple([y])
         result_dataset = GenericResult(result = z)
         return {'result': result_dataset}
@@ -85,6 +85,6 @@ class RidgeClassifierPredictor(Task):
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
         ric = learned_model.result
-        y = ric.predict(dataset.features.values)
+        y = ric.predict(dataset.get_features().values)
         result_dataset = Dataset(targets = DataFrame(y))
         return {'result': result_dataset}

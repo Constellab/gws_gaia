@@ -39,7 +39,7 @@ class DecisionTreeClassifierTrainer(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         dtc = DecisionTreeClassifier(max_depth=params["max_depth"])
-        dtc.fit(dataset.features.values, ravel(dataset.targets.values))
+        dtc.fit(dataset.get_features().values, ravel(dataset.get_targets().values))
         result = DecisionTreeClassifierResult(result = dtc)
         return {'result': result}
 
@@ -61,7 +61,7 @@ class DecisionTreeClassifierTester(Task):
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
         dtc = learned_model.result
-        y = dtc.score(dataset.features.values,ravel(dataset.targets.values))
+        y = dtc.score(dataset.get_features().values,ravel(dataset.get_targets().values))
         z = tuple([y])
         result_dataset = GenericResult(result = z)
         return {'result': result_dataset}
@@ -83,6 +83,6 @@ class DecisionTreeClassifierPredictor(Task):
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
         dtc = learned_model.result
-        y = dtc.predict(dataset.features.values)
+        y = dtc.predict(dataset.get_features().values)
         result_dataset = Dataset(targets = DataFrame(y))
         return {'result': result_dataset}

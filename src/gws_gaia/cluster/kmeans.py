@@ -37,7 +37,7 @@ class KMeansTrainer(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         kmeans = KMeans(n_clusters=params["nb_clusters"])
-        kmeans.fit(dataset.features.values)
+        kmeans.fit(dataset.get_features().values)
         result = KMeansResult(result = kmeans)
         return {'result': result}
 
@@ -59,6 +59,6 @@ class KMeansPredictor(Task):
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
         kmeans = learned_model.result
-        y = kmeans.predict(dataset.features.values)
+        y = kmeans.predict(dataset.get_features().values)
         result_dataset = Dataset(targets = DataFrame(y))
         return {'result': result_dataset}

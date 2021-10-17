@@ -39,7 +39,7 @@ class SVRTrainer(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         svr = SVR(kernel=params["kernel"])
-        svr.fit(dataset.features.values, ravel(dataset.targets.values))
+        svr.fit(dataset.get_features().values, ravel(dataset.get_targets().values))
         result = SVRResult(result=svr)
         return {'result': result}
 
@@ -61,7 +61,7 @@ class SVRTester(Task):
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
         svr = learned_model.result
-        y = svr.score(dataset.features.values, dataset.targets.values)
+        y = svr.score(dataset.get_features().values, dataset.get_targets().values)
         z = tuple([y])
         result_dataset = GenericResult(result = z)
         return {'result': result_dataset}
@@ -84,6 +84,6 @@ class SVRPredictor(Task):
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
         svr = learned_model.result
-        y = svr.predict(dataset.features.values)
+        y = svr.predict(dataset.get_features().values)
         result_dataset = Dataset(targets = DataFrame(y))
         return {'result': result_dataset}

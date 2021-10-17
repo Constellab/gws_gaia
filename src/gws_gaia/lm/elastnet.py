@@ -39,7 +39,7 @@ class ElasticNetTrainer(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         eln = ElasticNet(alpha=params["alpha"])
-        eln.fit(dataset.features.values, dataset.targets.values)
+        eln.fit(dataset.get_features().values, dataset.get_targets().values)
         result = ElasticNetResult(result = eln)
         return {'result': result}
 
@@ -61,7 +61,7 @@ class ElasticNetTester(Task):
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
         eln = learned_model.result
-        y = eln.score(dataset.features.values, dataset.targets.values)
+        y = eln.score(dataset.get_features().values, dataset.get_targets().values)
         z = tuple([y])
         result_dataset = GenericResult(result = z)
         return {'result': result_dataset}
@@ -84,6 +84,6 @@ class ElasticNetPredictor(Task):
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
         eln = learned_model.result
-        y = eln.predict(dataset.features.values)
+        y = eln.predict(dataset.get_features().values)
         result_dataset = Dataset(targets = DataFrame(y))
         return {'result': result_dataset}

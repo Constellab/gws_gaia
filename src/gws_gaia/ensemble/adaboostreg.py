@@ -36,7 +36,7 @@ class AdaBoostRegressorTrainer(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         abr = AdaBoostRegressor(n_estimators=params["nb_estimators"])
-        abr.fit(dataset.features.values, ravel(dataset.targets.values))
+        abr.fit(dataset.get_features().values, ravel(dataset.get_targets().values))
         result = AdaBoostRegressorResult(result = abr)
         return {'result': result}
 
@@ -58,7 +58,7 @@ class AdaBoostRegressorTester(Task):
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
         abr = learned_model.result
-        y = abr.score(dataset.features.values,ravel(dataset.targets.values))
+        y = abr.score(dataset.get_features().values,ravel(dataset.get_targets().values))
         z = tuple([y])
         result_dataset = GenericResult(result = z)
         return {'result': result_dataset}
@@ -82,6 +82,6 @@ class AdaBoostRegressorPredictor(Task):
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
         abr = learned_model.result
-        y = abr.predict(dataset.features.values)
+        y = abr.predict(dataset.get_features().values)
         result_dataset = Dataset(targets = DataFrame(y))
         return {'result': result_dataset}

@@ -40,7 +40,7 @@ class BernoulliNaiveBayesClassifierTrainer(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         bnb = BernoulliNB(alpha=params["alpha"])
-        bnb.fit(dataset.features.values, ravel(dataset.targets.values))
+        bnb.fit(dataset.get_features().values, ravel(dataset.get_targets().values))
         result = BernoulliNaiveBayesClassifierResult(result = bnb)
         return {'result': result}
 
@@ -62,7 +62,7 @@ class BernoulliNaiveBayesClassifierTester(Task):
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
         bnb = learned_model.result
-        y = bnb.score(dataset.features.values,ravel(dataset.targets.values))
+        y = bnb.score(dataset.get_features().values,ravel(dataset.get_targets().values))
         z = tuple([y])
         result_dataset = GenericResult(result = z)
         return {'result': result_dataset}
@@ -85,6 +85,6 @@ class BernoulliNaiveBayesClassifierPredictor(Task):
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
         bnb = learned_model.result
-        y = bnb.predict(dataset.features.values)
+        y = bnb.predict(dataset.get_features().values)
         result_dataset = Dataset(targets = DataFrame(y))
         return {'result': result_dataset}

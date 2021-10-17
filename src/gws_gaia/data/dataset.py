@@ -7,14 +7,15 @@ import os
 import numpy as np
 import pandas
 from pandas import DataFrame
+from pandas.api.types import is_string_dtype
 from typing import Union, List
 from pathlib import Path
 
 from gws_core import (task_decorator, 
                         resource_decorator, BadRequestException, 
                         Table, File, TableExporter, TableImporter, TableLoader, TableDumper, 
-                        StrParam, IntParam, ListParam, BoolParam, DataFrameRField)
-
+                        StrParam, IntParam, ListParam, BoolParam, DataFrameRField, view)
+from .view.extended_table_view import ExtendedTableView
 #====================================================================================================================
 #====================================================================================================================
 
@@ -24,8 +25,8 @@ class Dataset(Table):
     Dataset class
     """
     
-    features: DataFrame = DataFrameRField()
-    targets: DataFrame = DataFrameRField()
+    _data: DataFrame = DataFrameRField()    # features
+    _targets: DataFrame = DataFrameRField()
 
     def __init__(self, *args, features: Union[DataFrame, np.ndarray] = None, 
                     targets: Union[DataFrame, np.ndarray] = None, 
@@ -45,7 +46,7 @@ class Dataset(Table):
             else:
                 raise BadRequestException(
                     "The table mus be an instance of DataFrame or Numpy array")
-            self.features = features
+            self._data = features
 
         if targets is not None:
             if isinstance(targets, DataFrame):
@@ -60,7 +61,7 @@ class Dataset(Table):
             else:
                 raise BadRequestException(
                     "The table mus be an instance of DataFrame or Numpy array")
-            self.targets = targets
+            self._targets = targets
 
     # -- C --
 
@@ -76,10 +77,10 @@ class Dataset(Table):
 
         file_extension = Path(file_path).suffix
         if file_extension in [".xls", ".xlsx"] or file_format in [".xls", ".xlsx"]:
-            table = pandas.concat([self.features, self.targets])
+            table = pandas.concat([self._data, self._targets])
             table.to_excel(file_path)
         elif file_extension in [".csv", ".tsv", ".txt", ".tab"] or file_format in [".csv", ".tsv", ".txt", ".tab"]:
-            table = pandas.concat([self.features, self.targets])
+            table = pandas.concat([self._data, self._targets])
             table.to_csv(
                 file_path,
                 sep=delimiter,
@@ -92,6 +93,18 @@ class Dataset(Table):
 
     # -- F --
 
+    def get_features(self) -> DataFrame:
+        return self._data
+    
+    def set_features(self, data: DataFrame):
+        self._data = data
+
+    def get_targets(self) -> DataFrame:
+        return self._targets
+    
+    def set_targets(self, targets: DataFrame):
+        self._targets = targets
+
     @property
     def feature_names(self) -> list:
         """ 
@@ -101,7 +114,7 @@ class Dataset(Table):
         :rtype: list or None
         """
         try:
-            return self.features.columns.values.tolist()
+            return self._data.columns.values.tolist()
         except:
             return None
 
@@ -120,12 +133,12 @@ class Dataset(Table):
         :rtype: tuple, (pandas.DataFrame, pandas.DataFrame)
         """
 
-        f = self.features.head(n)
+        f = self._data.head(n)
 
         if self._target is None:
             t = None
         else:
-            t = self.targets.head(n)
+            t = self._targets.head(n)
 
         return f, t
 
@@ -175,7 +188,7 @@ class Dataset(Table):
         :return: The list of instance names
         :rtype: list
         """
-        return self.features.index.values.tolist()
+        return self._data.index.values.tolist()
 
     # -- N --
 
@@ -187,7 +200,7 @@ class Dataset(Table):
         :return: The number of features 
         :rtype: int
         """
-        return self.features.shape[1]
+        return self._data.shape[1]
     
     @property
     def nb_instances(self) -> int:
@@ -197,7 +210,7 @@ class Dataset(Table):
         :return: The number of instances 
         :rtype: int
         """
-        return self.features.shape[0]
+        return self._data.shape[0]
 
     @property
     def nb_targets(self) -> int:
@@ -207,10 +220,10 @@ class Dataset(Table):
         :return: The number of targets (0 is no targets exist)
         :rtype: int
         """
-        if self.targets is None:
+        if self._targets is None:
             return 0
         else:
-            return self.targets.shape[1]
+            return self._targets.shape[1]
 
     # -- R --
 
@@ -225,7 +238,7 @@ class Dataset(Table):
     # -- S --
 
     def __str__(self):        
-        return f"Features: \n{self.features.__str__()} \n\nTargets: \n{self.targets.__str__()} "
+        return f"Features: \n{self._data.__str__()} \n\nTargets: \n{self._targets.__str__()} "
 
     # -- T --
 
@@ -238,12 +251,38 @@ class Dataset(Table):
         :rtype: list or None
         """
         try:
-            return self.targets.columns.values.tolist()
+            return self._targets.columns.values.tolist()
         except:
             return None
 
     def target_exists(self, name) -> bool:
         return name in self.target_names
+    
+    def has_string_targets(self):
+        return is_string_dtype(self._targets)
+
+    def convert_targets_to_dummy_matrix(self) -> DataFrame:
+        if self._targets.shape[1] != 1:
+            raise BadRequestException("The target vector must be a column vector")   
+        labels = sorted(list(set(self._targets.transpose().values.tolist()[0])))
+        nb_labels = len(labels)
+        nb_instances = self._targets.shape[0]
+        data = np.zeros(shape=(nb_instances,nb_labels))
+        for i in range(0,nb_instances):
+            current_label = self._targets.iloc[i,0]
+            idx = labels.index(current_label)
+            data[i][idx] = 1.0
+        return DataFrame(data=data, index=self._targets.index, columns=labels)
+
+    @view(view_type=ExtendedTableView, default_view=True, human_name='Extended Tabular', short_description='View as a extended table',
+          specs={})
+    def view_as_extended_table(self) -> ExtendedTableView:
+        """
+        View as table
+        """
+
+        return ExtendedTableView(self._data, self._targets)
+
 
     # -- W --
 

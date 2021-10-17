@@ -39,7 +39,7 @@ class LogisticRegressionTrainer(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         logreg = LogisticRegression(C=params["inv_reg_strength"])
-        logreg.fit(dataset.features.values, ravel(dataset.targets.values))
+        logreg.fit(dataset.get_features().values, ravel(dataset.get_targets().values))
         result = LogisticRegressionResult(result=logreg)
         return {'result': result}
 
@@ -61,7 +61,7 @@ class LogisticRegressionTester(Task):
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
         logreg = learned_model.result
-        y = logreg.score(dataset.features.values, dataset.targets.values)
+        y = logreg.score(dataset.get_features().values, dataset.get_targets().values)
         z = tuple([y])
         result_dataset = GenericResult(result = z)
         return {'result': result_dataset}
@@ -84,6 +84,6 @@ class LogisticRegressionPredictor(Task):
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
         logreg = learned_model.result
-        y = logreg.predict(dataset.features.values)
+        y = logreg.predict(dataset.get_features().values)
         result_dataset = Dataset(targets = DataFrame(y))
         return {'result': result_dataset}

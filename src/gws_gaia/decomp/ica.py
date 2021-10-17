@@ -36,6 +36,6 @@ class ICATrainer(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         ica = FastICA(n_components=params["nb_components"])
-        ica.fit(dataset.features.values)
+        ica.fit(dataset.get_features().values)
         result = ICAResult(result = ica)
         return {'result': result}

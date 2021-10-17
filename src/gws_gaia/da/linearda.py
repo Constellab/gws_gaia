@@ -21,14 +21,6 @@ from ..base.base_resource import BaseResource
 class LDAResult(BaseResource):
     pass
 
-# class LDATrainerResult(BaseResource):
-#     pass
-
-# class LDAPredictorResult(Dataset):
-
-#     def view_as_table(self) -> DataFrame:
-#         pass
-
 #==============================================================================
 #==============================================================================
 
@@ -49,7 +41,7 @@ class LDATrainer(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         lda = LinearDiscriminantAnalysis(solver=params["solver"],n_components=params["nb_components"])
-        lda.fit(dataset.features.values, ravel(dataset.targets.values))
+        lda.fit(dataset.get_features().values, ravel(dataset.get_targets().values))
         result = LDAResult(result = lda)
         return {'result': result}
         
@@ -72,7 +64,7 @@ class LDATransformer(Task):
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
         lda = learned_model.result
-        x = lda.transform(dataset.features.values)
+        x = lda.transform(dataset.get_features().values)
         result = GenericResult(result = x)
         return {'result': result}
         
@@ -94,7 +86,7 @@ class LDATester(Task):
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
         lda = learned_model.result
-        y = lda.score(dataset.features.values, dataset.targets.values)
+        y = lda.score(dataset.get_features().values, dataset.get_targets().values)
         z = tuple([y])
         result_dataset = GenericResult(result = z)
         return {'result': result_dataset}
@@ -117,6 +109,6 @@ class LDAPredictor(Task):
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
         lda = learned_model.result
-        y = lda.predict(dataset.features.values)
+        y = lda.predict(dataset.get_features().values)
         result_dataset = Dataset(targets = DataFrame(y))
         return {'result': result_dataset}

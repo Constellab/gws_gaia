@@ -40,7 +40,7 @@ class GaussianMixtureTrainer(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         gmixt = GaussianMixture(n_components=params["nb_components"],covariance_type=params["covariance_type"])
-        gmixt.fit(dataset.features.values)
+        gmixt.fit(dataset.get_features().values)
         result = GaussianMixtureResult(result = gmixt)
         return {'result': result}
 
@@ -62,6 +62,6 @@ class GaussianMixturePredictor(Task):
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
         gmixt = learned_model.result
-        y = gmixt.predict(dataset.features.values)
+        y = gmixt.predict(dataset.get_features().values)
         result_dataset = Dataset(targets = DataFrame(y))
         return {'result': result_dataset}

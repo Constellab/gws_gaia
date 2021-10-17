@@ -27,11 +27,14 @@ class TestImporter(BaseTestCase):
         self.assertEquals(ds.nb_features, 4)
         self.assertEquals(ds.nb_targets, 1)
         self.assertEquals(ds.nb_instances, 150)
-        self.assertEquals(ds.features.values[0,0], 5.1)
-        self.assertEquals(ds.features.values[0,1], 3.5)
-        self.assertEquals(ds.features.values[149,0], 5.9)
+        self.assertEquals(ds.get_features().values[0,0], 5.1)
+        self.assertEquals(ds.get_features().values[0,1], 3.5)
+        self.assertEquals(ds.get_features().values[149,0], 5.9)
         self.assertEquals(list(ds.feature_names), ["sepal.length","sepal.width","petal.length","petal.width"])
         self.assertEquals(list(ds.target_names), ["variety"])
+
+        y = ds.convert_targets_to_dummy_matrix()
+        print(y)
         
 
     async def test_importer_no_head(self):
@@ -54,10 +57,9 @@ class TestImporter(BaseTestCase):
         self.assertEquals(ds.nb_features, 4)
         self.assertEquals(ds.nb_targets, 1)
         self.assertEquals(ds.nb_instances, 150)
-        self.assertEquals(ds.features.values[0,0], 5.1)
-        self.assertEquals(ds.features.values[0,1], 3.5)
-        self.assertEquals(ds.features.values[149,0], 5.9)
+        self.assertEquals(ds.get_features().values[0,0], 5.1)
+        self.assertEquals(ds.get_features().values[0,1], 3.5)
+        self.assertEquals(ds.get_features().values[149,0], 5.9)
         self.assertEquals(list(ds.feature_names), list(range(0,4)))
         self.assertEquals(list(ds.target_names), [4])
-
         print(ds)

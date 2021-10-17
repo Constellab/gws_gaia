@@ -23,7 +23,7 @@ class ExtendedTableView(TableView):
     ```
     """
 
-    _type = "extended-table"
+    _type = "extended-table-view"
     _data: DataFrame
     _targets: DataFrame
 

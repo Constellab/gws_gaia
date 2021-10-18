@@ -1,11 +1,11 @@
 import os
 from gws_core import (Settings, TaskTester, BaseTestCase)
-from gws_gaia import Dataset, ExtendedTableView, DatasetLoader
+from gws_gaia import Dataset, DatasetView, DatasetLoader
 
 
-class TestTExtentedTableView(BaseTestCase):
+class TestTDatasetView(BaseTestCase):
 
-    async def test_extended_table_view(self,):
+    async def test_dataset_view(self,):
         self.print("Dataset import")
         settings = Settings.retrieve()
         test_dir = settings.get_variable("gws_gaia:testdata_dir")
@@ -23,13 +23,13 @@ class TestTExtentedTableView(BaseTestCase):
         outputs = await tester.run()
         ds = outputs['dataset']
 
-        vw = ExtendedTableView(ds)
+        vw = DatasetView(ds)
         dic = vw.to_dict()
 
-        self.assertEqual(dic["type"], "extended-table")
+        self.assertEqual(dic["type"], "dataset-view")
         self.assertEqual(
             dic["data"],
-            ds.get_data().iloc[0:49, 0:3].to_dict('list')
+            ds.get_data().iloc[0:49, 0:4].to_dict('list')
         )
 
         self.assertEqual(

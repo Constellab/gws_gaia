@@ -15,7 +15,7 @@ from gws_core import (task_decorator,
                         resource_decorator, BadRequestException, 
                         Table, File, TableExporter, TableImporter, TableLoader, TableDumper, 
                         StrParam, IntParam, ListParam, BoolParam, DataFrameRField, view)
-from .view.extended_table_view import ExtendedTableView
+from .view.dataset_view import DatasetView
 #====================================================================================================================
 #====================================================================================================================
 
@@ -274,14 +274,14 @@ class Dataset(Table):
             data[i][idx] = 1.0
         return DataFrame(data=data, index=self._targets.index, columns=labels)
 
-    @view(view_type=ExtendedTableView, default_view=True, human_name='Extended Tabular', short_description='View as a extended table',
+    @view(view_type=DatasetView, default_view=True, human_name='Extended Tabular', short_description='View as a extended table',
           specs={})
-    def view_as_extended_table(self) -> ExtendedTableView:
+    def view_as_dataset(self) -> DatasetView:
         """
         View as table
         """
 
-        return ExtendedTableView(self._data, self._targets)
+        return DatasetView(self._data, self._targets)
 
 
     # -- W --

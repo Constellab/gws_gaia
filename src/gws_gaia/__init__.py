@@ -9,7 +9,7 @@ from .da.quadrada import QDAResult, QDATrainer, QDATester, QDAPredictor
 
 from .data.core import GenericResult
 from .data.dataset import Dataset, DatasetExporter, DatasetImporter, DatasetLoader, DatasetDumper
-from .data.view.extended_table_view import ExtendedTableView
+from .data.view.dataset_view import DatasetView
 
 # decomposition
 from .decomp.ica import ICAResult, ICATrainer

@@ -3,14 +3,14 @@ from pandas import DataFrame
 
 from gws_core import Table, TableView, IntParam, ViewSpecs
 
-class ExtendedTableView(TableView):
+class DatasetView(TableView):
     """
     Class table view.
 
     The view model is:
     ```
     {
-        "type": "extended-table",
+        "type": "dataset-view",
         "data": dict,
         "targets": dict,
         "from_row": int,
@@ -23,7 +23,7 @@ class ExtendedTableView(TableView):
     ```
     """
 
-    _type = "extended-table-view"
+    _type = "dataset-view"
     _data: DataFrame
     _targets: DataFrame
 
@@ -39,8 +39,13 @@ class ExtendedTableView(TableView):
         n = min(self._targets.shape[1], 49)
         return self._targets.iloc[from_row_index:to_row_index, 0:n].to_dict('list')
         
-    def to_dict(self, from_row: int = 1, number_of_rows_per_page: int = 50, from_column: int = 1,
-                number_of_columns_per_page: int = 50, **kwargs) -> dict:
+    def to_dict(self, *args, **kwargs) -> dict:
+        from_row = kwargs.get("from_row", 1)
+        number_of_rows_per_page = kwargs.get("number_of_rows_per_page", 50)
+        from_column = kwargs.get("from_column", 1)
+        number_of_columns_per_page = kwargs.get("number_of_columns_per_page", 50)
+        scale = kwargs.get("scale", "none")
+
         total_number_of_rows = self._data.shape[0]
         total_number_of_columns = self._data.shape[1]
         from_row_index = from_row - 1
@@ -52,7 +57,8 @@ class ExtendedTableView(TableView):
             from_row_index=from_row_index,
             to_row_index=to_row_index,
             from_column_index=from_column_index,
-            to_column_index=to_column_index
+            to_column_index=to_column_index,
+            scale=scale
         )
 
         targets = self._slice_targets(

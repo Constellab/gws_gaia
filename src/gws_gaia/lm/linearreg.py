@@ -8,7 +8,8 @@ from pandas import DataFrame
 from sklearn.linear_model import LinearRegression
 
 from gws_core import (Task, Resource, task_decorator, resource_decorator,
-                        ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam)
+                        ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam,
+                        view, TableView, ResourceRField)
 
 from ..data.core import GenericResult
 from ..data.dataset import Dataset
@@ -19,7 +20,25 @@ from ..base.base_resource import BaseResource
 
 @resource_decorator("LinearRegressionResult", hide=True)
 class LinearRegressionResult(BaseResource):
-    pass
+    _training_set: Resource = ResourceRField()
+
+    def _get_data(self) -> DataFrame:
+        data: DataFrame = self._training_set.get_features().values
+        data = DataFrame(data=data, index=self._training_set.instance_names)
+        return data
+    
+    @view(view_type=TableView, human_name="Table", short_description="Table of data")
+    def view_data_as_table(self, *args, **kwargs) -> dict:
+        """
+        View in a table
+        """
+        data = self._get_data()
+
+        return TableView(
+            data=data, 
+            title="Data", 
+            *args, **kwargs
+        )
 
 #==============================================================================
 #==============================================================================

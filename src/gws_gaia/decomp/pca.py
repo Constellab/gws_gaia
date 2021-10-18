@@ -43,8 +43,8 @@ class PCATrainerResult(BaseResource):
         x_transformed = self._get_transformed_data()
         return TableView(
             data=x_transformed, 
-            title="Transformed data", 
-            subtitle="log-likelihood = {:.2f}".format(self._get_log_likelihood()), 
+            #title="Transformed data", 
+            #subtitle="log-likelihood = {:.2f}".format(self._get_log_likelihood()), 
             *args, **kwargs
         )
 
@@ -69,8 +69,8 @@ class PCATrainerResult(BaseResource):
         x_transformed = self._get_transformed_data()
         view_model = ScatterPlot2DView(
             data=x_transformed, 
-            title="Transformed data", 
-            subtitle="log-likelihood = {:.2f}".format(self._get_log_likelihood()), 
+            #title="Transformed data", 
+            #subtitle="log-likelihood = {:.2f}".format(self._get_log_likelihood()), 
             *args, **kwargs
         )
         return view_model
@@ -84,8 +84,8 @@ class PCATrainerResult(BaseResource):
         x_transformed = self._get_transformed_data()
         view_model = ScatterPlot3DView(
             data=x_transformed,
-            title="Transformed data", 
-            subtitle="log-likelihood = {:.2f}".format(self._get_log_likelihood()), 
+            #title="Transformed data", 
+            #subtitle="log-likelihood = {:.2f}".format(self._get_log_likelihood()), 
             *args, **kwargs
         )
         return view_model

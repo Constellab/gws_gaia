@@ -32,7 +32,7 @@ class TestTrainer(BaseTestCase):
 
         vm = trainer_result.view_transformed_data_as_table()
         dic = vm.to_dict()
-        self.assertEqual(dic["type"], "table")
+        self.assertEqual(dic["type"], "table-view")
 
         # vm = trainer_result.view_variance_as_table()
         # dic = vm.to_dict()
@@ -42,7 +42,7 @@ class TestTrainer(BaseTestCase):
 
         vm = trainer_result.view_scores_as_2d_plot()
         dic = vm.to_dict()
-        self.assertEqual(dic["type"], "scatter-plot-2d")
+        self.assertEqual(dic["type"], "scatter-plot-2d-view")
         self.assertTrue(numpy.all(numpy.isclose(dic["series"][0]["data"]["x"], [-1.3970, -1.1967, 0.5603, 2.0334], atol=1e-3)))
 
         # run predictior

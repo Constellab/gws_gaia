@@ -49,8 +49,8 @@ class PLSTrainerResult(BaseResource):
         x_transformed = self._get_transformed_data()
         return TableView(
             data=x_transformed, 
-            title="Transformed data", 
-            subtitle="R2 = {:.2f}".format(self._get_R2()), 
+            #title="Transformed data", 
+            #subtitle="R2 = {:.2f}".format(self._get_R2()), 
             *args, **kwargs
         )
 
@@ -76,8 +76,8 @@ class PLSTrainerResult(BaseResource):
         x_transformed = self._get_transformed_data()
         view_model = ScatterPlot2DView(
             data=x_transformed, 
-            title="Transformed data", 
-            subtitle="R2 = {:.2f}".format(self._get_R2()), 
+            #title="Transformed data", 
+            #subtitle="R2 = {:.2f}".format(self._get_R2()), 
             *args, **kwargs
         )
         return view_model
@@ -91,8 +91,8 @@ class PLSTrainerResult(BaseResource):
         x_transformed = self._get_transformed_data()
         view_model = ScatterPlot3DView(
             data=x_transformed,
-            title="Transformed data", 
-            subtitle="R2 = {:.2f}".format(self._get_R2()), 
+            #title="Transformed data", 
+            #subtitle="R2 = {:.2f}".format(self._get_R2()), 
             *args, **kwargs
         )
         return view_model

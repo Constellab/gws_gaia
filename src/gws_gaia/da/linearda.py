@@ -17,7 +17,6 @@ from ..base.base_resource import BaseResource
                     human_name="LDA Result", 
                     short_description = "Linear Discriminant Analysis result", 
                     hide=True)
-
 class LDAResult(BaseResource):
     pass
 

@@ -49,10 +49,9 @@ class LinearRegressionResult(BaseResource):
         """
         Y_data = self._get_target_data()
         Y_predicted = self._get_predicted_data()
-        Y = [Y_data, Y_predicted]
-        Y = concat(Y)
-        columns= ["Y_data", "Y_predicted"]
-        data = DataFrame(data=Y, columns=columns)
+        Y = concat([Y_data, Y_predicted],axis=1, ignore_index=True)
+        data = Y.set_axis(["Y_data", "Y_predicted"], axis=1)
+        # data = DataFrame(data=Y, columns=columns)
 
         return TableView(
             data=data, 
@@ -68,10 +67,9 @@ class LinearRegressionResult(BaseResource):
 
         Y_data = self._get_target_data()
         Y_predicted = self._get_predicted_data()
-        Y = [Y_data, Y_predicted]
-        Y = concat(Y)
-        columns= ["Y_data", "Y_predicted"]
-        data = DataFrame(data=Y, columns=columns)
+        Y = concat([Y_data, Y_predicted],axis=1, ignore_index=True)
+        data = Y.set_axis(["Y_data", "Y_predicted"], axis=1)
+        #data = DataFrame(data=Y, columns=columns)
 
         view_model = ScatterPlot2DView(
             data=data, #prend DataFrame, Table, Dataset

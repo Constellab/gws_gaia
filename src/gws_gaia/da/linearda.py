@@ -9,7 +9,7 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 
 from gws_core import (Task, Resource, task_decorator, resource_decorator,
                         ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam,
-                        StrParam, ScatterPlot2DView, ScatterPlot3DView, TableView, view, ResourceRField, FloatRField)
+                        StrParam, ScatterPlot2DView, ScatterPlot3DView, TableView, view, ResourceRField, FloatRField, IntRField)
 from ..data.core import GenericResult
 from ..data.dataset import Dataset
 from ..base.base_resource import BaseResource
@@ -22,7 +22,7 @@ class LDAResult(BaseResource):
 
     _training_set: Resource = ResourceRField() #pour lier ressources entre elles
 #    _log_likelihood: int = FloatRField() #list, float, dict,...
-    _nb_components: int = FloatRField()
+    _nb_components: int = IntRField()
 
     def _get_transformed_data(self) -> DataFrame: #retourne DataFrame
         lda: LinearDiscriminantAnalysis = self.get_result() #typage de lda du type LDA

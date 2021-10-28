@@ -31,6 +31,14 @@ class TestTrainer(BaseTestCase):
         outputs = await tester.run()
         trainer_result = outputs['result']
 
+        vm = trainer_result.view_y_data_vs_y_predicted_as_table()
+        dic = vm.to_dict()
+        self.assertEqual(dic["type"], "table-view")
+
+        vm = trainer_result.view_y_data_vs_y_predicted_as_2dplot()
+        dic = vm.to_dict()
+        self.assertEqual(dic["type"], "scatter-plot-2d-view")
+
         # run predictior
         tester = TaskTester(
             params = {},

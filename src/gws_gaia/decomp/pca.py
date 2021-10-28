@@ -18,11 +18,11 @@ from ..base.base_resource import BaseResource
 @resource_decorator("PCATrainerResult", hide=True)
 class PCATrainerResult(BaseResource):
 
-    _training_set: Resource = ResourceRField()
-    _log_likelihood: int = FloatRField()
+    _training_set: Resource = ResourceRField() #pour lier ressources entre elles
+    _log_likelihood: int = FloatRField() #list, float, dict,...
 
-    def _get_transformed_data(self) -> DataFrame:
-        pca: PCA = self.get_result()
+    def _get_transformed_data(self) -> DataFrame: #retourne DataFrame
+        pca: PCA = self.get_result() #typage de pca du type PCA
         ncomp = pca.n_components_
         X_transformed: DataFrame = pca.transform(self._training_set.get_features().values)
         columns = [f"PC{n+1}" for n in range(0,ncomp)]
@@ -40,9 +40,10 @@ class PCATrainerResult(BaseResource):
         """
         View 2D score plot
         """
-        x_transformed = self._get_transformed_data()
+    
+        x_transformed = self._get_transformed_data() 
         return TableView(
-            data=x_transformed, 
+            data=x_transformed, #prend un DataFrame, Table, Dataset
             #title="Transformed data", 
             #subtitle="log-likelihood = {:.2f}".format(self._get_log_likelihood()), 
             *args, **kwargs
@@ -68,7 +69,7 @@ class PCATrainerResult(BaseResource):
 
         x_transformed = self._get_transformed_data()
         view_model = ScatterPlot2DView(
-            data=x_transformed, 
+            data=x_transformed,  #prend DataFrame, Table, Dataset
             #title="Transformed data", 
             #subtitle="log-likelihood = {:.2f}".format(self._get_log_likelihood()), 
             *args, **kwargs

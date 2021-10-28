@@ -292,7 +292,7 @@ class Dataset(Table):
         View as table
         """
 
-        return DatasetView(self, self._targets)
+        return DatasetView(data=self)
 
 
     # -- W --

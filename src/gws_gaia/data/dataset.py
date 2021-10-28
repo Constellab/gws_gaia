@@ -28,40 +28,12 @@ class Dataset(Table):
     _data: DataFrame = DataFrameRField()    # features
     _targets: DataFrame = DataFrameRField()
 
-    def __init__(self, *args, features: Union[DataFrame, np.ndarray] = None, 
+    def __init__(self, features: Union[DataFrame, np.ndarray] = None, 
                     targets: Union[DataFrame, np.ndarray] = None, 
-                    feature_names: List[str]=None, target_names: List[str]=None, row_names: List[str]=None, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        if features is not None:
-            if isinstance(features, DataFrame):
-                # OK!
-                pass
-            elif isinstance(features, (np.ndarray, list)):
-                features = DataFrame(features)
-                if feature_names:
-                    features.columns = feature_names
-                if row_names:
-                    features.index = row_names
-            else:
-                raise BadRequestException(
-                    "The table mus be an instance of DataFrame or Numpy array")
-            self._data = features
-
-        if targets is not None:
-            if isinstance(targets, DataFrame):
-                # OK!
-                pass
-            elif isinstance(targets, (np.ndarray, list)):
-                targets = DataFrame(targets)
-                if target_names:
-                    targets.columns = target_names
-                if row_names:
-                    targets.index = row_names
-            else:
-                raise BadRequestException(
-                    "The table mus be an instance of DataFrame or Numpy array")
-            self._targets = targets
+                    feature_names: List[str]=None, target_names: List[str]=None, row_names: List[str]=None):
+        super().__init__()
+        self._set_features_and_targets(features=features, targets=targets, feature_names=feature_names, target_names=target_names, row_names=row_names)
+        
 
     # -- C --
 
@@ -96,14 +68,8 @@ class Dataset(Table):
     def get_features(self) -> DataFrame:
         return self._data
     
-    def set_features(self, data: DataFrame):
-        self._data = data
-
     def get_targets(self) -> DataFrame:
         return self._targets
-    
-    def set_targets(self, targets: DataFrame):
-        self._targets = targets
 
     @property
     def feature_names(self) -> list:
@@ -240,6 +206,51 @@ class Dataset(Table):
     def __str__(self):        
         return f"Features: \n{self._data.__str__()} \n\nTargets: \n{self._targets.__str__()} "
 
+    def set_data(self, *args, **kwargs):
+        raise BadRequestException("Not implemented for Dataset")
+
+    def set_features(self, data: DataFrame):
+        self._data = data
+        
+    def set_targets(self, targets: DataFrame):
+        self._targets = targets
+
+    def _set_features_and_targets(self, features: Union[DataFrame, np.ndarray] = None, 
+                    targets: Union[DataFrame, np.ndarray] = None, 
+                    feature_names: List[str]=None, target_names: List[str]=None, row_names: List[str]=None):
+        
+        if features is not None:
+            if isinstance(features, DataFrame):
+                # OK!
+                pass
+            elif isinstance(features, (np.ndarray, list)):
+                features = DataFrame(features)
+                if feature_names:
+                    features.columns = feature_names
+                if row_names:
+                    features.index = row_names
+            else:
+                raise BadRequestException(
+                    "The table mus be an instance of DataFrame or Numpy array")
+            self._data = features
+
+        if targets is not None:
+            if isinstance(targets, DataFrame):
+                # OK!
+                pass
+            elif isinstance(targets, (np.ndarray, list)):
+                targets = DataFrame(targets)
+                if target_names:
+                    targets.columns = target_names
+                if row_names:
+                    targets.index = row_names
+            else:
+                raise BadRequestException(
+                    "The table mus be an instance of DataFrame or Numpy array")
+            self._targets = targets
+        
+        return self
+
     # -- T --
 
     @property
@@ -274,14 +285,14 @@ class Dataset(Table):
             data[i][idx] = 1.0
         return DataFrame(data=data, index=self._targets.index, columns=labels)
 
-    @view(view_type=DatasetView, default_view=True, human_name='Extended Tabular', short_description='View as a extended table',
+    @view(view_type=DatasetView, default_view=True, human_name='Dataset', short_description='View as a dataset (extended X,Y table)',
           specs={})
     def view_as_dataset(self) -> DatasetView:
         """
         View as table
         """
 
-        return DatasetView(self._data, self._targets)
+        return DatasetView(self, self._targets)
 
 
     # -- W --

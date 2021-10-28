@@ -3,6 +3,7 @@
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
+from typing import List
 from sklearn.cluster import AgglomerativeClustering
 
 from gws_core import (Task, Resource, 
@@ -16,7 +17,15 @@ from ..base.base_resource import BaseResource
 
 @resource_decorator("AgglomerativeClusteringResult", hide=True)
 class AgglomerativeClusteringResult(BaseResource):
-    pass
+    
+    def get_labels(self) -> List[str]:
+        return self.get_result().labels_
+    
+    def view_as_dendrogram(self):
+        pass
+
+    def view_as_table(self):
+        pass
 
 #==============================================================================
 #==============================================================================
@@ -30,12 +39,14 @@ class AgglomerativeClusteringTrainer(Task):
     input_specs = {'dataset' : Dataset}
     output_specs = {'result' : AgglomerativeClusteringResult}
     config_specs = {
-        'nb_clusters': IntParam(default_value=2, min_value=0)
+        "nb_clusters": IntParam(default_value=2, min_value=0),
+        "linkage": StrParam(default_value="ward", allowed_values=["ward", "complete", "average", "single"]),
+        "affinity": StrParam(default_value="euclidean", allowed_values=["euclidean", "l1", "l2", "manhattan", "cosine", "precomputed"], short_description="Metric used to compute the linkage."),
     }
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
-        aggclust = AgglomerativeClustering(n_clusters=params["nb_clusters"])
+        aggclust = AgglomerativeClustering(n_clusters=params["nb_clusters"], linkage=params["linkage"])
         aggclust.fit(dataset.get_features().values)
         result = AgglomerativeClusteringResult(result = aggclust)
         return {'result': result}

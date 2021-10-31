@@ -8,7 +8,7 @@ from .da.quadrada import QDAResult, QDATrainer, QDATester, QDAPredictor
 # dataset
 
 from .data.core import GenericResult
-from .data.dataset import Dataset, DatasetExporter, DatasetImporter, DatasetLoader, DatasetDumper
+from .data.dataset import Dataset, DatasetExporter, DatasetImporter
 from .data.view.dataset_view import DatasetView
 
 # decomposition

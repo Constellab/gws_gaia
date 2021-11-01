@@ -4,10 +4,11 @@
 # About us: https://gencovery.com
 
 from pandas import DataFrame
+import numpy as np
 from sklearn.decomposition import PCA
 
 from gws_core import (Task, Resource, task_decorator, resource_decorator,
-                        ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, 
+                        ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, BarPlotView,
                         StrParam, ScatterPlot2DView, ScatterPlot3DView, TableView, view, ResourceRField, FloatRField, Resource)
 from ..data.dataset import Dataset
 from ..base.base_resource import BaseResource
@@ -60,6 +61,22 @@ class PCATrainerResult(BaseResource):
         columns = ["ExplainedVariance"]
         data = DataFrame(pca.explained_variance_ratio_, index=index, columns=columns)
         return TableView(data=data, *args, **kwargs)
+
+    @view(view_type=BarPlotView, human_name="VarianceBarPlot", short_description="Barplot of explained variances")
+    def view_variance_as_barplot(self, *args, **kwargs) -> dict:
+        """
+        View bar plot of explained variances
+        """
+
+        pca = self.get_result()
+        explained_var = pca.explained_variance_ratio_[np.newaxis]
+        columns = [f"PC{n+1}" for n in range(0,pca.n_components_)]
+        index = ["ExplainedVariance"]
+        data = DataFrame(explained_var, columns=columns, index=index)
+        
+        return BarPlotView(data=data, 
+            *args, **kwargs
+        )
 
     @view(view_type=ScatterPlot2DView, human_name='ScorePlot3D', short_description='2D score plot')
     def view_scores_as_2d_plot(self, *args, **kwargs) -> dict:

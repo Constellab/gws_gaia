@@ -22,7 +22,7 @@ class TestImporter(BaseTestCase):
             task_type = DatasetImporter
         )
         outputs = await tester.run()
-        ds = outputs['data']
+        ds = outputs['resource']
         self.assertEquals(ds.nb_features, 4)
         self.assertEquals(ds.nb_targets, 1)
         self.assertEquals(ds.nb_instances, 150)
@@ -51,7 +51,7 @@ class TestImporter(BaseTestCase):
             task_type = DatasetImporter
         )
         outputs = await tester.run()
-        ds = outputs['data']
+        ds = outputs['resource']
         self.assertEquals(ds.nb_features, 4)
         self.assertEquals(ds.nb_targets, 1)
         self.assertEquals(ds.nb_instances, 150)

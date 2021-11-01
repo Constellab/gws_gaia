@@ -20,7 +20,7 @@ class TestTDatasetView(BaseTestCase):
             task_type = DatasetImporter
         )
         outputs = await tester.run()
-        ds = outputs['data']
+        ds = outputs['resource']
 
         tester = ViewTester(
             view = DatasetView(ds)

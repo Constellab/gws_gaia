@@ -15,11 +15,11 @@ class AdaBoostClassifierTestProto(Protocol):
         p2: ProcessSpec = self.add_process(AdaBoostClassifierPredictor, 'p2')
         p3: ProcessSpec = self.add_process(AdaBoostClassifierTester, 'p3')
         self.add_connectors([
-            (p0>>'data', p1<<'dataset'),
-            (p0>>'data', p2<<'dataset'),
+            (p0>>'resource', p1<<'dataset'),
+            (p0>>'resource', p2<<'dataset'),
             (p1>>'result', p2<<'learned_model'),
             (p1>>'result', p3<<'learned_model'),
-            (p0>>'data', p3<<'dataset')
+            (p0>>'resource', p3<<'dataset')
         ])
         self.add_interface('file', p0, 'file')
 

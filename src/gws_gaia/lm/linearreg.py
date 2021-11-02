@@ -43,7 +43,7 @@ class LinearRegressionResult(BaseResource):
         return self._R2
 
     @view(view_type=TableView, human_name="Table", short_description="Table")
-    def view_y_data_vs_y_predicted_as_table(self, *args, **kwargs) -> dict:
+    def view_predictions_as_table(self, *args, **kwargs) -> dict:
         """
         View the target data and the predicted data in a table
         """
@@ -60,7 +60,7 @@ class LinearRegressionResult(BaseResource):
         )
 
     @view(view_type=ScatterPlot2DView, human_name='ScorePlot2D', short_description='2D data plot')
-    def view_y_data_vs_y_predicted_as_2dplot(self, *args, **kwargs) -> dict:
+    def view_predictions_as_2d_plot(self, *args, **kwargs) -> dict:
         """
         View the target data and the predicted data in a 2d scatter plot
         """

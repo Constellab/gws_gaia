@@ -6,10 +6,10 @@
 import os
 from gws_core import (Protocol, Study, User, Experiment, 
                         protocol_decorator, ProcessSpec, 
-                        ConfigParams, Settings)
+                        ConfigParams, Settings, File)
 
 from gws_gaia import GenericResult
-from gws_gaia import Dataset, DatasetLoader
+from gws_gaia import Dataset, DatasetImporter
 from gws_gaia import  LDATrainer, LDAPredictor, LDATester, LDATransformer
 from gws_gaia import PCATrainer, PCATransformer
 
@@ -22,7 +22,7 @@ class LDATutorialProto(Protocol):
         settings = Settings.retrieve()
         test_dir = settings.get_variable("gws_gaia:testdata_dir")
 
-        importer: ProcessSpec = self.add_process(DatasetLoader, 'importer')
+        importer: ProcessSpec = self.add_process(DatasetImporter, 'importer')
         lda_trainer: ProcessSpec = self.add_process(LDATrainer, 'lda_trainer')
         lda_pred: ProcessSpec = self.add_process(LDAPredictor, 'lda_pred')
         lda_tester: ProcessSpec = self.add_process(LDATester, 'lda_tester')
@@ -30,11 +30,9 @@ class LDATutorialProto(Protocol):
         pca_trainer: ProcessSpec = self.add_process(PCATrainer, 'pca_trainer')
         pca_trans: ProcessSpec = self.add_process(PCATransformer, 'pca_trans')
 
-        data_file = os.path.join(test_dir, "./iris.csv")
         importer.set_param("delimiter", ",")
         importer.set_param("header", 0)
         importer.set_param('targets', ['variety']) 
-        importer.set_param("file_path", data_file)
         lda_trainer.set_param('nb_components', 2)
         pca_trainer.set_param('nb_components', 2)
 
@@ -50,3 +48,5 @@ class LDATutorialProto(Protocol):
             (importer>>'dataset', lda_pred<<'dataset'),
             (lda_trainer>>'result', lda_pred<<'learned_model'),
         ])
+
+        self.add_interface('file', importer.inputs['file'], 'file')

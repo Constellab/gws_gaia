@@ -11,10 +11,10 @@ from pandas.api.types import is_string_dtype
 from typing import Union, List
 from pathlib import Path
 
-from gws_core import (task_decorator, 
-                        resource_decorator, BadRequestException, 
-                        Table, File, TableExporter, TableImporter, TableLoader, TableDumper, 
-                        StrParam, IntParam, ListParam, BoolParam, DataFrameRField, view)
+from gws_core import (task_decorator, importer_decorator, exporter_decorator,
+                        resource_decorator,import_from_path, export_to_path, BadRequestException, 
+                        Table, File, TableExporter, TableImporter,
+                        StrParam, IntParam, ListParam, BoolParam, DataFrameRField, view, ConfigParams)
 from .view.dataset_view import DatasetView
 #====================================================================================================================
 #====================================================================================================================
@@ -28,46 +28,24 @@ class Dataset(Table):
     _data: DataFrame = DataFrameRField()    # features
     _targets: DataFrame = DataFrameRField()
 
-    def __init__(self, *args, features: Union[DataFrame, np.ndarray] = None, 
+    def __init__(self, features: Union[DataFrame, np.ndarray] = None, 
                     targets: Union[DataFrame, np.ndarray] = None, 
-                    feature_names: List[str]=None, target_names: List[str]=None, row_names: List[str]=None, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        if features is not None:
-            if isinstance(features, DataFrame):
-                # OK!
-                pass
-            elif isinstance(features, (np.ndarray, list)):
-                features = DataFrame(features)
-                if feature_names:
-                    features.columns = feature_names
-                if row_names:
-                    features.index = row_names
-            else:
-                raise BadRequestException(
-                    "The table mus be an instance of DataFrame or Numpy array")
-            self._data = features
-
-        if targets is not None:
-            if isinstance(targets, DataFrame):
-                # OK!
-                pass
-            elif isinstance(targets, (np.ndarray, list)):
-                targets = DataFrame(targets)
-                if target_names:
-                    targets.columns = target_names
-                if row_names:
-                    targets.index = row_names
-            else:
-                raise BadRequestException(
-                    "The table mus be an instance of DataFrame or Numpy array")
-            self._targets = targets
+                    feature_names: List[str]=None, target_names: List[str]=None, row_names: List[str]=None):
+        super().__init__()
+        self._set_features_and_targets(features=features, targets=targets, feature_names=feature_names, target_names=target_names, row_names=row_names)
+        
 
     # -- C --
 
     # -- E --
-
-    def export_to_path(self, file_path: str, delimiter: str = "\t", index=True, file_format: str = None, **kwargs):
+    @export_to_path(specs = {
+        'file_name': StrParam(default_value="file.csv", short_description="File name"),
+        'file_format': StrParam(default_value=".csv", short_description="File format"),
+        'delimiter': StrParam(default_value="\t", short_description="Delimiter character. Only for parsing CSV files"),
+        'write_header': BoolParam(optional=True, short_description= "True to write column names (header), False otherwise"),
+        'write_index': BoolParam(optional=True, short_description="True to write row names (index), Fasle otherwise"),
+    })
+    def export_to_path(self, dest_dir, params: ConfigParams):
         """
         Export to a repository
 
@@ -75,7 +53,10 @@ class Dataset(Table):
         :type file_path: File
         """
 
-        file_extension = Path(file_path).suffix
+        file_name = params.get_value("file_name", "file.csv")
+
+        file_path = os.path.join(dest_dir, file_name)
+        file_extension = Path(file_path).suffix or params.get_value("file_format", ".csv")
         if file_extension in [".xls", ".xlsx"] or file_format in [".xls", ".xlsx"]:
             table = pandas.concat([self._data, self._targets])
             table.to_excel(file_path)
@@ -83,8 +64,9 @@ class Dataset(Table):
             table = pandas.concat([self._data, self._targets])
             table.to_csv(
                 file_path,
-                sep=delimiter,
-                index=index
+                sep=params.get_value("delimiter", "\t"),
+                header=params.get_value("write_header", True),
+                index=params.get_value("write_index", True)
             )
         else:
             raise BadRequestException(
@@ -96,14 +78,8 @@ class Dataset(Table):
     def get_features(self) -> DataFrame:
         return self._data
     
-    def set_features(self, data: DataFrame):
-        self._data = data
-
     def get_targets(self) -> DataFrame:
         return self._targets
-    
-    def set_targets(self, targets: DataFrame):
-        self._targets = targets
 
     @property
     def feature_names(self) -> list:
@@ -145,7 +121,14 @@ class Dataset(Table):
     # -- I --
 
     @classmethod
-    def import_from_path(cls, file_path: str, delimiter: str = "\t", header=0, index_col=None, file_format: str = None, targets: list=None, **kwargs) -> 'Dataset':
+    @import_from_path(specs = {
+        'file_format': StrParam(default_value=".csv", short_description="File format"),
+        'delimiter': StrParam(default_value='\t', short_description="Delimiter character. Only for parsing CSV files"),
+        'header': IntParam(optional=True, default_value=0, short_description="Row number to use as the column names. Use -1 to prevent parsing column names. Only for parsing CSV files"),
+        'index_columns' : ListParam(optional=True, short_description="Columns to use as the row names. Use None to prevent parsing row names. Only for parsing CSV files"),
+        'targets': ListParam(default_value='[]', short_description="List of integers or strings (eg. ['name', 6, '7'])"),
+    })
+    def import_from_path(cls, file: File, params: ConfigParams) -> 'Dataset':
         """
         Import from a repository
 
@@ -154,21 +137,29 @@ class Dataset(Table):
         :returns: the parsed data
         :rtype any
         """
-
-        _, file_extension = os.path.splitext(file_path)
+        
+        delimiter = params.get_value("delimiter", '\t')
+        header = params.get_value("header", 0)
+        index_col = params.get_value("index_columns")
+        #file_format = params.get_value("file_format")
+        targets = params.get_value("targets", [])
+        _, file_extension = os.path.splitext(file.path)
 
         if file_extension in [".xls", ".xlsx"]:
-            df = pandas.read_excel(file_path)
+            df = pandas.read_excel(file.path)
         elif file_extension in [".csv", ".tsv", ".txt", ".tab"]:
             df = pandas.read_table(
-                file_path, 
+                file.path, 
                 sep = delimiter,
-                header = header,
+                header = (None if header < 0 else header),
                 index_col = index_col
             )
         else:
             raise BadRequestException("Cannot detect the file type using file extension. Valid file extensions are [.xls, .xlsx, .csv, .tsv, .txt, .tab].")
-        
+
+        print("----")
+        print(targets)
+        print(df)
         if not targets:
             ds = cls(features=df)
         else:
@@ -240,6 +231,51 @@ class Dataset(Table):
     def __str__(self):        
         return f"Features: \n{self._data.__str__()} \n\nTargets: \n{self._targets.__str__()} "
 
+    def set_data(self, *args, **kwargs):
+        raise BadRequestException("Not implemented for Dataset")
+
+    def set_features(self, data: DataFrame):
+        self._data = data
+        
+    def set_targets(self, targets: DataFrame):
+        self._targets = targets
+
+    def _set_features_and_targets(self, features: Union[DataFrame, np.ndarray] = None, 
+                    targets: Union[DataFrame, np.ndarray] = None, 
+                    feature_names: List[str]=None, target_names: List[str]=None, row_names: List[str]=None):
+        
+        if features is not None:
+            if isinstance(features, DataFrame):
+                # OK!
+                pass
+            elif isinstance(features, (np.ndarray, list)):
+                features = DataFrame(features)
+                if feature_names:
+                    features.columns = feature_names
+                if row_names:
+                    features.index = row_names
+            else:
+                raise BadRequestException(
+                    "The table mus be an instance of DataFrame or Numpy array")
+            self._data = features
+
+        if targets is not None:
+            if isinstance(targets, DataFrame):
+                # OK!
+                pass
+            elif isinstance(targets, (np.ndarray, list)):
+                targets = DataFrame(targets)
+                if target_names:
+                    targets.columns = target_names
+                if row_names:
+                    targets.index = row_names
+            else:
+                raise BadRequestException(
+                    "The table mus be an instance of DataFrame or Numpy array")
+            self._targets = targets
+        
+        return self
+
     # -- T --
 
     @property
@@ -274,14 +310,14 @@ class Dataset(Table):
             data[i][idx] = 1.0
         return DataFrame(data=data, index=self._targets.index, columns=labels)
 
-    @view(view_type=DatasetView, default_view=True, human_name='Extended Tabular', short_description='View as a extended table',
+    @view(view_type=DatasetView, default_view=True, human_name='Dataset', short_description='View as a dataset (extended X,Y table)',
           specs={})
     def view_as_dataset(self) -> DatasetView:
         """
         View as table
         """
 
-        return DatasetView(self._data, self._targets)
+        return DatasetView(data=self)
 
 
     # -- W --
@@ -289,53 +325,10 @@ class Dataset(Table):
 #====================================================================================================================
 #====================================================================================================================
 
-@task_decorator("DatasetImporter")
+@importer_decorator(unique_name="DatasetImporter", resource_type=Dataset)
 class DatasetImporter(TableImporter):
-    input_specs = {'file': File}
-    output_specs = {'dataset': Dataset}
-    config_specs = {
-        'file_format': StrParam(default_value=".csv", short_description="File format"),
-        'delimiter': StrParam(default_value='\t', short_description="Delimiter character. Only for parsing CSV files"),
-        'header': IntParam(optional=True, default_value=0, short_description="Row number to use as the column names. Use None to prevent parsing column names. Only for parsing CSV files"),
-        'index' : IntParam(optional=True, short_description="Column number to use as the row names. Use None to prevent parsing row names. Only for parsing CSV files"),
-        'targets': ListParam(default_value='[]', short_description="List of integers or strings (eg. ['name', 6, '7'])"),
-    }
+    pass
 
-@task_decorator("DatasetExporter")
+@exporter_decorator("DatasetExporter", resource_type=Dataset)
 class DatasetExporter(TableExporter):
-    input_specs = {'dataset': Dataset}
-    output_specs = {'file': File}
-    config_specs = {
-        'file_format': StrParam(default_value=".csv", short_description="File format"),
-        'delimiter': StrParam(default_value="\t", short_description="Delimiter character. Only for parsing CSV files"),
-        'header': BoolParam(optional=True, short_description= "Write column names (header)"),
-        'index': BoolParam(optional=True, short_description="Write row names (index)"),
-    }
-
-#====================================================================================================================
-#====================================================================================================================
-
-@task_decorator("DatasetLoader")
-class DatasetLoader(TableLoader):
-    input_specs = {}
-    output_specs = {'dataset': Dataset}
-    config_specs = {
-        'file_path': StrParam(short_description="File path"),
-        'file_format': StrParam(default_value=".csv", short_description="File format"),
-        'delimiter': StrParam(default_value='\t', short_description="Delimiter character. Only for parsing CSV files"),
-        'header': IntParam(optional=True, default_value=0, short_description="Row number to use as the column names. Use None to prevent parsing column names. Only for parsing CSV files"),
-        'index' : IntParam(optional=True, short_description="Column number to use as the row names. Use None to prevent parsing row names. Only for parsing CSV files"),
-        'targets': ListParam(default_value='[]', short_description="List of integers or strings (eg. ['name', 6, '7'])"),
-    }
-
-@task_decorator("DatasetDumper")
-class DatasetDumper(TableDumper):
-    input_specs = {'dataset': Dataset}
-    output_specs = {}
-    config_specs = {
-        'file_path': StrParam(short_description="File path"),
-        'file_format': StrParam(default_value=".csv", short_description="File format"),
-        'delimiter': StrParam(default_value="\t", short_description="Delimiter character. Only for parsing CSV files"),
-        'header': BoolParam(optional=True, short_description= "Write column names (header)"),
-        'index': BoolParam(optional=True, short_description="Write row names (index)"),
-    }
+    pass

@@ -65,7 +65,7 @@ class LDAResult(BaseResource):
         data = DataFrame(lda.explained_variance_ratio_, index=index, columns=columns)
         return TableView(data=data, *args, **kwargs)
 
-    @view(view_type=ScatterPlot2DView, human_name='ScorePlot3D', short_description='2D score plot')
+    @view(view_type=ScatterPlot2DView, human_name='ScorePlot2D', short_description='2D score plot')
     def view_scores_as_2d_plot(self, *args, **kwargs) -> dict:
         """
         View 2D score plot

@@ -4,7 +4,7 @@
 # About us: https://gencovery.com
 
 
-from pandas import DataFrame
+from pandas import DataFrame, concat
 from pandas.api.types import is_string_dtype
 from sklearn.cross_decomposition import PLSRegression
 
@@ -32,6 +32,17 @@ class PLSTrainerResult(BaseResource):
         columns = [f"PC{n+1}" for n in range(0,ncomp)]
         X_transformed = DataFrame(data=X_transformed, columns=columns, index=self._training_set.instance_names)
         return X_transformed
+
+    def _get_target_data(self) -> DataFrame:
+        Y_data: DataFrame = self._training_set.get_targets().values
+        Y_data = DataFrame(data=Y_data)
+        return Y_data
+
+    def _get_predicted_data(self) -> DataFrame:
+        pls: PLSRegression = self.get_result() #lir du type Linear Regression
+        Y_predicted: DataFrame = pls.predict(self._training_set.get_features().values)
+        Y_predicted = DataFrame(data=Y_predicted)
+        return Y_predicted
         
     def _get_R2(self) -> float:
         if not self._R2:
@@ -67,7 +78,7 @@ class PLSTrainerResult(BaseResource):
     #     data = DataFrame(pls.explained_variance_ratio_, index=index, columns=columns)
     #     return TableView(data=data, *args, **kwargs)
 
-    @view(view_type=ScatterPlot2DView, human_name='ScorePlot3D', short_description='2D score plot')
+    @view(view_type=ScatterPlot2DView, human_name='ScorePlot2D', short_description='2D score plot')
     def view_scores_as_2d_plot(self, *args, **kwargs) -> dict:
         """
         View 2D score plot
@@ -97,6 +108,42 @@ class PLSTrainerResult(BaseResource):
         )
         return view_model
 
+    @view(view_type=TableView, human_name="Table", short_description="Table")
+    def view_predictions_as_table(self, *args, **kwargs) -> dict:
+        """
+        View the target data and the predicted data in a table. Works for data with only one target.
+        """
+        Y_data = self._get_target_data()
+        Y_predicted = self._get_predicted_data()
+        Y = concat([Y_data, Y_predicted],axis=1, ignore_index=True)
+        data = Y.set_axis(["Y_data", "Y_predicted"], axis=1)
+        # data = DataFrame(data=Y, columns=columns)
+
+        return TableView(
+            data=data, 
+            #title="Target data and predicted data", 
+            *args, **kwargs
+        )
+
+    @view(view_type=ScatterPlot2DView, human_name='ScorePlot2D', short_description='2D data plot')
+    def view_predictions_as_2d_plot(self, *args, **kwargs) -> dict:
+        """
+        View the target data and the predicted data in a 2d scatter plot. Works for data with only one target.
+        """
+
+        Y_data = self._get_target_data()
+        Y_predicted = self._get_predicted_data()
+        Y = concat([Y_data, Y_predicted],axis=1, ignore_index=True)
+        data = Y.set_axis(["Y_data", "Y_predicted"], axis=1)
+        #data = DataFrame(data=Y, columns=columns)
+
+        view_model = ScatterPlot2DView(
+            data=data, #prend DataFrame, Table, Dataset
+            #title="Predicted data versus target data", 
+            #subtitle="R2 = {:.2f}".format(self._get_R2()), 
+            *args, **kwargs
+        )
+        return view_model
 
 #==============================================================================
 #==============================================================================

@@ -55,7 +55,7 @@ class LDAResult(BaseResource):
     @view(view_type=TableView, human_name="VarianceTable", short_description="Table of explained variances")
     def view_variance_as_table(self, *args, **kwargs) -> dict:
         """
-        View 2D score plot
+        View table data
         """
 
         lda = self.get_result()

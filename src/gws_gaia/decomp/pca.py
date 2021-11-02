@@ -78,7 +78,7 @@ class PCATrainerResult(BaseResource):
             *args, **kwargs
         )
 
-    @view(view_type=ScatterPlot2DView, human_name='ScorePlot3D', short_description='2D score plot')
+    @view(view_type=ScatterPlot2DView, human_name='ScorePlot2D', short_description='2D score plot')
     def view_scores_as_2d_plot(self, *args, **kwargs) -> dict:
         """
         View 2D score plot

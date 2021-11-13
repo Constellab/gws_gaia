@@ -13,6 +13,7 @@ class TestTrainer(BaseTestCase):
         settings = Settings.retrieve()
         test_dir = settings.get_variable("gws_gaia:testdata_dir")
 
+        #---------------------------------------------------------------------
         #import data
         dataset = Dataset.import_from_path(
             File(path=os.path.join(test_dir, "./iris.csv")), 
@@ -23,6 +24,7 @@ class TestTrainer(BaseTestCase):
             })
         )
 
+        #---------------------------------------------------------------------
         # run trainer
         tester = TaskTester(
             params = {'nb_components': 2},
@@ -32,12 +34,15 @@ class TestTrainer(BaseTestCase):
         outputs = await tester.run()
         trainer_result = outputs['result']
 
+        #---------------------------------------------------------------------
+        # test views
         tester = ViewTester(
             view = trainer_result.view_transformed_data_as_table()
         )
         dic = tester.to_dict()
         self.assertEqual(dic["type"], "table-view")
 
+        #-----------------------------------------
         tester = ViewTester(
             view = trainer_result.view_variance_as_table()
         )
@@ -45,14 +50,32 @@ class TestTrainer(BaseTestCase):
         self.assertEqual(dic["type"], "table-view")
         self.assertTrue(numpy.all(numpy.isclose(dic["data"]["ExplainedVariance"], [0.92461, 0.053066], atol=1e-3)))
 
+        #-----------------------------------------
+        tester = ViewTester(
+            view = trainer_result.view_variance_as_barplot()
+        )
+        dic = tester.to_dict()
+        self.assertEqual(dic["type"], "bar-plot-view")
+        #self.assertTrue(numpy.all(numpy.isclose(dic["data"]["ExplainedVariance"], [0.92461, 0.053066], atol=1e-3)))
+
+        #-----------------------------------------
+        #vm = trainer_result.view_scores_as_2d_plot()
+        #dic = vm.to_dict()
         tester = ViewTester(
             view = trainer_result.view_scores_as_2d_plot()
         )
         dic = tester.to_dict()
-
         self.assertEqual(dic["type"], "scatter-plot-2d-view")
         self.assertTrue(numpy.all(numpy.isclose(dic["data"][0]["data"]["x"][0:3], [-2.6841, -2.714, -2.8889], atol=1e-3)))
+        
+        #-----------------------------------------
+        tester = ViewTester(
+            view = trainer_result.view_scores_as_2d_plot()
+        )
+        dic = tester.to_dict()
+        self.assertEqual(dic["type"], "scatter-plot-2d-view")
 
+        #--------------------------------------------------------------------
         # run transformer
         tester = TaskTester(
             params = {},

@@ -8,6 +8,7 @@ from gws_core import (Settings, TaskTester, BaseTestCase, File)
 class TestImporter(BaseTestCase):
     
     async def test_importer(self):
+        return
         self.print("Dataset import")
         settings = Settings.retrieve()
         test_dir = settings.get_variable("gws_gaia:testdata_dir")
@@ -36,7 +37,47 @@ class TestImporter(BaseTestCase):
         print(y)
         
 
+    async def test_data_select(self):
+        self.print("Dataset import")
+        settings = Settings.retrieve()
+        test_dir = settings.get_variable("gws_gaia:testdata_dir")
+        # run trainer
+        tester = TaskTester(
+            params = {
+                "delimiter": ",",
+                "header": 0,
+                "targets": ["variety"]
+            },
+            inputs = {"file": File(path=os.path.join(test_dir, "./iris.csv"))},
+            task_type = DatasetImporter
+        )
+        outputs = await tester.run()
+        ds = outputs['resource']
+        print(ds)
+
+        selected_ds = ds.select_by_column_indexes([1,2])
+        self.assertEqual(selected_ds.feature_names,["sepal.width", "petal.length"])
+        self.assertEqual(selected_ds.target_names,[])
+        self.assertEqual(selected_ds.nb_rows,150)
+
+        selected_ds = ds.select_by_column_indexes([1,2,4])
+        self.assertEqual(selected_ds.feature_names,["sepal.width", "petal.length"])
+        self.assertEqual(selected_ds.target_names,["variety"])
+        self.assertEqual(selected_ds.nb_rows,150)
+
+        selected_ds = ds.select_by_column_indexes([1,2,4], only_targets=True)
+        self.assertEqual(selected_ds.feature_names,[])
+        self.assertEqual(selected_ds.target_names,["variety"])
+        self.assertEqual(selected_ds.nb_rows,150)
+
+        selected_ds = ds.select_by_row_indexes([1,2,4])
+        self.assertEqual(selected_ds.feature_names,["sepal.length", "sepal.width", "petal.length", "petal.width"])
+        self.assertEqual(selected_ds.target_names,["variety"])
+        self.assertEqual(selected_ds.nb_rows,3)
+
+
     async def test_importer_no_head(self):
+        return
         self.print("Dataset import without header")
         settings = Settings.retrieve()
         test_dir = settings.get_variable("gws_gaia:testdata_dir")

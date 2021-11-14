@@ -8,7 +8,6 @@ from gws_core import (Settings, TaskTester, BaseTestCase, File)
 class TestImporter(BaseTestCase):
     
     async def test_importer(self):
-        return
         self.print("Dataset import")
         settings = Settings.retrieve()
         test_dir = settings.get_variable("gws_gaia:testdata_dir")
@@ -77,7 +76,6 @@ class TestImporter(BaseTestCase):
 
 
     async def test_importer_no_head(self):
-        return
         self.print("Dataset import without header")
         settings = Settings.retrieve()
         test_dir = settings.get_variable("gws_gaia:testdata_dir")

@@ -42,8 +42,8 @@ class LinearRegressionResult(BaseResource):
             self._R2 = lir.score(X=self._training_set.get_features().values, y=self._training_set.get_targets().values)
         return self._R2
 
-    @view(view_type=TableView, human_name="Table", short_description="Table")
-    def view_predictions_as_table(self, *args, **kwargs) -> dict:
+    @view(view_type=TableView, human_name="PredictionTable", short_description="Prediction Table")
+    def view_predictions_as_table(self, params: ConfigParams) -> dict:
         """
         View the target data and the predicted data in a table. Works for data with only one target
         """
@@ -53,14 +53,10 @@ class LinearRegressionResult(BaseResource):
         data = Y.set_axis(["Y_data", "Y_predicted"], axis=1)
         # data = DataFrame(data=Y, columns=columns)
 
-        return TableView(
-            data=data, 
-            #title="Target data and predicted data", 
-            *args, **kwargs
-        )
+        return TableView(data=data)
 
     @view(view_type=ScatterPlot2DView, human_name='ScorePlot2D', short_description='2D data plot')
-    def view_predictions_as_2d_plot(self, *args, **kwargs) -> dict:
+    def view_predictions_as_2d_plot(self, params: ConfigParams) -> dict:
         """
         View the target data and the predicted data in a 2d scatter plot. Works for data with only one target
         """
@@ -71,12 +67,7 @@ class LinearRegressionResult(BaseResource):
         data = Y.set_axis(["Y_data", "Y_predicted"], axis=1)
         #data = DataFrame(data=Y, columns=columns)
 
-        view_model = ScatterPlot2DView(
-            data=data, #prend DataFrame, Table, Dataset
-            #title="Predicted data versus target data", 
-            #subtitle="R2 = {:.2f}".format(self._get_R2()), 
-            *args, **kwargs
-        )
+        view_model = ScatterPlot2DView(data=data)
         return view_model
 
 #==============================================================================

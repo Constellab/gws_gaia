@@ -34,17 +34,18 @@ class TestTrainer(BaseTestCase):
         outputs = await tester.run()
         trainer_result = outputs['result']
 
+        params = ConfigParams()
         #---------------------------------------------------------------------
         # test views
         tester = ViewTester(
-            view = trainer_result.view_transformed_data_as_table()
+            view = trainer_result.view_transformed_data_as_table(params)
         )
         dic = tester.to_dict()
         self.assertEqual(dic["type"], "table-view")
 
         #-----------------------------------------
         tester = ViewTester(
-            view = trainer_result.view_variance_as_table()
+            view = trainer_result.view_variance_as_table(params)
         )
         dic = tester.to_dict()
         self.assertEqual(dic["type"], "table-view")
@@ -52,7 +53,7 @@ class TestTrainer(BaseTestCase):
 
         #-----------------------------------------
         tester = ViewTester(
-            view = trainer_result.view_variance_as_barplot()
+            view = trainer_result.view_variance_as_barplot(params)
         )
         dic = tester.to_dict()
         self.assertEqual(dic["type"], "bar-plot-view")
@@ -62,7 +63,7 @@ class TestTrainer(BaseTestCase):
         #vm = trainer_result.view_scores_as_2d_plot()
         #dic = vm.to_dict()
         tester = ViewTester(
-            view = trainer_result.view_scores_as_2d_plot()
+            view = trainer_result.view_scores_as_2d_plot(params)
         )
         dic = tester.to_dict()
         self.assertEqual(dic["type"], "scatter-plot-2d-view")
@@ -70,7 +71,7 @@ class TestTrainer(BaseTestCase):
         
         #-----------------------------------------
         tester = ViewTester(
-            view = trainer_result.view_scores_as_2d_plot()
+            view = trainer_result.view_scores_as_2d_plot(params)
         )
         dic = tester.to_dict()
         self.assertEqual(dic["type"], "scatter-plot-2d-view")

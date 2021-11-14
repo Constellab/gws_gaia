@@ -390,9 +390,12 @@ class Dataset(Table):
             data[i][idx] = 1.0
         return DataFrame(data=data, index=self._targets.index, columns=labels)
 
-    @view(view_type=DatasetView, default_view=True, human_name='Dataset', short_description='View as a dataset (extended X,Y table)',
-          specs={})
-    def view_as_dataset(self) -> DatasetView:
+    @view(view_type=DatasetView, 
+          default_view=True, 
+          human_name='Dataset', 
+          short_description='View as a dataset (extended X,Y table)'
+    )
+    def view_as_dataset(self, params: ConfigParams) -> DatasetView:
         """
         View as table
         """

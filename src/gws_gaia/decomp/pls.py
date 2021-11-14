@@ -51,65 +51,37 @@ class PLSTrainerResult(BaseResource):
         return self._R2
 
 
-    @view(view_type=TableView, human_name="TransformedDataTable' table", short_description="Table of data in the score plot")
-    def view_transformed_data_as_table(self, *args, **kwargs) -> dict:
+    @view(view_type=TableView, human_name="ProjectedDataTable", short_description="Table of data in the score plot")
+    def view_transformed_data_as_table(self, params: ConfigParams) -> dict:
         """
         View 2D score plot
         """
 
         x_transformed = self._get_transformed_data()
-        return TableView(
-            data=x_transformed, 
-            #title="Transformed data", 
-            #subtitle="R2 = {:.2f}".format(self._get_R2()), 
-            *args, **kwargs
-        )
-
-    # @view(view_type=TableView, human_name="VarianceTable", short_description="Table of explained variances")
-    # def view_variance_as_table(self, *args, **kwargs) -> dict:
-    #     """
-    #     View 2D score plot
-    #     """
-
-    #     pls = self.get_result()
-    #     ncomp = pls.x_rotations_.shape[1]
-    #     index = [f"PC{n+1}" for n in range(0,ncomp)]
-    #     columns = ["ExplainedVariance"]
-    #     data = DataFrame(pls.explained_variance_ratio_, index=index, columns=columns)
-    #     return TableView(data=data, *args, **kwargs)
+        return TableView(data=x_transformed)
 
     @view(view_type=ScatterPlot2DView, human_name='ScorePlot2D', short_description='2D score plot')
-    def view_scores_as_2d_plot(self, *args, **kwargs) -> dict:
+    def view_scores_as_2d_plot(self, params: ConfigParams) -> dict:
         """
         View 2D score plot
         """
 
         x_transformed = self._get_transformed_data()
-        view_model = ScatterPlot2DView(
-            data=x_transformed, 
-            #title="Transformed data", 
-            #subtitle="R2 = {:.2f}".format(self._get_R2()), 
-            *args, **kwargs
-        )
+        view_model = ScatterPlot2DView(data=x_transformed)
         return view_model
 
     @view(view_type=ScatterPlot3DView, human_name='ScorePlot3D', short_description='3D score plot')
-    def view_scores_as_3d_plot(self, *args, **kwargs) -> dict:
+    def view_scores_as_3d_plot(self, params: ConfigParams) -> dict:
         """
         View 3D score plot
         """
 
         x_transformed = self._get_transformed_data()
-        view_model = ScatterPlot3DView(
-            data=x_transformed,
-            #title="Transformed data", 
-            #subtitle="R2 = {:.2f}".format(self._get_R2()), 
-            *args, **kwargs
-        )
+        view_model = ScatterPlot3DView(data=x_transformed)
         return view_model
 
-    @view(view_type=TableView, human_name="Table", short_description="Table")
-    def view_predictions_as_table(self, *args, **kwargs) -> dict:
+    @view(view_type=TableView, human_name="PredictionTable", short_description="Prediction table")
+    def view_predictions_as_table(self, params: ConfigParams) -> dict:
         """
         View the target data and the predicted data in a table. Works for data with only one target.
         """
@@ -117,16 +89,10 @@ class PLSTrainerResult(BaseResource):
         Y_predicted = self._get_predicted_data()
         Y = concat([Y_data, Y_predicted],axis=1, ignore_index=True)
         data = Y.set_axis(["Y_data", "Y_predicted"], axis=1)
-        # data = DataFrame(data=Y, columns=columns)
-
-        return TableView(
-            data=data, 
-            #title="Target data and predicted data", 
-            *args, **kwargs
-        )
+        return TableView(data=data)
 
     @view(view_type=ScatterPlot2DView, human_name='ScorePlot2D', short_description='2D data plot')
-    def view_predictions_as_2d_plot(self, *args, **kwargs) -> dict:
+    def view_predictions_as_2d_plot(self, params: ConfigParams) -> dict:
         """
         View the target data and the predicted data in a 2d scatter plot. Works for data with only one target.
         """
@@ -135,14 +101,7 @@ class PLSTrainerResult(BaseResource):
         Y_predicted = self._get_predicted_data()
         Y = concat([Y_data, Y_predicted],axis=1, ignore_index=True)
         data = Y.set_axis(["Y_data", "Y_predicted"], axis=1)
-        #data = DataFrame(data=Y, columns=columns)
-
-        view_model = ScatterPlot2DView(
-            data=data, #prend DataFrame, Table, Dataset
-            #title="Predicted data versus target data", 
-            #subtitle="R2 = {:.2f}".format(self._get_R2()), 
-            *args, **kwargs
-        )
+        view_model = ScatterPlot2DView(data=data)
         return view_model
 
 #==============================================================================

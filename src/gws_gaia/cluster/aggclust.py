@@ -21,10 +21,10 @@ class AgglomerativeClusteringResult(BaseResource):
     def get_labels(self) -> List[str]:
         return self.get_result().labels_
     
-    def view_as_dendrogram(self):
+    def view_as_dendrogram(self, params: ConfigParams):
         pass
 
-    def view_as_table(self):
+    def view_as_table(self, params: ConfigParams):
         pass
 
 #==============================================================================

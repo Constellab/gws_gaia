@@ -7,7 +7,8 @@ from pandas import DataFrame
 from sklearn.cluster import KMeans
 
 from gws_core import (Task, task_decorator, resource_decorator,
-                        ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam)
+                        ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam,
+                        ScatterPlot2DView, ScatterPlot3DView, TableView, view, ResourceRField, FloatRField, Resource)
 from ..data.dataset import Dataset
 from ..base.base_resource import BaseResource
 
@@ -16,7 +17,18 @@ from ..base.base_resource import BaseResource
 
 @resource_decorator("KMeansResult")
 class KMeansResult(BaseResource):
-    pass
+        
+    @view(view_type=TableView, human_name="LabelsTable", short_description="Table of labels")
+    def view_labels_as_table(self, params: ConfigParams) -> dict:
+        """
+        View Table
+        """
+        kmeans = self.get_result()
+        #index = [f"PC{n+1}" for n in range(0,pca.n_components_)]
+        #columns = ["ExplainedVariance"]
+        print(kmeans.labels_)
+        data = DataFrame(kmeans.labels_)
+        return TableView(data=data)
 
 #==============================================================================
 #==============================================================================

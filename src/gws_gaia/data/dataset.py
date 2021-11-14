@@ -37,6 +37,14 @@ class Dataset(Table):
 
     # -- C --
 
+    @property
+    def column_names(self) -> list:
+        """ 
+        Returns the feature and tagert names
+        """
+        
+        return [ *self.feature_names, *self.target_names ]
+
     # -- E --
     @export_to_path(specs = {
         'file_name': StrParam(default_value="file.csv", short_description="File name"),
@@ -157,9 +165,6 @@ class Dataset(Table):
         else:
             raise BadRequestException("Cannot detect the file type using file extension. Valid file extensions are [.xls, .xlsx, .csv, .tsv, .txt, .tab].")
 
-        print("----")
-        print(targets)
-        print(df)
         if not targets:
             ds = cls(features=df)
         else:
@@ -216,6 +221,28 @@ class Dataset(Table):
         else:
             return self._targets.shape[1]
 
+    @property
+    def nb_columns(self) -> int:
+        """ 
+        Returns the total number of columns (number of features + number of targets)
+        
+        :return: The total number of columns
+        :rtype: int
+        """
+
+        return self.nb_features + self.nb_targets
+
+    @property
+    def nb_rows(self) -> int:
+        """ 
+        Returns the total number of rows
+        
+        :return: The total number of columns
+        :rtype: int
+        """
+
+        return max(self._data.shape[0], self._targets.shape[0])
+
     # -- R --
 
     @property
@@ -240,6 +267,59 @@ class Dataset(Table):
     def set_targets(self, targets: DataFrame):
         self._targets = targets
 
+    
+    def select_by_row_indexes(self, indexes: List[int], only_features=False, only_targets=False) -> 'Dataset':
+        if not isinstance(indexes, list):
+            raise BadRequestException("The indexes must be a list of integers")
+        data = DataFrame()
+        targets = DataFrame()
+        if not only_targets:
+            data = self._data.iloc[indexes, :]
+        if not only_features:
+            targets = self._targets.iloc[indexes, :]
+        return type(self)(features=data, targets=targets)
+
+    def select_by_column_indexes(self, indexes: List[int], only_features=False, only_targets=False) -> 'Dataset':
+        if not isinstance(indexes, list):
+            raise BadRequestException("The indexes must be a list of integers")
+        data = DataFrame()
+        targets = DataFrame()
+        n = self.nb_features
+        feature_indexes = [ i for i in indexes if i < n ]
+        target_indexes = [ i-n for i in indexes if i >= n ]
+
+        print(self.nb_features)
+        print(feature_indexes)
+        print(target_indexes)
+
+        if not only_targets:
+            data = self._data.iloc[:, feature_indexes]
+        if not only_features:
+            targets = self._targets.iloc[:, target_indexes]
+        return type(self)(features=data, targets=targets)
+
+    def select_by_row_name(self, name_regex: str, only_features=False, only_targets=False) -> 'Dataset':
+        if not isinstance(name_regex, str):
+            raise BadRequestException("The name must be a string")
+        data = DataFrame()
+        targets = DataFrame()
+        if not only_targets:
+            data = self._data.filter(regex=name_regex, axis=0)
+        if not only_features:
+            targets = self._targets.filter(regex=name_regex, axis=0)
+        return type(self)(features=data, targets=targets)
+
+    def select_by_column_name(self, name_regex: str, only_features=False, only_targets=False) -> 'Dataset':
+        if not isinstance(name_regex, str):
+            raise BadRequestException("The name must be a string")
+        data = DataFrame()
+        targets = DataFrame()
+        if not only_targets:
+            data = self._data.filter(regex=name_regex, axis=1)
+        if not only_features:
+            targets = self._targets.filter(regex=name_regex, axis=1)
+        return type(self)(features=data, targets=targets)
+        
     def _set_features_and_targets(self, features: Union[DataFrame, np.ndarray] = None, 
                     targets: Union[DataFrame, np.ndarray] = None, 
                     feature_names: List[str]=None, target_names: List[str]=None, row_names: List[str]=None):
@@ -310,9 +390,12 @@ class Dataset(Table):
             data[i][idx] = 1.0
         return DataFrame(data=data, index=self._targets.index, columns=labels)
 
-    @view(view_type=DatasetView, default_view=True, human_name='Dataset', short_description='View as a dataset (extended X,Y table)',
-          specs={})
-    def view_as_dataset(self) -> DatasetView:
+    @view(view_type=DatasetView, 
+          default_view=True, 
+          human_name='Dataset', 
+          short_description='View as a dataset (extended X,Y table)'
+    )
+    def view_as_dataset(self, params: ConfigParams) -> DatasetView:
         """
         View as table
         """

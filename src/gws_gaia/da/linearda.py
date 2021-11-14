@@ -38,22 +38,17 @@ class LDAResult(BaseResource):
     #         self._log_likelihood = pca.score(self._training_set.get_features().values)
     #     return self._log_likelihood
 
-    @view(view_type=TableView, human_name="TransformedDataTable' table", short_description="Table of data in the score plot")
-    def view_transformed_data_as_table(self, *args, **kwargs) -> dict:
+    @view(view_type=TableView, human_name="ProjectedDataTable' table", short_description="Table of data in the score plot")
+    def view_transformed_data_as_table(self, params: ConfigParams) -> dict:
         """
         View 2D score plot
         """
     
         x_transformed = self._get_transformed_data() 
-        return TableView(
-            data=x_transformed, #prend un DataFrame, Table, Dataset
-            #title="Transformed data", 
-            #subtitle="log-likelihood = {:.2f}".format(self._get_log_likelihood()), 
-            *args, **kwargs
-        )
+        return TableView(data=x_transformed)
 
     @view(view_type=TableView, human_name="VarianceTable", short_description="Table of explained variances")
-    def view_variance_as_table(self, *args, **kwargs) -> dict:
+    def view_variance_as_table(self, params: ConfigParams) -> dict:
         """
         View table data
         """
@@ -63,36 +58,26 @@ class LDAResult(BaseResource):
         index = [f"PC{n+1}" for n in range(0,ncomp)]
         columns = ["ExplainedVariance"]
         data = DataFrame(lda.explained_variance_ratio_, index=index, columns=columns)
-        return TableView(data=data, *args, **kwargs)
+        return TableView(data=data)
 
     @view(view_type=ScatterPlot2DView, human_name='ScorePlot2D', short_description='2D score plot')
-    def view_scores_as_2d_plot(self, *args, **kwargs) -> dict:
+    def view_scores_as_2d_plot(self, params: ConfigParams) -> dict:
         """
         View 2D score plot
         """
 
         x_transformed = self._get_transformed_data()
-        view_model = ScatterPlot2DView(
-            data=x_transformed,  #prend DataFrame, Table, Dataset
-            #title="Transformed data", 
-            #subtitle="log-likelihood = {:.2f}".format(self._get_log_likelihood()), 
-            *args, **kwargs
-        )
+        view_model = ScatterPlot2DView(data=x_transformed)
         return view_model
 
     @view(view_type=ScatterPlot3DView, human_name='ScorePlot3D', short_description='3D score plot')
-    def view_scores_as_3d_plot(self, *args, **kwargs) -> dict:
+    def view_scores_as_3d_plot(self, params: ConfigParams) -> dict:
         """
         View 3D score plot
         """
 
         x_transformed = self._get_transformed_data()
-        view_model = ScatterPlot3DView(
-            data=x_transformed,
-            #title="Transformed data", 
-            #subtitle="log-likelihood = {:.2f}".format(self._get_log_likelihood()), 
-            *args, **kwargs
-        )
+        view_model = ScatterPlot3DView(data=x_transformed)
         return view_model
 
 #==============================================================================

@@ -3,11 +3,13 @@
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
-from pandas import DataFrame
+from pandas import DataFrame, concat
+from numpy import concatenate, transpose, ndarray, vstack
 from sklearn.cluster import KMeans
 
 from gws_core import (Task, task_decorator, resource_decorator,
-                        ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam)
+                        ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam,
+                        ScatterPlot2DView, ScatterPlot3DView, TableView, view, ResourceRField, FloatRField, Resource)
 from ..data.dataset import Dataset
 from ..base.base_resource import BaseResource
 
@@ -16,7 +18,24 @@ from ..base.base_resource import BaseResource
 
 @resource_decorator("KMeansResult")
 class KMeansResult(BaseResource):
-    pass
+
+    _training_set: Resource = ResourceRField() #pour lier ressources entre elles
+    
+    @view(view_type=TableView, human_name="LabelsTable", short_description="Table of labels")
+    def view_labels_as_table(self, params: ConfigParams = None) -> dict:
+        """
+        View Table
+        """
+        kmeans = self.get_result()
+        columns = self._training_set.feature_names
+        columns.extend(['label'])
+        train_set = self._training_set.get_features().values
+        label = kmeans.labels_
+        label = label[:, None]
+        data = concatenate((train_set, label), axis=1)       
+        data = DataFrame(data, columns=columns)
+
+        return TableView(data=data)
 
 #==============================================================================
 #==============================================================================
@@ -39,6 +58,7 @@ class KMeansTrainer(Task):
         kmeans = KMeans(n_clusters=params["nb_clusters"])
         kmeans.fit(dataset.get_features().values)
         result = KMeansResult(result = kmeans)
+        result._training_set = dataset
         return {'result': result}
 
 #==============================================================================

@@ -3,11 +3,10 @@
 from .cluster.aggclust import AgglomerativeClusteringResult, AgglomerativeClusteringTrainer
 from .cluster.kmeans import KMeansResult, KMeansTrainer, KMeansPredictor
 # discrinimant analysis
-from .da.linearda import LDAResult, LDATrainer, LDATransformer, LDATester, LDAPredictor
-from .da.quadrada import QDAResult, QDATrainer, QDATester, QDAPredictor
+from .da.linearda import LDAResult, LDATrainer, LDATransformer, LDAPredictor
+from .da.quadrada import QDAResult, QDATrainer, QDAPredictor
 # dataset
 
-from .data.core import GenericResult
 from .data.dataset import Dataset, DatasetExporter, DatasetImporter
 from .data.view.dataset_view import DatasetView
 
@@ -17,59 +16,59 @@ from .decomp.pca import PCATrainerResult, PCATrainer, PCATransformer
 from .decomp.pls import PLSTrainerResult, PLSTrainer, PLSPredictor, PLSTransformer
 # ensemble
 from .ensemble.adaboostclass import (AdaBoostClassifierPredictor, AdaBoostClassifierResult, 
-                                        AdaBoostClassifierTester, AdaBoostClassifierTrainer)
+                                        AdaBoostClassifierTrainer)
 from .ensemble.adaboostreg import (AdaBoostRegressorResult, AdaBoostRegressorTrainer,
-                                        AdaBoostRegressorPredictor, AdaBoostRegressorTester )
+                                        AdaBoostRegressorPredictor )
 from .ensemble.extratreeclass import (ExtraTreesClassifierResult, ExtraTreesClassifierTrainer, 
-                                        ExtraTreesClassifierPredictor, ExtraTreesClassifierTester)
+                                        ExtraTreesClassifierPredictor)
 from .ensemble.extratreereg import (ExtraTreesRegressorResult, ExtraTreesRegressorTrainer, 
-                                        ExtraTreesRegressorPredictor, ExtraTreesRegressorTester)
+                                        ExtraTreesRegressorPredictor)
 from .ensemble.gradboostclass import (GradientBoostingClassifierResult, GradientBoostingClassifierTrainer, 
-                                        GradientBoostingClassifierPredictor, GradientBoostingClassifierTester)
+                                        GradientBoostingClassifierPredictor)
 from .ensemble.gradboostreg import (GradientBoostingRegressorResult, GradientBoostingRegressorTrainer, 
-                                        GradientBoostingRegressorPredictor, GradientBoostingRegressorTester)
+                                        GradientBoostingRegressorPredictor)
 from .ensemble.randforestclass import (RandomForestClassifierResult, RandomForestClassifierTrainer, 
-                                        RandomForestClassifierPredictor, RandomForestClassifierTester)    
+                                        RandomForestClassifierPredictor)    
 from .ensemble.randforestreg import (RandomForestRegressorResult, RandomForestRegressorTrainer, 
-                                        RandomForestRegressorPredictor, RandomForestRegressorTester)         
+                                        RandomForestRegressorPredictor)         
 # gaussian process
 from .gaussian_process.gaussprocclass import (GaussianProcessClassifierResult, GaussianProcessClassifierTrainer, 
-                                                GaussianProcessClassifierPredictor, GaussianProcessClassifierTester) 
+                                                GaussianProcessClassifierPredictor) 
 from .gaussian_process.gaussprocreg import (GaussianProcessRegressorResult, GaussianProcessRegressorTrainer, 
-                                                GaussianProcessRegressorPredictor, GaussianProcessRegressorTester) 
+                                                GaussianProcessRegressorPredictor) 
 #kernel ridge
-from .kernel_ridge.kernridge import (KernelRidgeResult, KernelRidgeTrainer, KernelRidgePredictor, KernelRidgeTester) 
+from .kernel_ridge.kernridge import (KernelRidgeResult, KernelRidgeTrainer, KernelRidgePredictor) 
 #kNN
-from .knn.kneighclass import (KNNClassifierResult, KNNClassifierTrainer, KNNClassifierPredictor, KNNClassifierTester) 
-from .knn.kneighreg import (KNNRegressorResult, KNNRegressorTrainer, KNNRegressorPredictor, KNNRegressorTester) 
+from .knn.kneighclass import (KNNClassifierResult, KNNClassifierTrainer, KNNClassifierPredictor) 
+from .knn.kneighreg import (KNNRegressorResult, KNNRegressorTrainer, KNNRegressorPredictor) 
 #lm
-from .lm.elastnet import (ElasticNetResult, ElasticNetTrainer, ElasticNetPredictor, ElasticNetTester)
-from .lm.lasso import (LassoResult, LassoTrainer, LassoPredictor, LassoTester)
-from .lm.linearreg import (LinearRegressionResult, LinearRegressionTrainer, LinearRegressionPredictor, LinearRegressionTester)
-from .lm.logreg import (LogisticRegressionResult, LogisticRegressionTrainer, LogisticRegressionPredictor, LogisticRegressionTester)
-from .lm.ridgeclass import (RidgeClassifierResult, RidgeClassifierTrainer, RidgeClassifierPredictor, RidgeClassifierTester)
-from .lm.ridgereg import (RidgeRegressionResult, RidgeRegressionTrainer, RidgeRegressionPredictor, RidgeRegressionTester)
-from .lm.sgdclass import (SGDClassifierResult, SGDClassifierTrainer, SGDClassifierPredictor, SGDClassifierTester)
-from .lm.sgdreg import (SGDRegressorResult, SGDRegressorTrainer, SGDRegressorPredictor, SGDRegressorTester)
+from .lm.elastnet import (ElasticNetResult, ElasticNetTrainer, ElasticNetPredictor)
+from .lm.lasso import (LassoResult, LassoTrainer, LassoPredictor)
+from .lm.linearreg import (LinearRegressionResult, LinearRegressionTrainer, LinearRegressionPredictor)
+from .lm.logreg import (LogisticRegressionResult, LogisticRegressionTrainer, LogisticRegressionPredictor)
+from .lm.ridgeclass import (RidgeClassifierResult, RidgeClassifierTrainer, RidgeClassifierPredictor)
+from .lm.ridgereg import (RidgeRegressionResult, RidgeRegressionTrainer, RidgeRegressionPredictor)
+from .lm.sgdclass import (SGDClassifierResult, SGDClassifierTrainer, SGDClassifierPredictor)
+from .lm.sgdreg import (SGDRegressorResult, SGDRegressorTrainer, SGDRegressorPredictor)
 # manifold
 from .manifold.loclinemb import LocallyLinearEmbeddingResult, LocallyLinearEmbeddingTrainer
 # mixture
 from .mixture.gaussmixt import (GaussianMixtureResult, GaussianMixtureTrainer, GaussianMixturePredictor)
 # naive bayes
 from .naive_bayes.bernoulnb import (BernoulliNaiveBayesClassifierResult, BernoulliNaiveBayesClassifierTrainer, 
-                                        BernoulliNaiveBayesClassifierPredictor, BernoulliNaiveBayesClassifierTester)
+                                        BernoulliNaiveBayesClassifierPredictor)
 from .naive_bayes.gaussiannb import (GaussianNaiveBayesResult, GaussianNaiveBayesTrainer, 
-                                        GaussianNaiveBayesPredictor, GaussianNaiveBayesTester)
+                                        GaussianNaiveBayesPredictor)
 from .naive_bayes.multinomnb import (MultinomialNaiveBayesClassifierResult, MultinomialNaiveBayesClassifierTrainer, 
-                                        MultinomialNaiveBayesClassifierPredictor, MultinomialNaiveBayesClassifierTester)
+                                        MultinomialNaiveBayesClassifierPredictor)
 # svm
-from .svm.svc import (SVCResult, SVCTrainer, SVCPredictor, SVCTester)
-from .svm.svr import (SVRResult, SVRTrainer, SVRPredictor, SVRTester)
+from .svm.svc import (SVCResult, SVCTrainer, SVCPredictor)
+from .svm.svr import (SVRResult, SVRTrainer, SVRPredictor)
 # tree
 from .tree.decistreeclass import (DecisionTreeClassifierResult, DecisionTreeClassifierTrainer, 
-                                    DecisionTreeClassifierPredictor, DecisionTreeClassifierTester)
+                                    DecisionTreeClassifierPredictor)
 from .tree.decistreereg import (DecisionTreeRegressorResult, DecisionTreeRegressorTrainer, 
-                                    DecisionTreeRegressorPredictor, DecisionTreeRegressorTester)
+                                    DecisionTreeRegressorPredictor)
 # tf
 from .tensorflow.averagepoollayers import (AveragePooling1D as TFAveragePooling1D, 
                                     AveragePooling2D as TFAveragePooling2D, 
@@ -89,7 +88,6 @@ from .tensorflow.data import (Tensor as TFTensor,
 from .tensorflow.deepmodeler import (DeepModelerBuilder as TFDeepModelerBuilder,
                             DeepModelerCompiler as TFDeepModelerCompiler,
                             DeepModelerTrainer as TFDeepModelerTrainer,
-                            DeepModelerTester as TFDeepModelerTester,
                             DeepModelerPredictor as TFDeepModelerPredictor)
 from .tensorflow.globalaveragepoollayers import (GlobalAveragePooling1D as TFGlobalAveragePooling1D,
                                             GlobalAveragePooling2D as TFGlobalAveragePooling2D,

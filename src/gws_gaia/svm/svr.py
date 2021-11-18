@@ -9,7 +9,6 @@ from sklearn.svm import SVR
 
 from gws_core import (Task, Resource, resource_decorator, task_decorator,
                         ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam)
-from ..data.core import GenericResult
 from ..data.dataset import Dataset
 from ..base.base_resource import BaseResource
 
@@ -42,29 +41,6 @@ class SVRTrainer(Task):
         svr.fit(dataset.get_features().values, ravel(dataset.get_targets().values))
         result = SVRResult(result=svr)
         return {'result': result}
-
-#==============================================================================
-#==============================================================================
-
-@task_decorator("SVRTester")
-class SVRTester(Task):
-    """
-    Tester of a trained Epsilon-Support Vector Regression (SVR) model. Return the coefficient of determination R^2 of the prediction on a given dataset for a trained Epsilon-Support Vector Regression (SVR) model.
-    
-    See https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVR.html for more details
-    """
-    input_specs = {'dataset' : Dataset, 'learned_model': SVRResult}
-    output_specs = {'result' : GenericResult}
-    config_specs = {   }
-
-    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
-        dataset = inputs['dataset']
-        learned_model = inputs['learned_model']
-        svr = learned_model.result
-        y = svr.score(dataset.get_features().values, dataset.get_targets().values)
-        z = tuple([y])
-        result_dataset = GenericResult(result = z)
-        return {'result': result_dataset}
 
 #==============================================================================
 #==============================================================================

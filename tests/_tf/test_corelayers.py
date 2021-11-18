@@ -5,14 +5,14 @@ import asyncio
 
 from gws_gaia.tf import Dense, Activation, Embedding, Masking
 from gws_gaia.tf import InputConverter
-from gws_core import Settings, BaseTestCase, TaskTester
+from gws_core import Settings, BaseTestCase, TaskRunner
 
 class TestTrainer(BaseTestCase):
     
     async def test_process_1D(self):
         self.print("Neural network layers")
         # run InputConverter
-        tester = TaskTester(
+        tester = TaskRunner(
             params = {'input_shape': [3, 3, 3]},
             inputs = {},
             task_type = InputConverter
@@ -21,7 +21,7 @@ class TestTrainer(BaseTestCase):
         result = outputs['result']
 
         # run Dense
-        tester = TaskTester(
+        tester = TaskRunner(
             params = {
                 'units': 32,
                 'activation': 'relu',   
@@ -34,7 +34,7 @@ class TestTrainer(BaseTestCase):
         result = outputs['result']
 
         # run Activation
-        tester = TaskTester(
+        tester = TaskRunner(
             params = {'activation_type': 'relu'},
             inputs = {'tensor': result},
             task_type = Activation
@@ -43,7 +43,7 @@ class TestTrainer(BaseTestCase):
         result = outputs['result']
 
         # run Embedding
-        tester = TaskTester(
+        tester = TaskRunner(
             params = {
                 'input_dimension': 1000,
                 'output_dimension': 64,
@@ -56,7 +56,7 @@ class TestTrainer(BaseTestCase):
         result = outputs['result']
 
         # run Masking
-        tester = TaskTester(
+        tester = TaskRunner(
             params = { 'mask_value': 0.0},
             inputs = {'tensor': result},
             task_type = Masking

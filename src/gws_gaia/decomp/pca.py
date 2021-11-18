@@ -37,7 +37,7 @@ class PCATrainerResult(BaseResource):
         return self._log_likelihood
 
     @view(view_type=TableView, human_name="ProjectedDataTable table", short_description="Table of data in the score plot")
-    def view_transformed_data_as_table(self, params: ConfigParams) -> dict:
+    def view_transformed_data_as_table(self, params: ConfigParams = None) -> dict:
         """
         View 2D score plot
         """
@@ -46,7 +46,7 @@ class PCATrainerResult(BaseResource):
         return TableView(data=x_transformed)
 
     @view(view_type=TableView, human_name="VarianceTable", short_description="Table of explained variances")
-    def view_variance_as_table(self, params: ConfigParams) -> dict:
+    def view_variance_as_table(self, params: ConfigParams = None) -> dict:
         """
         View 2D score plot
         """
@@ -58,7 +58,7 @@ class PCATrainerResult(BaseResource):
         return TableView(data=data)
 
     @view(view_type=BarPlotView, human_name="VarianceBarPlot", short_description="Barplot of explained variances")
-    def view_variance_as_barplot(self, params: ConfigParams) -> dict:
+    def view_variance_as_barplot(self, params: ConfigParams = None) -> dict:
         """
         View bar plot of explained variances
         """
@@ -72,7 +72,7 @@ class PCATrainerResult(BaseResource):
         return BarPlotView(data=data)
 
     @view(view_type=ScatterPlot2DView, human_name='ScorePlot2D', short_description='2D score plot')
-    def view_scores_as_2d_plot(self, params: ConfigParams) -> dict:
+    def view_scores_as_2d_plot(self, params: ConfigParams = None) -> dict:
         """
         View 2D score plot
         """
@@ -82,7 +82,7 @@ class PCATrainerResult(BaseResource):
         return view_model
 
     @view(view_type=ScatterPlot3DView, human_name='ScorePlot3D', short_description='3D score plot')
-    def view_scores_as_3d_plot(self, params: ConfigParams) -> dict:
+    def view_scores_as_3d_plot(self, params: ConfigParams = None) -> dict:
         """
         View 3D score plot
         """

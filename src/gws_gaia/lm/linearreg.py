@@ -12,7 +12,6 @@ from gws_core import (Task, Resource, task_decorator, resource_decorator,
                         view, TableView, ResourceRField, ScatterPlot2DView, ScatterPlot3DView, FloatRField, 
                         DataFrameRField, BadRequestException)
 
-from ..data.core import GenericResult
 from ..data.dataset import Dataset
 from ..base.base_resource import BaseResource
 
@@ -43,7 +42,7 @@ class LinearRegressionResult(BaseResource):
         return self._R2
 
     @view(view_type=TableView, human_name="PredictionTable", short_description="Prediction Table")
-    def view_predictions_as_table(self, params: ConfigParams) -> dict:
+    def view_predictions_as_table(self, params: ConfigParams = None) -> dict:
         """
         View the target data and the predicted data in a table. Works for data with only one target
         """
@@ -56,7 +55,7 @@ class LinearRegressionResult(BaseResource):
         return TableView(data=data)
 
     @view(view_type=ScatterPlot2DView, human_name='ScorePlot2D', short_description='2D data plot')
-    def view_predictions_as_2d_plot(self, params: ConfigParams) -> dict:
+    def view_predictions_as_2d_plot(self, params: ConfigParams = None) -> dict:
         """
         View the target data and the predicted data in a 2d scatter plot. Works for data with only one target
         """
@@ -69,35 +68,6 @@ class LinearRegressionResult(BaseResource):
 
         view_model = ScatterPlot2DView(data=data)
         return view_model
-
-#==============================================================================
-#==============================================================================
-
-# @resource_decorator("LinearRegressionResult", hide=True)
-# class LinearRegressionPredictorResult(BaseResource):
-
-#     _training_set: Resource = ResourceRField()
-
-#     def _get_data(self) -> DataFrame:
-#         data: DataFrame = self._training_set.get_features().values
-#         data = DataFrame(data=data, index=self._training_set.instance_names)
-#         return data
-
-#     @view(view_type=ScatterPlot2DView, human_name='ScorePlot3D', short_description='2D score plot')
-#     def view_prediction_as_2d_plot(self, *args, **kwargs) -> dict:
-#         """
-#         View 2D score plot
-#         """
-
-#         x = [self._data_set, self._prediction_target]
-#         view_model = ScatterPlot2DView(
-#             data=x, 
-#             #title="Transformed data", 
-#             #subtitle="log-likelihood = {:.2f}".format(self._get_log_likelihood()), 
-#             *args, **kwargs
-#         )
-#         return view_model
-
 
 #==============================================================================
 #==============================================================================
@@ -121,28 +91,6 @@ class LinearRegressionTrainer(Task):
         result._training_set = dataset
         return {'result': result}
 
-#==============================================================================
-#==============================================================================
-
-@task_decorator("LinearRegressionTester")
-class LinearRegressionTester(Task):
-    """
-    Tester of a trained linear regression model. Return the coefficient of determination R^2 of the prediction on a given dataset for a trained linear regression model.
-    
-    See https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html for more details
-    """
-    input_specs = {'dataset' : Dataset, 'learned_model': LinearRegressionResult}
-    output_specs = {'result' : GenericResult}
-    config_specs = {   }
-
-    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
-        dataset = inputs['dataset']
-        learned_model = inputs['learned_model']
-        lir = learned_model.result
-        y = lir.score(dataset.get_features().values, dataset.get_targets().values)
-        z = tuple([y])
-        result_dataset = GenericResult(result = z)
-        return {'result': result_dataset}
 
 #==============================================================================
 #==============================================================================

@@ -93,32 +93,6 @@ class DeepModelerTrainer(Task):
 #==================================================================================
 #==================================================================================
 
-@task_decorator("DeepModelerTester")
-class DeepModelerTester(Task):
-    """
-    Tester of a model on a test dataset.
-
-    See https://keras.io/api/models/model_training_apis/ for more details
-    """
-    input_specs = {'dataset' : GenericResult, 'trained_model': DeepModel}
-    output_specs = {'result' : GenericResult}
-    config_specs = {
-        'verbosity_mode':IntParam(default_value=0),
-    }
-
-    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
-        x = inputs['trained_model']
-        model = x.result
-        y = inputs['dataset']
-        data = y.result
-        (_, _), (x_test, y_test) = data
-        score = model.evaluate(x_test, y_test, verbose=params['verbosity_mode'])
-        result = GenericResult(result = score)
-        return {'result': result}
-
-#==================================================================================
-#==================================================================================
-
 @task_decorator("DeepModelerPredictor")
 class DeepModelerPredictor(Task):
     """

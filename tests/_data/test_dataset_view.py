@@ -1,5 +1,5 @@
 import os
-from gws_core import (Settings, TaskTester, ViewTester, BaseTestCase, ConfigParams, File)
+from gws_core import (Settings, TaskRunner, ViewTester, BaseTestCase, ConfigParams, File)
 from gws_gaia import Dataset, DatasetView, DatasetImporter
 
 
@@ -10,7 +10,7 @@ class TestTDatasetView(BaseTestCase):
         settings = Settings.retrieve()
         test_dir = settings.get_variable("gws_gaia:testdata_dir")
         # run trainer
-        tester = TaskTester(
+        tester = TaskRunner(
             params = {
                 "delimiter": ",",
                 "header": 0,

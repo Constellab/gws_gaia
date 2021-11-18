@@ -3,7 +3,7 @@ import os
 import asyncio
 
 from gws_gaia import Dataset, DatasetImporter
-from gws_core import (Settings, TaskTester, BaseTestCase, File)
+from gws_core import (Settings, TaskRunner, BaseTestCase, File)
 
 class TestImporter(BaseTestCase):
     
@@ -12,7 +12,7 @@ class TestImporter(BaseTestCase):
         settings = Settings.retrieve()
         test_dir = settings.get_variable("gws_gaia:testdata_dir")
         # run trainer
-        tester = TaskTester(
+        tester = TaskRunner(
             params = {
                 "delimiter": ",",
                 "header": 0,
@@ -41,7 +41,7 @@ class TestImporter(BaseTestCase):
         settings = Settings.retrieve()
         test_dir = settings.get_variable("gws_gaia:testdata_dir")
         # run trainer
-        tester = TaskTester(
+        tester = TaskRunner(
             params = {
                 "delimiter": ",",
                 "header": 0,
@@ -80,7 +80,7 @@ class TestImporter(BaseTestCase):
         settings = Settings.retrieve()
         test_dir = settings.get_variable("gws_gaia:testdata_dir")
         # run trainer
-        tester = TaskTester(
+        tester = TaskRunner(
             params = {
                 "delimiter": ",",
                 "header": -1,

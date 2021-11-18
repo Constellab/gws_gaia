@@ -5,14 +5,14 @@ import asyncio
 
 from gws_gaia.tf import Flatten
 from gws_gaia.tf import InputConverter
-from gws_core import Settings, GTest, BaseTestCase, TaskTester
+from gws_core import Settings, GTest, BaseTestCase, TaskRunner
 
 class TestTrainer(BaseTestCase):
     
     async def test_process(self):
         self.print("Flatten layer")
         # run InputConverter
-        tester = TaskTester(
+        tester = TaskRunner(
             params = {'input_shape': [3, 3, 3]},
             inputs = {},
             task_type = InputConverter
@@ -21,7 +21,7 @@ class TestTrainer(BaseTestCase):
         in1 = outputs['result']
 
         # run Flatten
-        tester = TaskTester(
+        tester = TaskRunner(
             params = {},
             inputs = {'tensor': in1},
             task_type = Flatten

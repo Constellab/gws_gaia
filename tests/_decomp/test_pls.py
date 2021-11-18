@@ -4,7 +4,7 @@ import numpy
 
 from gws_gaia import Dataset, DatasetImporter
 from gws_gaia import PLSTrainer, PLSPredictor, PLSTransformer
-from gws_core import Settings, GTest, BaseTestCase, TaskTester, ViewTester, File, ConfigParams
+from gws_core import Settings, GTest, BaseTestCase, TaskRunner, ViewTester, File, ConfigParams
 
 class TestTrainer(BaseTestCase):
 
@@ -33,7 +33,7 @@ class TestTrainer(BaseTestCase):
 
         #---------------------------------------------------------------------
         # run trainer
-        tester = TaskTester(
+        tester = TaskRunner(
             params = {'nb_components': 2},
             inputs = {'dataset': dataset},
             task_type = PLSTrainer
@@ -41,18 +41,17 @@ class TestTrainer(BaseTestCase):
         outputs = await tester.run()
         trainer_result = outputs['result']
 
-        params = ConfigParams()
         #---------------------------------------------------------------------
         # run views
         tester = ViewTester(
-            view = trainer_result.view_transformed_data_as_table(params)
+            view = trainer_result.view_transformed_data_as_table()
         )
         dic = tester.to_dict()
         self.assertEqual(dic["type"], "table-view")
 
         #------------------------------------------
         tester = ViewTester(
-            view = trainer_result.view_scores_as_2d_plot(params)
+            view = trainer_result.view_scores_as_2d_plot()
         )
         dic = tester.to_dict()
         self.assertEqual(dic["type"], "scatter-plot-2d-view")
@@ -60,21 +59,21 @@ class TestTrainer(BaseTestCase):
 
         #------------------------------------------
         tester = ViewTester(
-            view = trainer_result.view_predictions_as_table(params)
+            view = trainer_result.view_predictions_as_table()
         )
         dic = tester.to_dict()
         self.assertEqual(dic["type"], "table-view")
 
         #------------------------------------------
         tester = ViewTester(
-            view = trainer_result.view_predictions_as_2d_plot(params)
+            view = trainer_result.view_predictions_as_2d_plot()
         )
         dic = tester.to_dict()
         self.assertEqual(dic["type"], "scatter-plot-2d-view")
 
         #---------------------------------------------------------------------
         # run predictior
-        tester = TaskTester(
+        tester = TaskRunner(
             params = {},
             inputs = {
                 'dataset': dataset, 
@@ -87,7 +86,7 @@ class TestTrainer(BaseTestCase):
 
         #---------------------------------------------------------------------
         # run tester
-        tester = TaskTester(
+        tester = TaskRunner(
             params = {},
             inputs = {
                 'dataset': dataset, 

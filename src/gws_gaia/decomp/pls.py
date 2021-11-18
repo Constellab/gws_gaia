@@ -52,7 +52,7 @@ class PLSTrainerResult(BaseResource):
 
 
     @view(view_type=TableView, human_name="ProjectedDataTable", short_description="Table of data in the score plot")
-    def view_transformed_data_as_table(self, params: ConfigParams) -> dict:
+    def view_transformed_data_as_table(self, params: ConfigParams = None) -> dict:
         """
         View 2D score plot
         """
@@ -61,7 +61,7 @@ class PLSTrainerResult(BaseResource):
         return TableView(data=x_transformed)
 
     @view(view_type=ScatterPlot2DView, human_name='ScorePlot2D', short_description='2D score plot')
-    def view_scores_as_2d_plot(self, params: ConfigParams) -> dict:
+    def view_scores_as_2d_plot(self, params: ConfigParams = None) -> dict:
         """
         View 2D score plot
         """
@@ -71,7 +71,7 @@ class PLSTrainerResult(BaseResource):
         return view_model
 
     @view(view_type=ScatterPlot3DView, human_name='ScorePlot3D', short_description='3D score plot')
-    def view_scores_as_3d_plot(self, params: ConfigParams) -> dict:
+    def view_scores_as_3d_plot(self, params: ConfigParams = None) -> dict:
         """
         View 3D score plot
         """
@@ -81,7 +81,7 @@ class PLSTrainerResult(BaseResource):
         return view_model
 
     @view(view_type=TableView, human_name="PredictionTable", short_description="Prediction table")
-    def view_predictions_as_table(self, params: ConfigParams) -> dict:
+    def view_predictions_as_table(self, params: ConfigParams = None) -> dict:
         """
         View the target data and the predicted data in a table. Works for data with only one target.
         """
@@ -92,7 +92,7 @@ class PLSTrainerResult(BaseResource):
         return TableView(data=data)
 
     @view(view_type=ScatterPlot2DView, human_name='ScorePlot2D', short_description='2D data plot')
-    def view_predictions_as_2d_plot(self, params: ConfigParams) -> dict:
+    def view_predictions_as_2d_plot(self, params: ConfigParams = None) -> dict:
         """
         View the target data and the predicted data in a 2d scatter plot. Works for data with only one target.
         """

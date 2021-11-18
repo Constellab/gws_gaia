@@ -4,8 +4,8 @@ import asyncio
 
 
 from gws_gaia import Dataset
-from gws_gaia import LDATrainer, LDATester, LDAPredictor, LDATransformer
-from gws_core import Settings, GTest, BaseTestCase, TaskTester, ViewTester, File, ConfigParams
+from gws_gaia import LDATrainer, LDAPredictor, LDATransformer
+from gws_core import Settings, GTest, BaseTestCase, TaskRunner, ViewTester, File, ConfigParams
 
 class TestTrainer(BaseTestCase):
 
@@ -25,7 +25,7 @@ class TestTrainer(BaseTestCase):
         )
 
         # run trainer
-        tester = TaskTester(
+        tester = TaskRunner(
             params = {
                 'solver': 'svd',
                 'nb_components': 2
@@ -57,7 +57,7 @@ class TestTrainer(BaseTestCase):
         #self.assertTrue(numpy.all(numpy.isclose(dic["series"][0]["data"]["x"][0:3], [-2.6841, -2.714, -2.8889], atol=1e-3)))
 
         # run predictior
-        tester = TaskTester(
+        tester = TaskRunner(
             params = {},
             inputs = {
                 'dataset': dataset, 
@@ -68,20 +68,8 @@ class TestTrainer(BaseTestCase):
         outputs = await tester.run()
         predictor_result = outputs['result']
 
-        # run tester
-        tester = TaskTester(
-            params = {},
-            inputs = {
-                'dataset': dataset, 
-                'learned_model': trainer_result
-            },
-            task_type = LDATester
-        )
-        outputs = await tester.run()
-        tester_result = outputs['result']
-       
         # run transformer
-        tester = TaskTester(
+        tester = TaskRunner(
             params = {},
             inputs = {
                 'dataset': dataset, 
@@ -94,5 +82,4 @@ class TestTrainer(BaseTestCase):
 
         print(trainer_result)
         print(predictor_result)
-        print(tester_result)
         print(transformer_result)

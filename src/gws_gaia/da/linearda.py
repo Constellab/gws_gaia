@@ -10,7 +10,6 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from gws_core import (Task, Resource, task_decorator, resource_decorator,
                         ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam,
                         StrParam, ScatterPlot2DView, ScatterPlot3DView, TableView, view, ResourceRField, FloatRField, IntRField)
-from ..data.core import GenericResult
 from ..data.dataset import Dataset
 from ..base.base_resource import BaseResource
 
@@ -39,7 +38,7 @@ class LDAResult(BaseResource):
     #     return self._log_likelihood
 
     @view(view_type=TableView, human_name="ProjectedDataTable' table", short_description="Table of data in the score plot")
-    def view_transformed_data_as_table(self, params: ConfigParams) -> dict:
+    def view_transformed_data_as_table(self, params: ConfigParams = None) -> dict:
         """
         View 2D score plot
         """
@@ -48,7 +47,7 @@ class LDAResult(BaseResource):
         return TableView(data=x_transformed)
 
     @view(view_type=TableView, human_name="VarianceTable", short_description="Table of explained variances")
-    def view_variance_as_table(self, params: ConfigParams) -> dict:
+    def view_variance_as_table(self, params: ConfigParams = None) -> dict:
         """
         View table data
         """
@@ -61,7 +60,7 @@ class LDAResult(BaseResource):
         return TableView(data=data)
 
     @view(view_type=ScatterPlot2DView, human_name='ScorePlot2D', short_description='2D score plot')
-    def view_scores_as_2d_plot(self, params: ConfigParams) -> dict:
+    def view_scores_as_2d_plot(self, params: ConfigParams = None) -> dict:
         """
         View 2D score plot
         """
@@ -71,7 +70,7 @@ class LDAResult(BaseResource):
         return view_model
 
     @view(view_type=ScatterPlot3DView, human_name='ScorePlot3D', short_description='3D score plot')
-    def view_scores_as_3d_plot(self, params: ConfigParams) -> dict:
+    def view_scores_as_3d_plot(self, params: ConfigParams = None) -> dict:
         """
         View 3D score plot
         """
@@ -118,7 +117,7 @@ class LDATransformer(Task):
 
     """
     input_specs = {'dataset' : Dataset, 'learned_model': LDAResult}
-    output_specs = {'result' : GenericResult}
+    output_specs = {'result' : Dataset}
     config_specs = {}
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
@@ -126,30 +125,7 @@ class LDATransformer(Task):
         learned_model = inputs['learned_model']
         lda = learned_model.result
         x = lda.transform(dataset.get_features().values)
-        result = GenericResult(result = x)
-        return {'result': result}
-        
-#==============================================================================
-#==============================================================================
-
-@task_decorator("LDATester")
-class LDATester(Task):
-    """
-    Tester of a trained linear discriminant analysis classifier. Return the mean accuracy on a given dataset for a trained linear discriminant analysis classifier.
-    
-    See https://scikit-learn.org/stable/modules/generated/sklearn.discriminant_analysis.LinearDiscriminantAnalysis.html for more details
-    """
-    input_specs = {'dataset' : Dataset, 'learned_model': LDAResult}
-    output_specs = {'result' : GenericResult}
-    config_specs = { }
-
-    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
-        dataset = inputs['dataset']
-        learned_model = inputs['learned_model']
-        lda = learned_model.result
-        y = lda.score(dataset.get_features().values, dataset.get_targets().values)
-        z = tuple([y])
-        result_dataset = GenericResult(result = z)
+        result_dataset = Dataset(features = DataFrame(data=x))
         return {'result': result_dataset}
 
 #==============================================================================
@@ -163,7 +139,7 @@ class LDAPredictor(Task):
     See https://scikit-learn.org/stable/modules/generated/sklearn.discriminant_analysis.LinearDiscriminantAnalysis.html for more details.
     """
     input_specs = {'dataset' : Dataset, 'learned_model': LDAResult}
-    output_specs = {'result' : GenericResult}
+    output_specs = {'result' : Dataset}
     config_specs = {   }
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
@@ -171,5 +147,5 @@ class LDAPredictor(Task):
         learned_model = inputs['learned_model']
         lda = learned_model.result
         y = lda.predict(dataset.get_features().values)
-        result_dataset = Dataset(targets = DataFrame(y))
+        result_dataset = Dataset(targets = DataFrame(data=y))
         return {'result': result_dataset}

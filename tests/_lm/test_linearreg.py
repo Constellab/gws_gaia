@@ -34,13 +34,13 @@ class TestTrainer(BaseTestCase):
         trainer_result = outputs['result']
 
         tester = ViewTester(
-            view = trainer_result.view_predictions_as_table()
+            view = trainer_result.view_predictions_as_table({})
         )
         dic = tester.to_dict()
         self.assertEqual(dic["type"], "table-view")
 
         tester = ViewTester(
-            view = trainer_result.view_predictions_as_2d_plot()
+            view = trainer_result.view_predictions_as_2d_plot({})
         )
         dic = tester.to_dict()
         self.assertEqual(dic["type"], "scatter-plot-2d-view")

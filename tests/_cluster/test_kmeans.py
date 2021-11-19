@@ -36,7 +36,7 @@ class TestTrainer(BaseTestCase):
         #---------------------------------------------------------------------
         # test views
         tester = ViewTester(
-            view = trainer_result.view_labels_as_table()
+            view = trainer_result.view_labels_as_table({})
         )
         dic = tester.to_dict()
         self.assertEqual(dic["type"], "table-view")

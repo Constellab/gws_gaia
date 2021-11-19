@@ -22,7 +22,7 @@ class KMeansResult(BaseResource):
     _training_set: Resource = ResourceRField() #pour lier ressources entre elles
     
     @view(view_type=TableView, human_name="LabelsTable", short_description="Table of labels")
-    def view_labels_as_table(self, params: ConfigParams = None) -> dict:
+    def view_labels_as_table(self, params: ConfigParams) -> dict:
         """
         View Table
         """

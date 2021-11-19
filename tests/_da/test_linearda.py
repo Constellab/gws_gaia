@@ -37,20 +37,20 @@ class TestTrainer(BaseTestCase):
         trainer_result = outputs['result']
 
         tester = ViewTester(
-            view = trainer_result.view_transformed_data_as_table()
+            view = trainer_result.view_transformed_data_as_table({})
         )
         dic = tester.to_dict()
         self.assertEqual(dic["type"], "table-view")
 
         tester = ViewTester(
-            view = trainer_result.view_variance_as_table()
+            view = trainer_result.view_variance_as_table({})
         )
         dic = tester.to_dict()
         self.assertEqual(dic["type"], "table-view")
         #self.assertTrue(numpy.all(numpy.isclose(dic["data"]["ExplainedVariance"], [0.92461, 0.053066], atol=1e-3)))
 
         tester = ViewTester(
-            view = trainer_result.view_scores_as_2d_plot()
+            view = trainer_result.view_scores_as_2d_plot({})
         )
         dic = tester.to_dict()
         self.assertEqual(dic["type"], "scatter-plot-2d-view")

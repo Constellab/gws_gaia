@@ -4,14 +4,14 @@ import asyncio
 
 from gws_gaia.tf import GlobalMaxPooling1D, GlobalMaxPooling2D, GlobalMaxPooling3D
 from gws_gaia.tf import InputConverter
-from gws_core import Settings, GTest, BaseTestCase, TaskTester
+from gws_core import Settings, GTest, BaseTestCase, TaskRunner
 
 class TestTrainer(BaseTestCase):
     
     async def test_process_1D(self):
         self.print("Global Max pooling operation for 1D data")
         # run InputConverter
-        tester = TaskTester(
+        tester = TaskRunner(
             params = {'input_shape': [None, 3]},
             inputs = {},
             task_type = InputConverter
@@ -20,7 +20,7 @@ class TestTrainer(BaseTestCase):
         in1 = outputs['result']
 
         # run GlobalMaxPooling1D
-        tester = TaskTester(
+        tester = TaskRunner(
             params = {},
             inputs = {'tensor': in1},
             task_type = GlobalMaxPooling1D
@@ -32,7 +32,7 @@ class TestTrainer(BaseTestCase):
     async def test_process_2D(self):
         self.print("Global Max pooling operation for 2D data")
         # run InputConverter
-        tester = TaskTester(
+        tester = TaskRunner(
             params = {'input_shape': [None, 3, 3]},
             inputs = {},
             task_type = InputConverter
@@ -41,7 +41,7 @@ class TestTrainer(BaseTestCase):
         in2 = outputs['result']
 
         # run GlobalMaxPooling2D
-        tester = TaskTester(
+        tester = TaskRunner(
             params = {},
             inputs = {'tensor': in2},
             task_type = GlobalMaxPooling2D
@@ -53,7 +53,7 @@ class TestTrainer(BaseTestCase):
     async def test_process_3D(self):
         self.print("Global Max pooling operation for 3D data")
         # run InputConverter
-        tester = TaskTester(
+        tester = TaskRunner(
             params = {'input_shape': [None, 3, 3, 3]},
             inputs = {},
             task_type = InputConverter
@@ -62,7 +62,7 @@ class TestTrainer(BaseTestCase):
         in3 = outputs['result']
 
         # run GlobalMaxPooling3D
-        tester = TaskTester(
+        tester = TaskRunner(
             params = {},
             inputs = {'tensor': in3},
             task_type = GlobalMaxPooling3D

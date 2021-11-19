@@ -8,9 +8,8 @@ from gws_core import (Protocol, Study, User, Experiment,
                         protocol_decorator, ProcessSpec, 
                         ConfigParams, Settings, File)
 
-from gws_gaia import GenericResult
 from gws_gaia import Dataset, DatasetImporter
-from gws_gaia import  LDATrainer, LDAPredictor, LDATester, LDATransformer
+from gws_gaia import  LDATrainer, LDAPredictor, LDATransformer
 from gws_gaia import PCATrainer, PCATransformer
 
 @protocol_decorator("LDATutorialProto", 
@@ -25,7 +24,6 @@ class LDATutorialProto(Protocol):
         importer: ProcessSpec = self.add_process(DatasetImporter, 'importer')
         lda_trainer: ProcessSpec = self.add_process(LDATrainer, 'lda_trainer')
         lda_pred: ProcessSpec = self.add_process(LDAPredictor, 'lda_pred')
-        lda_tester: ProcessSpec = self.add_process(LDATester, 'lda_tester')
         lda_trans: ProcessSpec = self.add_process(LDATransformer, 'lda_trans')
         pca_trainer: ProcessSpec = self.add_process(PCATrainer, 'pca_trainer')
         pca_trans: ProcessSpec = self.add_process(PCATransformer, 'pca_trans')
@@ -37,16 +35,14 @@ class LDATutorialProto(Protocol):
         pca_trainer.set_param('nb_components', 2)
 
         self.add_connectors([
-            (importer>>'dataset', pca_trainer<<'dataset'),                
-            (importer>>'dataset', pca_trans<<'dataset'),                
+            (importer>>'resource', pca_trainer<<'dataset'),                
+            (importer>>'resource', pca_trans<<'dataset'),                
             (pca_trainer>>'result', pca_trans<<'learned_model'),                
-            (importer>>'dataset', lda_trainer<<'dataset'),
-            (importer>>'dataset', lda_trans<<'dataset'),
+            (importer>>'resource', lda_trainer<<'dataset'),
+            (importer>>'resource', lda_trans<<'dataset'),
             (lda_trainer>>'result', lda_trans<<'learned_model'),
-            (importer>>'dataset', lda_tester<<'dataset'),
-            (lda_trainer>>'result', lda_tester<<'learned_model'),
-            (importer>>'dataset', lda_pred<<'dataset'),
+            (importer>>'resource', lda_pred<<'dataset'),
             (lda_trainer>>'result', lda_pred<<'learned_model'),
         ])
 
-        self.add_interface('file', importer.inputs['file'], 'file')
+        self.add_interface('file', importer, 'file')

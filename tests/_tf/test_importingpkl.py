@@ -4,7 +4,7 @@ import asyncio
 
 from gws_gaia import Dataset
 from gws_gaia.tf import ImporterPKL, Preprocessor, AdhocExtractor
-from gws_core import Settings, GTest, BaseTestCase, TaskTester
+from gws_core import Settings, GTest, BaseTestCase, TaskRunner
 
 class TestTrainer(BaseTestCase):
 
@@ -14,7 +14,7 @@ class TestTrainer(BaseTestCase):
         test_dir = settings.get_variable("gws_gaia:testdata_dir")
         
         #run importerpkl
-        tester = TaskTester(
+        tester = TaskRunner(
            params = {'file_path': os.path.join(test_dir, "./mnist.pkl")},
            inputs = {},
            task_type = ImporterPKL
@@ -23,7 +23,7 @@ class TestTrainer(BaseTestCase):
         dataset = outputs['result']
         
         # run preprocessor
-        tester = TaskTester(
+        tester = TaskRunner(
             params = {'number_classes': 10},
             inputs = {'data': dataset},
             task_type = Preprocessor
@@ -32,7 +32,7 @@ class TestTrainer(BaseTestCase):
         preprocessor_result = outputs['result']
 
         # run extractor
-        tester = TaskTester(
+        tester = TaskRunner(
             params = {},
             inputs = {'data': dataset},
             task_type = AdhocExtractor

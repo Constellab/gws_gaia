@@ -4,8 +4,8 @@ import asyncio
 
 
 from gws_gaia import Dataset
-from gws_gaia import LinearRegressionTrainer, LinearRegressionPredictor, LinearRegressionTester
-from gws_core import Settings, GTest, BaseTestCase, TaskTester, ViewTester, File, ConfigParams
+from gws_gaia import LinearRegressionTrainer, LinearRegressionPredictor
+from gws_core import Settings, GTest, BaseTestCase, TaskRunner, ViewTester, File, ConfigParams
 
 class TestTrainer(BaseTestCase):
 
@@ -25,7 +25,7 @@ class TestTrainer(BaseTestCase):
         )
 
         # run trainer
-        tester = TaskTester(
+        tester = TaskRunner(
             params = {},
             inputs = {'dataset': dataset},
             task_type = LinearRegressionTrainer
@@ -34,19 +34,19 @@ class TestTrainer(BaseTestCase):
         trainer_result = outputs['result']
 
         tester = ViewTester(
-            view = trainer_result.view_predictions_as_table()
+            view = trainer_result.view_predictions_as_table({})
         )
         dic = tester.to_dict()
         self.assertEqual(dic["type"], "table-view")
 
         tester = ViewTester(
-            view = trainer_result.view_predictions_as_2d_plot()
+            view = trainer_result.view_predictions_as_2d_plot({})
         )
         dic = tester.to_dict()
         self.assertEqual(dic["type"], "scatter-plot-2d-view")
 
         # run predictior
-        tester = TaskTester(
+        tester = TaskRunner(
             params = {},
             inputs = {
                 'dataset': dataset, 
@@ -57,18 +57,5 @@ class TestTrainer(BaseTestCase):
         outputs = await tester.run()
         predictor_result = outputs['result']
 
-        # run tester
-        tester = TaskTester(
-            params = {},
-            inputs = {
-                'dataset': dataset, 
-                'learned_model': trainer_result
-            },
-            task_type = LinearRegressionTester
-        )
-        outputs = await tester.run()
-        tester_result = outputs['result']
-
         print(trainer_result)
         print(predictor_result)
-        print(tester_result)

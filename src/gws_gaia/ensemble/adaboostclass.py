@@ -9,7 +9,6 @@ from pandas import DataFrame
 
 from gws_core import (Task, Resource, task_decorator, resource_decorator,
                         ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam)
-from ..data.core import GenericResult
 from ..data.dataset import Dataset
 from ..base.base_resource import BaseResource
 
@@ -40,32 +39,6 @@ class AdaBoostClassifierTrainer(Task):
         abc.fit(dataset.get_features().values, ravel(dataset.get_targets().values))
         result = AdaBoostClassifierResult(result = abc)
         return {"result" : result}
-
-#==============================================================================
-#==============================================================================
-
-@task_decorator("AdaBoostClassifierTester")
-class AdaBoostClassifierTester(Task):
-    """
-    Tester of a trained Adaboost classifier. Return the mean accuracy on a given test data and labels for a trained Adaboost classifier.
-    
-    See https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.AdaBoostClassifier.html for more details
-    """
-    input_specs = {'dataset' : Dataset, 'learned_model': AdaBoostClassifierResult}
-    output_specs = {'result' : GenericResult}
-    config_specs = {}
-
-    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
-        dataset = inputs['dataset']
-        learned_model = inputs['learned_model']
-
-        print(inputs)
-        
-        abc = learned_model.result
-        y = abc.score(dataset.get_features().values,ravel(dataset.get_targets().values))
-        z = tuple([y])
-        result_dataset = GenericResult(result=z)
-        return {'result': result_dataset}
 
 #==============================================================================
 #==============================================================================

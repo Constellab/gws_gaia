@@ -4,7 +4,7 @@ import asyncio
 
 from gws_gaia import Dataset
 from gws_gaia import GaussianMixtureTrainer, GaussianMixturePredictor
-from gws_core import Settings, GTest, BaseTestCase, TaskTester, File, ConfigParams
+from gws_core import Settings, GTest, BaseTestCase, TaskRunner, File, ConfigParams
 
 
 class TestTrainer(BaseTestCase):
@@ -25,7 +25,7 @@ class TestTrainer(BaseTestCase):
         )
 
         # run trainer
-        tester = TaskTester(
+        tester = TaskRunner(
             params = {
                 'nb_components': 2,
                 'covariance_type': 'full'
@@ -37,7 +37,7 @@ class TestTrainer(BaseTestCase):
         trainer_result = outputs['result']
 
         # run predictior
-        tester = TaskTester(
+        tester = TaskRunner(
             params = {},
             inputs = {
                 'dataset': dataset, 

@@ -5,14 +5,14 @@ import asyncio
 
 from gws_gaia.tf import Conv1D, Conv2D, Conv3D
 from gws_gaia.tf import InputConverter
-from gws_core import Settings, BaseTestCase, TaskTester, ConfigParams
+from gws_core import Settings, BaseTestCase, TaskRunner, ConfigParams
 
 class TestTrainer(BaseTestCase):
 
     async def test_process_1D(self):
         self.print("Convolutional layers")
         # run InputConverter
-        tester = TaskTester(
+        tester = TaskRunner(
             params = {'input_shape': [3, 3, 3]},
             inputs = {},
             task_type = InputConverter
@@ -21,7 +21,7 @@ class TestTrainer(BaseTestCase):
         in1 = outputs['result']
 
         # run AveragePooling1D
-        tester = TaskTester(
+        tester = TaskRunner(
             params = ConfigParams({
                 'nb_filters': 32,
                 'kernel_size': 3,
@@ -37,7 +37,7 @@ class TestTrainer(BaseTestCase):
     async def test_process_2D(self):
         self.print("Average pooling operation for 2D data")
         # run InputConverter
-        tester = TaskTester(
+        tester = TaskRunner(
             params = {'input_shape': [3, 3, 3, 3]},
             inputs = {},
             task_type = InputConverter
@@ -46,7 +46,7 @@ class TestTrainer(BaseTestCase):
         in2 = outputs['result']
 
         # run AveragePooling2D
-        tester = TaskTester(
+        tester = TaskRunner(
             params = ConfigParams({
                 'nb_filters': 32,
                 'kernel_size': [3, 3],
@@ -62,7 +62,7 @@ class TestTrainer(BaseTestCase):
     async def test_process_3D(self):
         self.print("Average pooling operation for 3D data")
         # run InputConverter
-        tester = TaskTester(
+        tester = TaskRunner(
             params = {'input_shape': [3, 3, 3, 3,]},
             inputs = {},
             task_type = InputConverter
@@ -71,7 +71,7 @@ class TestTrainer(BaseTestCase):
         in3 = outputs['result']
 
         # run AveragePooling3D
-        tester = TaskTester(
+        tester = TaskRunner(
             params = {
                 'nb_filters': 32,
                 'kernel_size': [3, 3, 3],

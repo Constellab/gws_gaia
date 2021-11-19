@@ -10,7 +10,6 @@ from sklearn.ensemble import AdaBoostRegressor
 from gws_core import (Task, Resource, task_decorator, resource_decorator,
                         ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam)
 from ..data.dataset import Dataset
-from ..data.core import GenericResult
 from ..base.base_resource import BaseResource
 
 @resource_decorator("AdaBoostRegressorResult", hide=True)
@@ -39,29 +38,6 @@ class AdaBoostRegressorTrainer(Task):
         abr.fit(dataset.get_features().values, ravel(dataset.get_targets().values))
         result = AdaBoostRegressorResult(result = abr)
         return {'result': result}
-
-#==============================================================================
-#==============================================================================
-
-@task_decorator("AdaBoostRegressorTester")
-class AdaBoostRegressorTester(Task):
-    """
-    Tester of a trained Adaboost regressor. Return the coefficient of determination R^2 of the prediction on a given test data for a trained Adaboost regressor.
-    
-    See https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.AdaBoostRegressor.html for more details
-    """
-    input_specs = {'dataset' : Dataset, 'learned_model': AdaBoostRegressorResult}
-    output_specs = {'result' : GenericResult}
-    config_specs = {   }
-
-    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
-        dataset = inputs['dataset']
-        learned_model = inputs['learned_model']
-        abr = learned_model.result
-        y = abr.score(dataset.get_features().values,ravel(dataset.get_targets().values))
-        z = tuple([y])
-        result_dataset = GenericResult(result = z)
-        return {'result': result_dataset}
 
 #==============================================================================
 #==============================================================================

@@ -11,7 +11,6 @@ from sklearn.svm import SVC
 from gws_core import (Task, Resource, task_decorator, resource_decorator,
                         ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam, BoolParam)
 
-from ..data.core import GenericResult
 from ..data.dataset import Dataset
 from ..base.base_resource import BaseResource
 
@@ -45,29 +44,6 @@ class SVCTrainer(Task):
         svc.fit(dataset.get_features().values, ravel(dataset.get_targets().values))
         result = SVCResult(result=svc)
         return {'result': result}
-
-#==============================================================================
-#==============================================================================
-
-@task_decorator("SVCTester")
-class SVCTester(Task):
-    """
-    Tester of a trained C-Support Vector Classifier (SVC) model. Return the mean accuracy on a given dataset for a trained C-Support Vector Classifier (SVC) model.
-    
-    See https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html for more details
-    """
-    input_specs = {'dataset' : Dataset, 'learned_model': SVCResult}
-    output_specs = {'result' : GenericResult}
-    config_specs = {   }
-
-    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
-        dataset = inputs['dataset']
-        learned_model = inputs['learned_model']
-        svc = learned_model.result
-        y = svc.score(dataset.get_features().values, dataset.get_targets().values)
-        z = tuple([y])
-        result_dataset = GenericResult(result = z)
-        return {'result': result_dataset}
 
 #==============================================================================
 #==============================================================================

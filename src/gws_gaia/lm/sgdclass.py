@@ -11,7 +11,6 @@ from sklearn.linear_model import SGDClassifier
 from gws_core import (Task, Resource, task_decorator, resource_decorator,
                         ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam)
 
-from ..data.core import GenericResult
 from ..data.dataset import Dataset
 from ..base.base_resource import BaseResource
 
@@ -46,29 +45,6 @@ class SGDClassifierTrainer(Task):
         sgdc.fit(dataset.get_features().values, ravel(dataset.get_targets().values))
         result = SGDClassifierResult(result = sgdc)
         return {'result': result}
-
-#==============================================================================
-#==============================================================================
-
-@task_decorator("SGDClassifierTester")
-class SGDClassifierTester(Task):
-    """
-    Tester of a trained linear classifier with stochastic gradient descent (SGD). Return the mean accuracy on a given dataset for a trained linear classifier with stochastic gradient descent (SGD).
-    
-    See https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.SGDClassifier.html for more details
-    """
-    input_specs = {'dataset' : Dataset, 'learned_model': SGDClassifierResult}
-    output_specs = {'result' : GenericResult}
-    config_specs = {   }
-
-    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
-        dataset = inputs['dataset']
-        learned_model = inputs['learned_model']
-        sgdc = learned_model.result
-        y = sgdc.score(dataset.get_features().values, dataset.get_targets().values)
-        z = tuple([y])
-        result_dataset = GenericResult(result = z)
-        return {'result': result_dataset}
 
 #==============================================================================
 #==============================================================================

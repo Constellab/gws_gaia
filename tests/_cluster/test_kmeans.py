@@ -5,7 +5,7 @@ import asyncio
 
 from gws_gaia import Dataset
 from gws_gaia import KMeansTrainer, KMeansPredictor
-from gws_core import Settings, GTest, BaseTestCase, TaskTester, File, ConfigParams, ViewTester
+from gws_core import Settings, GTest, BaseTestCase, TaskRunner, File, ConfigParams, ViewTester
 
 class TestTrainer(BaseTestCase):
 
@@ -25,7 +25,7 @@ class TestTrainer(BaseTestCase):
         )
         #---------------------------------------------------------------------
         # run trainer
-        tester = TaskTester(
+        tester = TaskRunner(
             params = {'nb_clusters': 3},
             inputs = {'dataset': dataset},
             task_type = KMeansTrainer
@@ -33,17 +33,16 @@ class TestTrainer(BaseTestCase):
         outputs = await tester.run()
         trainer_result = outputs['result']
 
-        params = ConfigParams()
         #---------------------------------------------------------------------
         # test views
         tester = ViewTester(
-            view = trainer_result.view_labels_as_table(params)
+            view = trainer_result.view_labels_as_table({})
         )
         dic = tester.to_dict()
         self.assertEqual(dic["type"], "table-view")
         #---------------------------------------------------------------------
         # run predictior
-        tester = TaskTester(
+        tester = TaskRunner(
             params = {},
             inputs = {
                 'dataset': dataset, 

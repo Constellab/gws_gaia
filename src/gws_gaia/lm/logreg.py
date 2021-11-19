@@ -10,7 +10,6 @@ from sklearn.linear_model import LogisticRegression
 from gws_core import (Task, Resource, task_decorator, resource_decorator,
                         ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam)
 
-from ..data.core import GenericResult
 from ..data.dataset import Dataset
 from ..base.base_resource import BaseResource
 
@@ -42,29 +41,6 @@ class LogisticRegressionTrainer(Task):
         logreg.fit(dataset.get_features().values, ravel(dataset.get_targets().values))
         result = LogisticRegressionResult(result=logreg)
         return {'result': result}
-
-#==============================================================================
-#==============================================================================
-
-@task_decorator("LogisticRegressionTester")
-class LogisticRegressionTester(Task):
-    """
-    Tester of a trained logistic regression classifier. Return the mean accuracy on a given dataset for a trained logistic regression classifier.
-    
-    See https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html for more details
-    """
-    input_specs = {'dataset' : Dataset, 'learned_model': LogisticRegressionResult}
-    output_specs = {'result' : GenericResult}
-    config_specs = {   }
-
-    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
-        dataset = inputs['dataset']
-        learned_model = inputs['learned_model']
-        logreg = learned_model.result
-        y = logreg.score(dataset.get_features().values, dataset.get_targets().values)
-        z = tuple([y])
-        result_dataset = GenericResult(result = z)
-        return {'result': result_dataset}
 
 #==============================================================================
 #==============================================================================

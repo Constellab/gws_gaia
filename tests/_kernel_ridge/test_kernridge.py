@@ -4,8 +4,8 @@ import asyncio
 
 
 from gws_gaia import Dataset
-from gws_gaia import KernelRidgeTrainer, KernelRidgePredictor, KernelRidgeTester
-from gws_core import Settings, GTest, BaseTestCase, TaskTester, File, ConfigParams
+from gws_gaia import KernelRidgeTrainer, KernelRidgePredictor
+from gws_core import Settings, GTest, BaseTestCase, TaskRunner, File, ConfigParams
 
 class TestTrainer(BaseTestCase):
 
@@ -25,7 +25,7 @@ class TestTrainer(BaseTestCase):
         )
 
         # run trainer
-        tester = TaskTester(
+        tester = TaskRunner(
             params = {
                 'kernel': 'rbf',
                 'gamma': None
@@ -37,7 +37,7 @@ class TestTrainer(BaseTestCase):
         trainer_result = outputs['result']
 
         # run predictior
-        tester = TaskTester(
+        tester = TaskRunner(
             params = {},
             inputs = {
                 'dataset': dataset, 
@@ -48,18 +48,5 @@ class TestTrainer(BaseTestCase):
         outputs = await tester.run()
         predictor_result = outputs['result']
 
-        # run tester
-        tester = TaskTester(
-            params = {},
-            inputs = {
-                'dataset': dataset, 
-                'learned_model': trainer_result
-            },
-            task_type = KernelRidgeTester
-        )
-        outputs = await tester.run()
-        tester_result = outputs['result']
-
         print(trainer_result)
-        print(tester_result)
         print(predictor_result)

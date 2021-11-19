@@ -10,7 +10,6 @@ from sklearn.kernel_ridge import KernelRidge
 from gws_core import (Task, Resource, task_decorator, resource_decorator,
                         ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam)
 
-from ..data.core import GenericResult
 from ..data.dataset import Dataset
 from ..base.base_resource import BaseResource
 
@@ -44,29 +43,6 @@ class KernelRidgeTrainer(Task):
         krr.fit(dataset.get_features().values, ravel(dataset.get_targets().values))
         result = KernelRidgeResult(result = krr)
         return {'result': result}
-
-#==============================================================================
-#==============================================================================
-
-@task_decorator("KernelRidgeTester")
-class KernelRidgeTester(Task):
-    """
-    Tester of a trained kernel ridge regression model. Return the coefficient of determination R^2 of the prediction on a given dataset for a kernel ridge regression model.
-    
-    See https://scikit-learn.org/stable/modules/generated/sklearn.kernel_ridge.KernelRidge.html for more details
-    """
-    input_specs = {'dataset' : Dataset, 'learned_model': KernelRidgeResult}
-    output_specs = {'result' : GenericResult}
-    config_specs = {   }
-
-    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
-        dataset = inputs['dataset']
-        learned_model = inputs['learned_model']
-        krr = learned_model.result
-        y = krr.score(dataset.get_features().values, dataset.get_targets().values)
-        z = tuple([y])
-        result_dataset = GenericResult(result = z)
-        return {'result': result_dataset}
 
 #==============================================================================
 #==============================================================================

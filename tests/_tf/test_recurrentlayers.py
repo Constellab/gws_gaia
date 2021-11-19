@@ -4,14 +4,14 @@ import asyncio
 
 from gws_gaia.tf import SimpleRNN, LSTM, GRU
 from gws_gaia.tf import InputConverter
-from gws_core import Settings, GTest, BaseTestCase, TaskTester
+from gws_core import Settings, GTest, BaseTestCase, TaskRunner
 
 class TestTrainer(BaseTestCase):
     
     async def test_process(self):
         self.print("Recurrent layers")
         # run InputConverter
-        tester = TaskTester(
+        tester = TaskRunner(
             params = {'input_shape': [3, 3]},
             inputs = {},
             task_type = InputConverter
@@ -20,7 +20,7 @@ class TestTrainer(BaseTestCase):
         in1 = outputs['result']
 
         # run SimpleRNN
-        tester = TaskTester(
+        tester = TaskRunner(
             params = {
                 'units': 32,
                 'activation_type': 'tanh',
@@ -33,7 +33,7 @@ class TestTrainer(BaseTestCase):
         simplernn_result = outputs['result']
 
         # run LSTM
-        tester = TaskTester(
+        tester = TaskRunner(
             params = {
                 'units': 32,
                 'activation_type': 'tanh',
@@ -47,7 +47,7 @@ class TestTrainer(BaseTestCase):
         lstm_result = outputs['result']
 
         # run GRU
-        tester = TaskTester(
+        tester = TaskRunner(
             params = {
                 'units': 32,
                 'activation_type': 'tanh',

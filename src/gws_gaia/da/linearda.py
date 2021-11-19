@@ -10,7 +10,6 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from gws_core import (Task, Resource, task_decorator, resource_decorator,
                         ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam,
                         StrParam, ScatterPlot2DView, ScatterPlot3DView, TableView, view, ResourceRField, FloatRField, IntRField)
-from ..data.core import GenericResult
 from ..data.dataset import Dataset
 from ..base.base_resource import BaseResource
 
@@ -118,7 +117,7 @@ class LDATransformer(Task):
 
     """
     input_specs = {'dataset' : Dataset, 'learned_model': LDAResult}
-    output_specs = {'result' : GenericResult}
+    output_specs = {'result' : Dataset}
     config_specs = {}
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
@@ -126,30 +125,7 @@ class LDATransformer(Task):
         learned_model = inputs['learned_model']
         lda = learned_model.result
         x = lda.transform(dataset.get_features().values)
-        result = GenericResult(result = x)
-        return {'result': result}
-        
-#==============================================================================
-#==============================================================================
-
-@task_decorator("LDATester")
-class LDATester(Task):
-    """
-    Tester of a trained linear discriminant analysis classifier. Return the mean accuracy on a given dataset for a trained linear discriminant analysis classifier.
-    
-    See https://scikit-learn.org/stable/modules/generated/sklearn.discriminant_analysis.LinearDiscriminantAnalysis.html for more details
-    """
-    input_specs = {'dataset' : Dataset, 'learned_model': LDAResult}
-    output_specs = {'result' : GenericResult}
-    config_specs = { }
-
-    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
-        dataset = inputs['dataset']
-        learned_model = inputs['learned_model']
-        lda = learned_model.result
-        y = lda.score(dataset.get_features().values, dataset.get_targets().values)
-        z = tuple([y])
-        result_dataset = GenericResult(result = z)
+        result_dataset = Dataset(features = DataFrame(data=x))
         return {'result': result_dataset}
 
 #==============================================================================
@@ -163,7 +139,7 @@ class LDAPredictor(Task):
     See https://scikit-learn.org/stable/modules/generated/sklearn.discriminant_analysis.LinearDiscriminantAnalysis.html for more details.
     """
     input_specs = {'dataset' : Dataset, 'learned_model': LDAResult}
-    output_specs = {'result' : GenericResult}
+    output_specs = {'result' : Dataset}
     config_specs = {   }
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
@@ -171,5 +147,5 @@ class LDAPredictor(Task):
         learned_model = inputs['learned_model']
         lda = learned_model.result
         y = lda.predict(dataset.get_features().values)
-        result_dataset = Dataset(targets = DataFrame(y))
+        result_dataset = Dataset(targets = DataFrame(data=y))
         return {'result': result_dataset}

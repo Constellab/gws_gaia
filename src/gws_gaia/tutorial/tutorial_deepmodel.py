@@ -5,13 +5,12 @@
 
 import os
 from gws_core import (Protocol, Settings, GTest, BaseTestCase, 
-                        TaskTester, protocol_decorator, ProcessSpec, ConfigParams)
-from gws_gaia import GenericResult
+                        TaskRunner, protocol_decorator, ProcessSpec, ConfigParams)
 from gws_gaia.tf import (Conv2D, MaxPooling2D, Flatten, Dropout, Dense, 
                             ImporterPKL, Preprocessor, AdhocExtractor, 
                             Tensor, DeepModel, InputConverter, 
                             DeepModelerBuilder, DeepModelerCompiler, DeepModelerTrainer,
-                            DeepModelerTester, DeepModelerPredictor)
+                            DeepModelerPredictor)
 
 @protocol_decorator("DeepMoldelTurorialProto", 
                     human_name="Deep Moldel Proto", 
@@ -33,7 +32,6 @@ class DeepMoldelTurorialProto(Protocol):
         deep_modeler_builder: ProcessSpec = self.add_process(DeepModelerBuilder, 'deep_modeler_builder')
         deep_modeler_compiler: ProcessSpec = self.add_process(DeepModelerCompiler, 'deep_modeler_compiler')
         deep_modeler_trainer: ProcessSpec = self.add_process(DeepModelerTrainer, 'deep_modeler_trainer')
-        deep_modeler_tester: ProcessSpec = self.add_process(DeepModelerTester, 'deep_modeler_tester')
         ad_hoc_extractor: ProcessSpec = self.add_process(AdhocExtractor, 'ad_hoc_extractor')
         deep_modeler_predictor: ProcessSpec = self.add_process(DeepModelerPredictor, 'deep_modeler_predictor')
 
@@ -57,7 +55,6 @@ class DeepMoldelTurorialProto(Protocol):
         deep_modeler_trainer.set_param('batch_size', 128)
         deep_modeler_trainer.set_param('epochs', 2)
         deep_modeler_trainer.set_param('validation_split', 0.1)    
-        deep_modeler_tester.set_param('verbosity_mode', 1)    
         deep_modeler_predictor.set_param('verbosity_mode', 1)
 
         self.add_connectors([
@@ -75,8 +72,6 @@ class DeepMoldelTurorialProto(Protocol):
             (deep_modeler_builder>>'result', deep_modeler_compiler<<'builded_model'),            
             (deep_modeler_compiler>>'result', deep_modeler_trainer<<'compiled_model'),
             (preprocessor>>'result', deep_modeler_trainer<<'dataset'),
-            (deep_modeler_trainer>>'result', deep_modeler_tester<<'trained_model'),
-            (preprocessor>>'result', deep_modeler_tester<<'dataset'),
             (deep_modeler_trainer>>'result', deep_modeler_predictor<<'trained_model'),
             (ad_hoc_extractor>>'result', deep_modeler_predictor<<'dataset')
         ])

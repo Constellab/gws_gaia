@@ -4,7 +4,7 @@ import asyncio
 
 from gws_gaia import Dataset, DatasetImporter
 from gws_gaia import ICATrainer
-from gws_core import Settings, GTest, BaseTestCase, TaskTester, File, ConfigParams
+from gws_core import Settings, GTest, BaseTestCase, TaskRunner, File, ConfigParams
 
 class TestTrainer(BaseTestCase):
 
@@ -24,7 +24,7 @@ class TestTrainer(BaseTestCase):
         )
         
         # run trainer
-        tester = TaskTester(
+        tester = TaskRunner(
             params = {'nb_components': 7},
             inputs = {'dataset': dataset},
             task_type = ICATrainer

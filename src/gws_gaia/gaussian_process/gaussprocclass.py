@@ -9,8 +9,6 @@ from sklearn.gaussian_process import GaussianProcessClassifier
 
 from gws_core import (Task, Resource, task_decorator, resource_decorator,
                         ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam)
-
-from ..data.core import GenericResult
 from ..data.dataset import Dataset
 from ..base.base_resource import BaseResource
 
@@ -43,29 +41,6 @@ class GaussianProcessClassifierTrainer(Task):
         gpc.fit(dataset.get_features().values, ravel(dataset.get_targets().values))
         result = GaussianProcessClassifierResult(result = gpc)
         return {'result': result}
-
-#==============================================================================
-#==============================================================================
-
-@task_decorator("GaussianProcessClassifierTester")
-class GaussianProcessClassifierTester(Task):
-    """
-    Tester of a trained Gaussian process classifier. Return the mean accuracy on a given dataset for a trained Gaussian process classifier.
-    
-    See https://scikit-learn.org/stable/modules/generated/sklearn.gaussian_process.GaussianProcessClassifier.html for more details
-    """
-    input_specs = {'dataset' : Dataset, 'learned_model': GaussianProcessClassifierResult}
-    output_specs = {'result' : GenericResult}
-    config_specs = {   }
-
-    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
-        dataset = inputs['dataset']
-        learned_model = inputs['learned_model']
-        gpc = learned_model.result
-        y = gpc.score(dataset.get_features().values, dataset.get_targets().values)
-        z = tuple([y])
-        result_dataset = GenericResult(result = z)
-        return {'result': result_dataset}
 
 #==============================================================================
 #==============================================================================

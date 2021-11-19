@@ -10,7 +10,6 @@ from sklearn.naive_bayes import BernoulliNB
 from gws_core import (Task, Resource, task_decorator, resource_decorator,
                         ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam)
 
-from ..data.core import GenericResult
 from ..data.dataset import Dataset
 from ..base.base_resource import BaseResource
 
@@ -43,29 +42,6 @@ class BernoulliNaiveBayesClassifierTrainer(Task):
         bnb.fit(dataset.get_features().values, ravel(dataset.get_targets().values))
         result = BernoulliNaiveBayesClassifierResult(result = bnb)
         return {'result': result}
-
-#==============================================================================
-#==============================================================================
-
-@task_decorator("BernoulliNaiveBayesClassifierTester")
-class BernoulliNaiveBayesClassifierTester(Task):
-    """
-    Tester of a trained Naive Bayes classifier. Return the mean accuracy on a given test data and labels for a trained Naive Bayes classifier.
-    
-    See https://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.BernoulliNB.html for more details
-    """
-    input_specs = {'dataset' : Dataset, 'learned_model': BernoulliNaiveBayesClassifierResult}
-    output_specs = {'result' : GenericResult}
-    config_specs = {   }
-
-    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
-        dataset = inputs['dataset']
-        learned_model = inputs['learned_model']
-        bnb = learned_model.result
-        y = bnb.score(dataset.get_features().values,ravel(dataset.get_targets().values))
-        z = tuple([y])
-        result_dataset = GenericResult(result = z)
-        return {'result': result_dataset}
 
 #==============================================================================
 #==============================================================================

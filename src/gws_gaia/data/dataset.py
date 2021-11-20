@@ -1,21 +1,24 @@
 # LICENSE
-# This software is the exclusive property of Gencovery SAS. 
+# This software is the exclusive property of Gencovery SAS.
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
 import os
+from pathlib import Path
+from typing import List, Union
+
 import numpy as np
 import pandas
+from gws_core import (BadRequestException, BoolParam, ConfigParams,
+                      DataFrameRField, File, IntParam, ListParam, StrParam,
+                      Table, TableExporter, TableImporter, export_to_path,
+                      exporter_decorator, import_from_path, importer_decorator,
+                      resource_decorator, task_decorator, view)
 from pandas import DataFrame
 from pandas.api.types import is_string_dtype
-from typing import Union, List
-from pathlib import Path
 
-from gws_core import (task_decorator, importer_decorator, exporter_decorator,
-                        resource_decorator,import_from_path, export_to_path, BadRequestException, 
-                        Table, File, TableExporter, TableImporter,
-                        StrParam, IntParam, ListParam, BoolParam, DataFrameRField, view, ConfigParams)
 from .view.dataset_view import DatasetView
+
 #====================================================================================================================
 #====================================================================================================================
 
@@ -24,25 +27,25 @@ class Dataset(Table):
     """
     Dataset class
     """
-    
+
     _data: DataFrame = DataFrameRField()    # features
     _targets: DataFrame = DataFrameRField()
 
-    def __init__(self, features: Union[DataFrame, np.ndarray] = None, 
-                    targets: Union[DataFrame, np.ndarray] = None, 
+    def __init__(self, features: Union[DataFrame, np.ndarray] = None,
+                    targets: Union[DataFrame, np.ndarray] = None,
                     feature_names: List[str]=None, target_names: List[str]=None, row_names: List[str]=None):
         super().__init__()
         self._set_features_and_targets(features=features, targets=targets, feature_names=feature_names, target_names=target_names, row_names=row_names)
-        
+
 
     # -- C --
 
     @property
     def column_names(self) -> list:
-        """ 
+        """
         Returns the feature and tagert names
         """
-        
+
         return [ *self.feature_names, *self.target_names ]
 
     # -- E --
@@ -65,10 +68,10 @@ class Dataset(Table):
 
         file_path = os.path.join(dest_dir, file_name)
         file_extension = Path(file_path).suffix or params.get_value("file_format", ".csv")
-        if file_extension in [".xls", ".xlsx"] or file_format in [".xls", ".xlsx"]:
+        if file_extension in [".xls", ".xlsx"] or file_extension in [".xls", ".xlsx"]:
             table = pandas.concat([self._data, self._targets])
             table.to_excel(file_path)
-        elif file_extension in [".csv", ".tsv", ".txt", ".tab"] or file_format in [".csv", ".tsv", ".txt", ".tab"]:
+        elif file_extension in [".csv", ".tsv", ".txt", ".tab"] or file_extension in [".csv", ".tsv", ".txt", ".tab"]:
             table = pandas.concat([self._data, self._targets])
             table.to_csv(
                 file_path,
@@ -85,13 +88,13 @@ class Dataset(Table):
 
     def get_features(self) -> DataFrame:
         return self._data
-    
+
     def get_targets(self) -> DataFrame:
         return self._targets
 
     @property
     def feature_names(self) -> list:
-        """ 
+        """
         Returns the feaures names of the Dataset.
 
         :return: The list of feature names or `None` is no feature names exist
@@ -108,7 +111,7 @@ class Dataset(Table):
     # -- H --
 
     def head(self, n=5) -> (DataFrame, DataFrame):
-        """ 
+        """
         Returns the first n rows for the features ant targets.
 
         :param n: Number of rows
@@ -145,7 +148,7 @@ class Dataset(Table):
         :returns: the parsed data
         :rtype any
         """
-        
+
         delimiter = params.get_value("delimiter", '\t')
         header = params.get_value("header", 0)
         index_col = params.get_value("index_columns")
@@ -157,7 +160,7 @@ class Dataset(Table):
             df = pandas.read_excel(file.path)
         elif file_extension in [".csv", ".tsv", ".txt", ".tab"]:
             df = pandas.read_table(
-                file.path, 
+                file.path,
                 sep = delimiter,
                 header = (None if header < 0 else header),
                 index_col = index_col
@@ -178,7 +181,7 @@ class Dataset(Table):
 
     @property
     def instance_names(self) -> list:
-        """ 
+        """
         Returns the instance names.
 
         :return: The list of instance names
@@ -190,29 +193,29 @@ class Dataset(Table):
 
     @property
     def nb_features(self) -> int:
-        """ 
+        """
         Returns the number of features.
 
-        :return: The number of features 
+        :return: The number of features
         :rtype: int
         """
         return self._data.shape[1]
-    
+
     @property
     def nb_instances(self) -> int:
-        """ 
+        """
         Returns the number of instances.
 
-        :return: The number of instances 
+        :return: The number of instances
         :rtype: int
         """
         return self._data.shape[0]
 
     @property
     def nb_targets(self) -> int:
-        """ 
+        """
         Returns the number of targets.
-        
+
         :return: The number of targets (0 is no targets exist)
         :rtype: int
         """
@@ -223,9 +226,9 @@ class Dataset(Table):
 
     @property
     def nb_columns(self) -> int:
-        """ 
+        """
         Returns the total number of columns (number of features + number of targets)
-        
+
         :return: The total number of columns
         :rtype: int
         """
@@ -234,9 +237,9 @@ class Dataset(Table):
 
     @property
     def nb_rows(self) -> int:
-        """ 
+        """
         Returns the total number of rows
-        
+
         :return: The total number of columns
         :rtype: int
         """
@@ -247,15 +250,15 @@ class Dataset(Table):
 
     @property
     def row_names(self) -> list:
-        """ 
+        """
         Alias of :property:`instance_names`
         """
-        
+
         return self.instance_names
 
     # -- S --
 
-    def __str__(self):        
+    def __str__(self):
         return f"Features: \n{self._data.__str__()} \n\nTargets: \n{self._targets.__str__()} "
 
     def set_data(self, *args, **kwargs):
@@ -263,11 +266,11 @@ class Dataset(Table):
 
     def set_features(self, data: DataFrame):
         self._data = data
-        
+
     def set_targets(self, targets: DataFrame):
         self._targets = targets
 
-    
+
     def select_by_row_indexes(self, indexes: List[int], only_features=False, only_targets=False) -> 'Dataset':
         if not isinstance(indexes, list):
             raise BadRequestException("The indexes must be a list of integers")
@@ -319,11 +322,11 @@ class Dataset(Table):
         if not only_features:
             targets = self._targets.filter(regex=name_regex, axis=1)
         return type(self)(features=data, targets=targets)
-        
-    def _set_features_and_targets(self, features: Union[DataFrame, np.ndarray] = None, 
-                    targets: Union[DataFrame, np.ndarray] = None, 
+
+    def _set_features_and_targets(self, features: Union[DataFrame, np.ndarray] = None,
+                    targets: Union[DataFrame, np.ndarray] = None,
                     feature_names: List[str]=None, target_names: List[str]=None, row_names: List[str]=None):
-        
+
         if features is not None:
             if isinstance(features, DataFrame):
                 # OK!
@@ -353,14 +356,14 @@ class Dataset(Table):
                 raise BadRequestException(
                     "The table mus be an instance of DataFrame or Numpy array")
             self._targets = targets
-        
+
         return self
 
     # -- T --
 
     @property
     def target_names(self) -> list:
-        """ 
+        """
         Returns the target names.
 
         :return: The list of target names or `None` is no target names exist
@@ -373,13 +376,13 @@ class Dataset(Table):
 
     def target_exists(self, name) -> bool:
         return name in self.target_names
-    
+
     def has_string_targets(self):
         return is_string_dtype(self._targets)
 
     def convert_targets_to_dummy_matrix(self) -> DataFrame:
         if self._targets.shape[1] != 1:
-            raise BadRequestException("The target vector must be a column vector")   
+            raise BadRequestException("The target vector must be a column vector")
         labels = sorted(list(set(self._targets.transpose().values.tolist()[0])))
         nb_labels = len(labels)
         nb_instances = self._targets.shape[0]
@@ -390,9 +393,9 @@ class Dataset(Table):
             data[i][idx] = 1.0
         return DataFrame(data=data, index=self._targets.index, columns=labels)
 
-    @view(view_type=DatasetView, 
-          default_view=True, 
-          human_name='Dataset', 
+    @view(view_type=DatasetView,
+          default_view=True,
+          human_name='Dataset',
           short_description='View as a dataset (extended X,Y table)'
     )
     def view_as_dataset(self, params: ConfigParams) -> DatasetView:

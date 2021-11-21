@@ -13,7 +13,7 @@ from gws_core import (Task, Resource, task_decorator, resource_decorator,
                         FloatParam, StrParam, view, TableView, ScatterPlot2DView,
                         ScatterPlot3DView, ResourceRField, Resource, FloatRField, 
                         DataFrameRField, BadRequestException)
-from ..data.dataset import Dataset
+from gws_core import Dataset
 from ..base.base_resource import BaseResource
 
 #==============================================================================

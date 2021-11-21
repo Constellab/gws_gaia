@@ -2,7 +2,7 @@ import os
 import asyncio
 
 
-from gws_gaia import Dataset, DatasetImporter
+from gws_core import Dataset, DatasetImporter
 from gws_gaia import ICATrainer
 from gws_core import Settings, GTest, BaseTestCase, TaskRunner, File, ConfigParams
 

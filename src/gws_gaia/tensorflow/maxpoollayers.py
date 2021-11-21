@@ -14,7 +14,7 @@ from gws_core import (Task, Resource, task_decorator, resource_decorator,
                         ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam, ListParam)
 
 from .data import Tensor
-from ..data.dataset import Dataset
+from gws_core import Dataset
 
 #==================================================================================
 #==================================================================================

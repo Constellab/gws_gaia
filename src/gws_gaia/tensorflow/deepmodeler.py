@@ -12,7 +12,7 @@ from pandas import DataFrame
 from gws_core import (Task, Resource, task_decorator, resource_decorator,
                         ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam)
 from ..data.core import GenericResult
-from ..data.dataset import Dataset
+from gws_core import Dataset
 from .data import Tensor, DeepModel
 
 

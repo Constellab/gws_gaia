@@ -10,7 +10,7 @@ from sklearn.decomposition import PCA
 from gws_core import (Task, Resource, task_decorator, resource_decorator,
                         ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, BarPlotView,
                         StrParam, ScatterPlot2DView, ScatterPlot3DView, TableView, view, ResourceRField, FloatRField, Resource)
-from ..data.dataset import Dataset
+from gws_core import Dataset
 from ..base.base_resource import BaseResource
 
 #==============================================================================

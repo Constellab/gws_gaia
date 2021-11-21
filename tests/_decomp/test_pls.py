@@ -2,7 +2,7 @@
 import os
 import numpy
 
-from gws_gaia import Dataset, DatasetImporter
+from gws_core import Dataset, DatasetImporter
 from gws_gaia import PLSTrainer, PLSPredictor, PLSTransformer
 from gws_core import Settings, GTest, BaseTestCase, TaskRunner, ViewTester, File, ConfigParams
 

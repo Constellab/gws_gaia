@@ -4,7 +4,7 @@ import time
 
 from gws_core import (Settings, ConfigParams, TaskInputs, TaskRunner, BaseTestCase, 
                         ProcessSpec, protocol_decorator, Protocol, IExperiment, IProtocol, File)
-from gws_gaia import Dataset, DatasetImporter
+from gws_core import Dataset, DatasetImporter
 from gws_gaia import AdaBoostClassifierTrainer, AdaBoostClassifierPredictor
 
 class TestTrainer(BaseTestCase):

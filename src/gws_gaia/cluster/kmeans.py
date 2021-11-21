@@ -10,7 +10,7 @@ from sklearn.cluster import KMeans
 from gws_core import (Task, task_decorator, resource_decorator,
                         ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam,
                         ScatterPlot2DView, ScatterPlot3DView, TableView, view, ResourceRField, FloatRField, Resource)
-from ..data.dataset import Dataset
+from gws_core import Dataset
 from ..base.base_resource import BaseResource
 
 #==============================================================================

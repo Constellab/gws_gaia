@@ -10,7 +10,7 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from gws_core import (Task, Resource, task_decorator, resource_decorator,
                         ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam,
                         StrParam, ScatterPlot2DView, ScatterPlot3DView, TableView, view, ResourceRField, FloatRField, IntRField)
-from ..data.dataset import Dataset
+from gws_core import Dataset
 from ..base.base_resource import BaseResource
 
 @resource_decorator("LDAResult", 

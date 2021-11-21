@@ -5,7 +5,7 @@ import asyncio
 
 from gws_core import (Settings, ConfigParams, ExperimentService, 
                         BaseTestCase, IntParam, TaskRunner, File)
-from gws_gaia import Dataset
+from gws_core import Dataset
 from gws_gaia import AgglomerativeClusteringTrainer
 
 class TestTrainer(BaseTestCase):

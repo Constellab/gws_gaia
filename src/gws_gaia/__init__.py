@@ -5,11 +5,6 @@ from .cluster.kmeans import KMeansResult, KMeansTrainer, KMeansPredictor
 # discrinimant analysis
 from .da.linearda import LDAResult, LDATrainer, LDATransformer, LDAPredictor
 from .da.quadrada import QDAResult, QDATrainer, QDAPredictor
-# dataset
-
-from .data.dataset import Dataset, DatasetExporter, DatasetImporter
-from .data.view.dataset_view import DatasetView
-
 # decomposition
 from .decomp.ica import ICAResult, ICATrainer
 from .decomp.pca import PCATrainerResult, PCATrainer, PCATransformer

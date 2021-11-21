@@ -3,7 +3,7 @@ import asyncio
 
 
 from gws_core import Settings, BaseTestCase, TaskRunner, File, ConfigParams
-from gws_gaia import Dataset, DatasetImporter
+from gws_core import Dataset, DatasetImporter
 from gws_gaia import AdaBoostRegressorTrainer, AdaBoostRegressorPredictor
 
 class TestTrainer(BaseTestCase):

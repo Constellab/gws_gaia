@@ -9,7 +9,7 @@ from sklearn.svm import SVR
 
 from gws_core import (Task, Resource, resource_decorator, task_decorator,
                         ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam)
-from ..data.dataset import Dataset
+from gws_core import Dataset
 from ..base.base_resource import BaseResource
 
 #==============================================================================

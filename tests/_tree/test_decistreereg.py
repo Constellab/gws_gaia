@@ -3,7 +3,7 @@ import os
 import asyncio
 
 
-from gws_gaia import Dataset
+from gws_core import Dataset
 from gws_gaia import DecisionTreeRegressorTrainer, DecisionTreeRegressorPredictor 
 from gws_core import Settings, BaseTestCase, TaskRunner, File, ConfigParams
 

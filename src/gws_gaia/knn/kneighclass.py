@@ -19,6 +19,13 @@ from ..base.base_resource import BaseResource
 @resource_decorator("KNNClassifierResult", hide=True)
 class KNNClassifierResult(BaseResource):
     pass
+    # _training_set: Resource = ResourceRField()
+
+    # def _get_predicted_data(self) -> DataFrame:
+    #     neigh: KNeighborsClassifier = self.get_result() #lir du type Linear Regression
+    #     Y_predicted: DataFrame = neigh.predict(self._training_set.get_features().values)
+    #     Y_predicted = DataFrame(data=Y_predicted)
+    #     return Y_predicted    
 
 #==============================================================================
 #==============================================================================

@@ -3,7 +3,7 @@
     "author"   : "Gencovery",
     "version"   : "0.1.0",
     "variables":{
-        "gws_gaia:testdata_dir" : "{CURRENT_DIR}/tests/testdata"
+        "gws_gaia:testdata_dir" : "${CURRENT_DIR}/tests/testdata"
     },
     "environment":{
         "pip":[

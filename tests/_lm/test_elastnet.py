@@ -1,44 +1,32 @@
-import os
-import asyncio
+from gws_core import (BaseTestCase, ConfigParams, Dataset, File, GTest,
+                      Settings, TaskRunner)
+from gws_gaia import ElasticNetPredictor, ElasticNetTrainer
+from gws_gaia.extra import DataProvider
 
-from gws_core import Dataset
-from gws_gaia import ElasticNetTrainer, ElasticNetPredictor
-from gws_core import Settings, GTest, BaseTestCase, TaskRunner, File, ConfigParams
 
 class TestTrainer(BaseTestCase):
 
     async def test_process(self):
         self.print("Elastic Net")
-        settings = Settings.retrieve()
-        test_dir = settings.get_variable("gws_gaia:testdata_dir")
-
-        #import data
-        dataset = Dataset.import_from_path(
-            File(path=os.path.join(test_dir, "./diabetes.csv")), 
-            ConfigParams({
-                "delimiter":",", 
-                "header":0, 
-                "targets":['target']
-            })
-        )
+        dataset = DataProvider.get_diabetes_dataset()
 
         # run trainer
         tester = TaskRunner(
-            params = {'alpha': 1},
-            inputs = {'dataset': dataset},
-            task_type = ElasticNetTrainer
+            params={'alpha': 1},
+            inputs={'dataset': dataset},
+            task_type=ElasticNetTrainer
         )
         outputs = await tester.run()
         trainer_result = outputs['result']
 
         # run predictior
         tester = TaskRunner(
-            params = {},
-            inputs = {
-                'dataset': dataset, 
+            params={},
+            inputs={
+                'dataset': dataset,
                 'learned_model': trainer_result
             },
-            task_type = ElasticNetPredictor
+            task_type=ElasticNetPredictor
         )
         outputs = await tester.run()
         predictor_result = outputs['result']

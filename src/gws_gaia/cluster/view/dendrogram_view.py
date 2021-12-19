@@ -28,15 +28,15 @@ class DendrogramView(TableView):
 
     _type: str = "dendrogram-view"
     _data: "AgglomerativeClusteringResult"
-    
-    def check_and_set_data(self, data):
+
+    def _check_and_set_data(self, data):
         from ..aggclust import AgglomerativeClusteringResult
         if isinstance(data, AgglomerativeClusteringResult):
             raise BadRequestException("The data must be an instance of AgglomerativeClusteringResult")
         self._data = data
 
     def _compute_linkage():
-        """ 
+        """
             Create linkage matrix
             from: https://scikit-learn.org/stable/auto_examples/cluster/plot_agglomerative_dendrogram.html
         """
@@ -70,12 +70,12 @@ class DendrogramView(TableView):
             newick = self._tree_to_newick(node.get_right(), ",%s" % (newick), node.dist, leaf_names)
             newick = "(%s" % (newick)
             return newick
-    
+
     def _compute_tree(self):
         #Z = linkage(self._data, 'ward')
         Z = self._compute_linkage()
         tree = hierarchy.to_tree(Z,False)
-    
+
     def _compute_newick(self):
         tree = self._compute_tree()
         leaf_names = self._data.get_labels()

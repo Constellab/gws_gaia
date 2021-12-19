@@ -1,45 +1,33 @@
-import os
-import asyncio
+from gws_core import (BaseTestCase, ConfigParams, Dataset, File, GTest,
+                      Settings, TaskRunner)
+from gws_gaia import (MultinomialNaiveBayesClassifierPredictor,
+                      MultinomialNaiveBayesClassifierTrainer)
+from tests.gws_gaia_test_helper import GWSGaiaTestHelper
 
-
-from gws_core import Dataset
-from gws_gaia import MultinomialNaiveBayesClassifierTrainer, MultinomialNaiveBayesClassifierPredictor
-from gws_core import Settings, GTest, BaseTestCase, TaskRunner, File, ConfigParams
 
 class TestTrainer(BaseTestCase):
 
     async def test_process(self):
         self.print("Naive Bayes classifier for a multinomial model")
-        settings = Settings.retrieve()
-        test_dir = settings.get_variable("gws_gaia:testdata_dir")
-
-        #import data
-        dataset = Dataset.import_from_path(
-            File(path=os.path.join(test_dir, "./dataset7.csv")), 
-            ConfigParams({
-                "delimiter":",", 
-                "header":0, 
-                "targets":['target']
-            })
-        )
+        dataset = GWSGaiaTestHelper.get_dataset(index=7, header=0, targets=['target'])
 
         # run trainer
         tester = TaskRunner(
-            params = {'alpha': 1},
-            inputs = {'dataset': dataset},
-            task_type = MultinomialNaiveBayesClassifierTrainer
+            params={'alpha': 1},
+            inputs={'dataset': dataset},
+            task_type=MultinomialNaiveBayesClassifierTrainer
         )
         outputs = await tester.run()
         trainer_result = outputs['result']
 
         # run predictior
         tester = TaskRunner(
-            params = {},
-            inputs = {
-                'dataset': dataset, 
+            params={},
+            inputs={
+                'dataset': dataset,
                 'learned_model': trainer_result
             },
-            task_type = MultinomialNaiveBayesClassifierPredictor
+            task_type=MultinomialNaiveBayesClassifierPredictor
         )
         outputs = await tester.run()
         predictor_result = outputs['result']

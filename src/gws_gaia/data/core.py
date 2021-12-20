@@ -1,6 +1,6 @@
 
 # LICENSE
-# This software is the exclusive property of Gencovery SAS. 
+# This software is the exclusive property of Gencovery SAS.
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
@@ -20,7 +20,7 @@ from ..base.base_resource import BaseResource
 class GenericResult(BaseResource):
     result: Any = RField(default_value=None)
 
-    def __init__(self, result=None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, result=None):
+        super().__init__()
         if result is not None:
             self.result = result

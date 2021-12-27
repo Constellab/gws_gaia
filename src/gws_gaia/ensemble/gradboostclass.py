@@ -12,15 +12,21 @@ from gws_core import (Task, Resource, task_decorator, resource_decorator,
 from gws_core import Dataset
 from ..base.base_resource import BaseResource
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# GradientBoostingClassifierResult
+#
+# *****************************************************************************
 
 @resource_decorator("GradientBoostingClassifierResult", hide=True)
 class GradientBoostingClassifierResult(BaseResource):
     pass
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# GradientBoostingClassifierTrainer
+#
+# *****************************************************************************
 
 @task_decorator("GradientBoostingClassifierTrainer")
 class GradientBoostingClassifierTrainer(Task):
@@ -42,8 +48,11 @@ class GradientBoostingClassifierTrainer(Task):
         result = GradientBoostingClassifierResult(result = gbc)
         return {'result': result}
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# GradientBoostingClassifierPredictor
+#
+# *****************************************************************************
 
 @task_decorator("GradientBoostingClassifierPredictor")
 class GradientBoostingClassifierPredictor(Task):
@@ -61,5 +70,10 @@ class GradientBoostingClassifierPredictor(Task):
         learned_model = inputs['learned_model']
         gbc = learned_model.result
         y = gbc.predict(dataset.get_features().values)
-        result_dataset = Dataset(targets = DataFrame(y))
+        result_dataset = Dataset(
+            data=y, 
+            row_names=dataset.row_names, 
+            column_names=dataset.target_names, 
+            target_names=dataset.target_names
+        )
         return {'result': result_dataset}

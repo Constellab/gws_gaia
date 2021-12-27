@@ -13,9 +13,6 @@ from dill import load, dump
 from gws_core import Serializer, resource_decorator, RField
 from ..base.base_resource import BaseResource
 
-#==============================================================================
-#==============================================================================
-
 @resource_decorator("GenericResult")
 class GenericResult(BaseResource):
     result: Any = RField(default_value=None)

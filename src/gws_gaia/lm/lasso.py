@@ -14,15 +14,21 @@ from gws_core import (Task, Resource, task_decorator, resource_decorator,
 from gws_core import Dataset
 from ..base.base_resource import BaseResource
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# LassoResult
+#
+# *****************************************************************************
 
 @resource_decorator("LassoResult", hide=True)
 class LassoResult(BaseResource):
     pass
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# LassoTrainer
+#
+# *****************************************************************************
 
 @task_decorator("LassoTrainer")
 class LassoTrainer(Task):
@@ -44,8 +50,11 @@ class LassoTrainer(Task):
         result = LassoResult(result = las)
         return {'result': result}
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# LassoPredictor
+#
+# *****************************************************************************
 
 @task_decorator("LassoPredictor")
 class LassoPredictor(Task):
@@ -63,5 +72,10 @@ class LassoPredictor(Task):
         learned_model = inputs['learned_model']
         las = learned_model.result
         y = las.predict(dataset.get_features().values)
-        result_dataset = Dataset(targets = DataFrame(y))
+        result_dataset = Dataset(
+            data=y, 
+            row_names=dataset.row_names, 
+            column_names=dataset.target_names, 
+            target_names=dataset.target_names
+        )
         return {'result': result_dataset}

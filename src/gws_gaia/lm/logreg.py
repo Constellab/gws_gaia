@@ -13,14 +13,22 @@ from gws_core import (Task, Resource, task_decorator, resource_decorator,
 from gws_core import Dataset
 from ..base.base_resource import BaseResource
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# LogisticRegressionResult
+#
+# *****************************************************************************
+
 
 @resource_decorator("LogisticRegressionResult", hide=True)
 class LogisticRegressionResult(BaseResource):
     pass
-#==============================================================================
-#==============================================================================
+
+# *****************************************************************************
+#
+# LogisticRegressionTrainer
+#
+# *****************************************************************************
 
 @task_decorator("LogisticRegressionTrainer")
 class LogisticRegressionTrainer(Task):
@@ -42,8 +50,11 @@ class LogisticRegressionTrainer(Task):
         result = LogisticRegressionResult(result=logreg)
         return {'result': result}
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# LogisticRegressionPredictor
+#
+# *****************************************************************************
 
 @task_decorator("LogisticRegressionPredictor")
 class LogisticRegressionPredictor(Task):
@@ -61,5 +72,10 @@ class LogisticRegressionPredictor(Task):
         learned_model = inputs['learned_model']
         logreg = learned_model.result
         y = logreg.predict(dataset.get_features().values)
-        result_dataset = Dataset(targets = DataFrame(y))
+        result_dataset = Dataset(
+            data=y, 
+            row_names=dataset.row_names, 
+            column_names=dataset.target_names, 
+            target_names=dataset.target_names
+        )
         return {'result': result_dataset}

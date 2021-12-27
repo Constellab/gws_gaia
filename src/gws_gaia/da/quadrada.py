@@ -12,15 +12,21 @@ from gws_core import (Task, Resource, task_decorator, resource_decorator,
 from gws_core import Dataset
 from ..base.base_resource import BaseResource
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# QDAResult
+#
+# *****************************************************************************
 
 @resource_decorator("QDAResult")
 class QDAResult(BaseResource):
     pass
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# QDATrainer
+#
+# *****************************************************************************
 
 @task_decorator("QDAResult")
 class QDATrainer(Task):
@@ -42,8 +48,11 @@ class QDATrainer(Task):
         result = QDAResult(result = qda)
         return {'result': result}
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# QDAPredictor
+#
+# *****************************************************************************
 
 @task_decorator("QDAPredictor")
 class QDAPredictor(Task):
@@ -61,5 +70,10 @@ class QDAPredictor(Task):
         learned_model = inputs['learned_model']
         qda = learned_model.result
         y = qda.predict(dataset.get_features().values)
-        result_dataset = Dataset(targets = DataFrame(y))
+        result_dataset = Dataset(
+            data = DataFrame(y),
+            row_names=dataset.row_names,
+            column_names=dataset.target_names,
+            target_names=dataset.target_names,
+        )
         return {'result': result_dataset}

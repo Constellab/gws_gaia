@@ -12,15 +12,21 @@ from gws_core import (Task, Resource, task_decorator, resource_decorator,
 from gws_core import Dataset
 from ..base.base_resource import BaseResource
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# RandomForestRegressorResult
+#
+# *****************************************************************************
 
 @resource_decorator("RandomForestRegressorResult", hide=True)
 class RandomForestRegressorResult(BaseResource):
     pass
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# RandomForestRegressorTrainer
+#
+# *****************************************************************************
 
 @task_decorator("RandomForestRegressorTrainer")
 class RandomForestRegressorTrainer(Task):
@@ -42,8 +48,11 @@ class RandomForestRegressorTrainer(Task):
         result = RandomForestRegressorResult(result = rfr)
         return {'result': result}
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# RandomForestRegressorPredictor
+#
+# *****************************************************************************
 
 @task_decorator("RandomForestRegressorPredictor")
 class RandomForestRegressorPredictor(Task):
@@ -61,5 +70,10 @@ class RandomForestRegressorPredictor(Task):
         learned_model = inputs['learned_model']
         rfr = learned_model.result
         y = rfr.predict(dataset.get_features().values)
-        result_dataset = Dataset(targets = DataFrame(y))
+        result_dataset = Dataset(
+            data=y, 
+            row_names=dataset.row_names, 
+            column_names=dataset.target_names, 
+            target_names=dataset.target_names
+        )
         return {'result': result_dataset}

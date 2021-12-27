@@ -16,8 +16,11 @@ from gws_core import (Task, Resource, task_decorator, resource_decorator,
 from .data import Tensor
 from gws_core import Dataset
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# GlobalAveragePooling1D
+#
+# *****************************************************************************
 
 @task_decorator("GlobalAveragePooling1D")
 class GlobalAveragePooling1D(Task):
@@ -35,8 +38,11 @@ class GlobalAveragePooling1D(Task):
         result = Tensor(result = z)
         return {'result': result}
 
-#================================================================================
-#================================================================================
+# *****************************************************************************
+#
+# GlobalAveragePooling2D
+#
+# *****************************************************************************
 
 @task_decorator("GlobalAveragePooling2D")
 class GlobalAveragePooling2D(Task):
@@ -54,8 +60,11 @@ class GlobalAveragePooling2D(Task):
         result = Tensor(result = z)
         return {'result': result}
 
-#================================================================================
-#================================================================================
+# *****************************************************************************
+#
+# GlobalAveragePooling3D
+#
+# *****************************************************************************
 
 @task_decorator("GlobalAveragePooling3D")
 class GlobalAveragePooling3D(Task):

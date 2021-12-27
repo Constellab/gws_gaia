@@ -4,7 +4,7 @@
 # About us: https://gencovery.com
 
 import os
-from gws_core import (Protocol, Study, User, Experiment, 
+from gws_core import (Protocol, User, Experiment, 
                         protocol_decorator, ProcessSpec, 
                         ConfigParams, Settings, File)
 

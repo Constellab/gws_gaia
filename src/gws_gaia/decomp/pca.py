@@ -8,14 +8,17 @@ from gws_core import (BarPlotView, ConfigParams, Dataset, FloatParam,
                       FloatRField, IntParam, Resource, ResourceRField,
                       ScatterPlot2DView, ScatterPlot3DView, StrParam,
                       TableView, Task, TaskInputs, TaskOutputs,
-                      resource_decorator, task_decorator, view)
+                      resource_decorator, task_decorator, view, Table)
 from pandas import DataFrame
 from sklearn.decomposition import PCA
 
 from ..base.base_resource import BaseResource
 
-# ==============================================================================
-# ==============================================================================
+# *****************************************************************************
+#
+# PCATrainerResult
+#
+# *****************************************************************************
 
 
 @resource_decorator("PCATrainerResult", hide=True)
@@ -46,7 +49,8 @@ class PCATrainerResult(BaseResource):
         """
 
         x_transformed = self._get_transformed_data()
-        return TableView(data=x_transformed)
+        table = Table(x_transformed)
+        return TableView(table)
 
     @view(view_type=TableView, human_name="VarianceTable", short_description="Table of explained variances")
     def view_variance_as_table(self, params: ConfigParams) -> dict:
@@ -57,8 +61,9 @@ class PCATrainerResult(BaseResource):
         pca = self.get_result()
         index = [f"PC{n+1}" for n in range(0, pca.n_components_)]
         columns = ["ExplainedVariance"]
-        data = DataFrame(pca.explained_variance_ratio_, index=index, columns=columns)
-        return TableView(data=data)
+        data = DataFrame(pca.explained_variance_ratio_, columns=columns, index=index)
+        table = Table(data)
+        return TableView(table)
 
     @view(view_type=BarPlotView, human_name="VarianceBarPlot", short_description="Barplot of explained variances")
     def view_variance_as_barplot(self, params: ConfigParams) -> dict:
@@ -113,8 +118,11 @@ class PCATrainerResult(BaseResource):
         _view.z_label = 'PC3'
         return _view
 
-# ==============================================================================
-# ==============================================================================
+# *****************************************************************************
+#
+# PCATrainer
+#
+# *****************************************************************************
 
 
 @task_decorator("PCATrainer")
@@ -139,8 +147,11 @@ class PCATrainer(Task):
         result._training_set = dataset
         return {'result': result}
 
-# ==============================================================================
-# ==============================================================================
+# *****************************************************************************
+#
+# PCATransformer
+#
+# *****************************************************************************
 
 
 @task_decorator("PCATransformer")
@@ -160,5 +171,10 @@ class PCATransformer(Task):
         learned_model = inputs['learned_model']
         pca = learned_model.get_result()
         x_transformed = pca.transform(dataset.get_features().values)
-        result = Dataset(features=x_transformed)
+        ncomp = x_transformed.shape[1]
+        result = Dataset(
+            data=x_transformed,
+            row_names=dataset.row_names, 
+            column_names=[ "PC"+str(i+1) for i in range(0,ncomp) ]
+        )
         return {'result': result}

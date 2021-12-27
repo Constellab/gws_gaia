@@ -12,15 +12,21 @@ from gws_core import (Task, Resource, task_decorator, resource_decorator,
 from gws_core import Dataset
 from ..base.base_resource import BaseResource
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# RandomForestClassifierResult
+#
+# *****************************************************************************
 
 @resource_decorator("RandomForestClassifierResult", hide=True)
 class RandomForestClassifierResult(BaseResource):
     pass
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# RandomForestClassifierTrainer
+#
+# *****************************************************************************
 
 @task_decorator("RandomForestClassifierTrainer")
 class RandomForestClassifierTrainer(Task):
@@ -42,8 +48,11 @@ class RandomForestClassifierTrainer(Task):
         result = RandomForestClassifierResult(result = rfc)
         return {'result': result}
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# RandomForestClassifierPredictor
+#
+# *****************************************************************************
 
 @task_decorator("RandomForestClassifierPredictor")
 class RandomForestClassifierPredictor(Task):
@@ -61,5 +70,10 @@ class RandomForestClassifierPredictor(Task):
         learned_model = inputs['learned_model']
         rfc = learned_model.result
         y = rfc.predict(dataset.get_features().values)
-        result_dataset = Dataset(targets = DataFrame(y))
+        result_dataset = Dataset(
+            data=y, 
+            row_names=dataset.row_names, 
+            column_names=dataset.target_names, 
+            target_names=dataset.target_names
+        )
         return {'result': result_dataset}

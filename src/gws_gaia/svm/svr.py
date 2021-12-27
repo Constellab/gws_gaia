@@ -12,15 +12,21 @@ from gws_core import (Task, Resource, resource_decorator, task_decorator,
 from gws_core import Dataset
 from ..base.base_resource import BaseResource
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# SVRResult
+#
+# *****************************************************************************
 
 @resource_decorator("SVRResult", hide=True)
 class SVRResult(BaseResource):
     pass
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# SVRTrainer
+#
+# *****************************************************************************
 
 @task_decorator("SVRTrainer")
 class SVRTrainer(Task):
@@ -42,8 +48,11 @@ class SVRTrainer(Task):
         result = SVRResult(result=svr)
         return {'result': result}
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# SVRPredictor
+#
+# *****************************************************************************
 
 @task_decorator("SVRPredictor")
 class SVRPredictor(Task):
@@ -61,5 +70,10 @@ class SVRPredictor(Task):
         learned_model = inputs['learned_model']
         svr = learned_model.result
         y = svr.predict(dataset.get_features().values)
-        result_dataset = Dataset(targets = DataFrame(y))
+        result_dataset = Dataset(
+            data=y, 
+            row_names=dataset.row_names, 
+            column_names=dataset.target_names, 
+            target_names=dataset.target_names
+        )
         return {'result': result_dataset}

@@ -13,15 +13,21 @@ from gws_core import (Task, Resource, task_decorator, resource_decorator,
 from gws_core import Dataset
 from ..base.base_resource import BaseResource
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# GaussianProcessRegressorResult
+#
+# *****************************************************************************
 
 @resource_decorator("GaussianProcessRegressorResult", hide=True)
 class GaussianProcessRegressorResult(BaseResource):
     pass
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# GaussianProcessRegressorTrainer
+#
+# *****************************************************************************
 
 @task_decorator("GaussianProcessRegressorTrainer")
 class GaussianProcessRegressorTrainer(Task):
@@ -43,8 +49,11 @@ class GaussianProcessRegressorTrainer(Task):
         result = GaussianProcessRegressorResult(result=gpr)
         return {'result': result}
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# GaussianProcessRegressorPredictor
+#
+# *****************************************************************************
 
 @task_decorator("GaussianProcessRegressorPredictor")
 class GaussianProcessRegressorPredictor(Task):
@@ -62,5 +71,10 @@ class GaussianProcessRegressorPredictor(Task):
         learned_model = inputs['learned_model']
         gpr = learned_model.result
         y = gpr.predict(dataset.get_features().values)
-        result_dataset = Dataset(targets = DataFrame(y))
+        result_dataset = Dataset(
+            data=y, 
+            row_names=dataset.row_names, 
+            column_names=dataset.target_names, 
+            target_names=dataset.target_names
+        )
         return {'result': result_dataset}

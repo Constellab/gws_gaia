@@ -13,15 +13,21 @@ from gws_core import (Task, Resource, task_decorator, resource_decorator,
 from gws_core import Dataset
 from ..base.base_resource import BaseResource
 
-#========================================================================================
-#========================================================================================
+# *****************************************************************************
+#
+# DecisionTreeClassifierResult
+#
+# *****************************************************************************
 
 @resource_decorator("DecisionTreeClassifierResult")
 class DecisionTreeClassifierResult(BaseResource):
     pass
 
-#========================================================================================
-#========================================================================================
+# *****************************************************************************
+#
+# DecisionTreeClassifierTrainer
+#
+# *****************************************************************************
 
 @task_decorator("DecisionTreeClassifierTrainer")
 class DecisionTreeClassifierTrainer(Task):
@@ -42,8 +48,11 @@ class DecisionTreeClassifierTrainer(Task):
         result = DecisionTreeClassifierResult(result = dtc)
         return {'result': result}
 
-#========================================================================================
-#========================================================================================
+# *****************************************************************************
+#
+# DecisionTreeClassifierPredictor
+#
+# *****************************************************************************
 
 @task_decorator("DecisionTreeClassifierPredictor")
 class DecisionTreeClassifierPredictor(Task):
@@ -60,5 +69,10 @@ class DecisionTreeClassifierPredictor(Task):
         learned_model = inputs['learned_model']
         dtc = learned_model.result
         y = dtc.predict(dataset.get_features().values)
-        result_dataset = Dataset(targets = DataFrame(y))
+        result_dataset = Dataset(
+            data=y, 
+            row_names=dataset.row_names, 
+            column_names=dataset.target_names, 
+            target_names=dataset.target_names
+        )
         return {'result': result_dataset}

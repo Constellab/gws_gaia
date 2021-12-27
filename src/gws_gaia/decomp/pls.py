@@ -8,16 +8,18 @@ from gws_core import (BadRequestException, ConfigParams, DataFrameRField,
                       Dataset, FloatParam, FloatRField, IntParam, Resource,
                       ResourceRField, ScatterPlot2DView, ScatterPlot3DView,
                       StrParam, TableView, Task, TaskInputs, TaskOutputs,
-                      resource_decorator, task_decorator, view)
+                      resource_decorator, task_decorator, view, Table)
 from pandas import DataFrame, concat
 from pandas.api.types import is_string_dtype
 from sklearn.cross_decomposition import PLSRegression
 
 from ..base.base_resource import BaseResource
 
-# ==============================================================================
-# ==============================================================================
-
+# *****************************************************************************
+#
+# PLSTrainerResult
+#
+# *****************************************************************************
 
 @resource_decorator("PLSTrainerResult", hide=True)
 class PLSTrainerResult(BaseResource):
@@ -29,25 +31,31 @@ class PLSTrainerResult(BaseResource):
         pls: PLSRegression = self.get_result()
         ncomp = pls.x_rotations_.shape[1]
         x_transformed: DataFrame = pls.transform(self._training_set.get_features().values)
-        columns = [f"PC{n+1}" for n in range(0, ncomp)]
-        x_transformed = DataFrame(data=x_transformed, columns=columns, index=self._training_set.instance_names)
+        columns = [f"PC{i+1}" for i in range(0, ncomp)]
+        x_transformed = DataFrame(
+            data=x_transformed, 
+            columns=columns, 
+            index=self._training_set.row_names
+        )
         return x_transformed
-
-    def _get_target_data(self) -> DataFrame:
-        y_data: DataFrame = self._training_set.get_targets().values
-        y_data = DataFrame(data=y_data)
-        return y_data
 
     def _get_predicted_data(self) -> DataFrame:
         pls: PLSRegression = self.get_result()  # lir du type Linear Regression
         y_predicted: DataFrame = pls.predict(self._training_set.get_features().values)
-        y_predicted = DataFrame(data=y_predicted)
+        y_predicted = DataFrame(
+            data=y_predicted, 
+            columns=self._training_set.target_names, 
+            index=self._training_set.row_names
+        )
         return y_predicted
 
     def _get_R2(self) -> float:
         if not self._R2:
             pls = self.get_result()
-            self._R2 = pls.score(X=self._training_set.get_features().values, y=self._training_set.get_targets().values)
+            self._R2 = pls.score(
+                X=self._training_set.get_features().values, 
+                y=self._training_set.get_targets().values
+            )
         return self._R2
 
     @view(view_type=TableView, human_name="ProjectedDataTable", short_description="Table of data in the score plot")
@@ -57,7 +65,8 @@ class PLSTrainerResult(BaseResource):
         """
 
         x_transformed = self._get_transformed_data()
-        return TableView(data=x_transformed)
+        table = Table(data=x_transformed)
+        return TableView(table)
 
     @view(view_type=ScatterPlot2DView, human_name='ScorePlot2D', short_description='2D score plot')
     def view_scores_as_2d_plot(self, params: ConfigParams) -> dict:
@@ -98,11 +107,12 @@ class PLSTrainerResult(BaseResource):
         """
         View the target data and the predicted data in a table. Works for data with only one target.
         """
-        y_data = self._get_target_data()
+        y_data = self._training_set.get_targets()
         y_predicted = self._get_predicted_data()
-        Y = concat([y_data, y_predicted], axis=1, ignore_index=True)
-        data = Y.set_axis(["y_data", "y_predicted"], axis=1)
-        return TableView(data=data)
+        Y = concat([y_data, y_predicted], axis=1)
+        data = Y.set_axis(["YData", "YPredicted"], axis=1)
+        table = Table(data=data)
+        return TableView(table)
 
     @view(view_type=ScatterPlot2DView, human_name='ScorePlot2D', short_description='2D data plot')
     def view_predictions_as_2d_plot(self, params: ConfigParams) -> dict:
@@ -110,19 +120,24 @@ class PLSTrainerResult(BaseResource):
         View the target data and the predicted data in a 2d scatter plot. Works for data with only one target.
         """
 
-        y_data = self._get_target_data()
+        y_data = self._training_set.get_targets()
         y_predicted = self._get_predicted_data()
         _view = ScatterPlot2DView()
-        _view.add_series(
-            x=y_data.loc[:, 0].values.tolist(),
-            y=y_predicted.loc[:, 0].values.tolist()
-        )
-        _view.x_label = 'Y data'
-        _view.y_label = 'Y predicted'
+        for name in y_data.columns:
+            _view.add_series(
+                x=y_data.loc[:, name].values.tolist(),
+                y=y_predicted.loc[:, name].values.tolist(),
+                y_name=name
+            )
+        _view.x_label = 'YData'
+        _view.y_label = 'YPredicted'
         return _view
-# ==============================================================================
-# ==============================================================================
 
+# *****************************************************************************
+#
+# PLSTrainer
+#
+# *****************************************************************************
 
 @task_decorator("PLSTrainer")
 class PLSTrainer(Task):
@@ -150,9 +165,11 @@ class PLSTrainer(Task):
         result._training_set = dataset
         return {'result': result}
 
-# ==============================================================================
-# ==============================================================================
-
+# *****************************************************************************
+#
+# PLSTransformer
+#
+# *****************************************************************************
 
 @task_decorator("PLSTransformer")
 class PLSTransformer(Task):
@@ -170,12 +187,19 @@ class PLSTransformer(Task):
         learned_model = inputs['learned_model']
         pls = learned_model.get_result()
         x_transformed = pls.transform(dataset.get_features().values)
-        result_dataset = Dataset(features=x_transformed)
+        ncomp = x_transformed.shape[1]
+        result_dataset = Dataset(
+            data=x_transformed,
+            row_names=dataset.row_names, 
+            column_names=[ "PC"+str(i+1) for i in range(0,ncomp) ]
+        )
         return {'result': result_dataset}
 
-# ==============================================================================
-# ==============================================================================
-
+# *****************************************************************************
+#
+# PLSPredictor
+#
+# *****************************************************************************
 
 @task_decorator("PLSPredictor")
 class PLSPredictor(Task):
@@ -193,5 +217,10 @@ class PLSPredictor(Task):
         learned_model = inputs['learned_model']
         pls = learned_model.get_result()
         Y = pls.predict(dataset.get_features().values)
-        result_dataset = Dataset(targets=Y)
+        result_dataset = Dataset(
+            data=Y, 
+            row_names=dataset.row_names, 
+            column_names=dataset.target_names, 
+            target_names=dataset.target_names
+        )
         return {'result': result_dataset}

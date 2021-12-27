@@ -14,15 +14,21 @@ from gws_core import (Task, Resource, task_decorator, resource_decorator,
 from gws_core import Dataset
 from ..base.base_resource import BaseResource
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# SVCResult
+#
+# *****************************************************************************
 
 @resource_decorator("SVCResult", hide=True)
 class SVCResult(BaseResource):
     pass
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# SVCTrainer
+#
+# *****************************************************************************
 
 @task_decorator("SVCTrainer")
 class SVCTrainer(Task):
@@ -45,8 +51,11 @@ class SVCTrainer(Task):
         result = SVCResult(result=svc)
         return {'result': result}
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# SVCPredictor
+#
+# *****************************************************************************
 
 @task_decorator("SVCPredictor")
 class SVCPredictor(Task):
@@ -64,5 +73,10 @@ class SVCPredictor(Task):
         learned_model = inputs['learned_model']
         svc = learned_model.result
         y = svc.predict(dataset.get_features().values)
-        result_dataset = Dataset(targets = DataFrame(y))
+        result_dataset = Dataset(
+            data=y, 
+            row_names=dataset.row_names, 
+            column_names=dataset.target_names, 
+            target_names=dataset.target_names
+        )
         return {'result': result_dataset}

@@ -13,15 +13,21 @@ from gws_core import (Task, Resource, task_decorator, resource_decorator,
 from gws_core import Dataset
 from ..base.base_resource import BaseResource
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# GaussianMixtureResult
+#
+# *****************************************************************************
 
 @resource_decorator("GaussianMixtureResult", hide=True)
 class GaussianMixtureResult(BaseResource):
     pass
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# GaussianMixtureTrainer
+#
+# *****************************************************************************
 
 @task_decorator("GaussianMixtureTrainer")
 class GaussianMixtureTrainer(Task):
@@ -44,8 +50,11 @@ class GaussianMixtureTrainer(Task):
         result = GaussianMixtureResult(result = gmixt)
         return {'result': result}
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# GaussianMixturePredictor
+#
+# *****************************************************************************
 
 @task_decorator("GaussianMixturePredictor")
 class GaussianMixturePredictor(Task):
@@ -63,5 +72,10 @@ class GaussianMixturePredictor(Task):
         learned_model = inputs['learned_model']
         gmixt = learned_model.result
         y = gmixt.predict(dataset.get_features().values)
-        result_dataset = Dataset(targets = DataFrame(y))
+        result_dataset = Dataset(
+            data=y, 
+            row_names=dataset.row_names, 
+            column_names=dataset.target_names, 
+            target_names=dataset.target_names
+        )
         return {'result': result_dataset}

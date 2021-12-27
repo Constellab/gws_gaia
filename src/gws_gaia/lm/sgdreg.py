@@ -13,15 +13,21 @@ from gws_core import (Task, Resource, task_decorator, resource_decorator,
 from gws_core import Dataset
 from ..base.base_resource import BaseResource
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# SGDRegressorResult
+#
+# *****************************************************************************
 
 @resource_decorator("SGDRegressorResult", hide=True)
 class SGDRegressorResult(BaseResource):
     pass
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# SGDRegressorTrainer
+#
+# *****************************************************************************
 
 @task_decorator("SGDRegressorTrainer")
 class SGDRegressorTrainer(Task):
@@ -45,8 +51,11 @@ class SGDRegressorTrainer(Task):
         result = SGDRegressorResult(result = sgdr)
         return {'result': result}
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# SGDRegressorPredictor
+#
+# *****************************************************************************
 
 @task_decorator("SGDRegressorPredictor")
 class SGDRegressorPredictor(Task):
@@ -64,5 +73,10 @@ class SGDRegressorPredictor(Task):
         learned_model = inputs['learned_model']
         sgdr = learned_model.result
         y = sgdr.predict(dataset.get_features().values)
-        result_dataset = Dataset(targets = DataFrame(y))
+        result_dataset = Dataset(
+            data=y, 
+            row_names=dataset.row_names, 
+            column_names=dataset.target_names, 
+            target_names=dataset.target_names
+        )
         return {'result': result_dataset}

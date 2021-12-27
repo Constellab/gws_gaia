@@ -9,17 +9,21 @@ from sklearn.cluster import KMeans
 
 from gws_core import (Task, task_decorator, resource_decorator,
                         ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam,
-                        ScatterPlot2DView, ScatterPlot3DView, TableView, view, ResourceRField, FloatRField, Resource)
+                        ScatterPlot2DView, ScatterPlot3DView, TableView, view, ResourceRField, 
+                        FloatRField, Resource, Table)
 from gws_core import Dataset
 from ..base.base_resource import BaseResource
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# KMeansResult
+#
+# *****************************************************************************
 
 @resource_decorator("KMeansResult")
 class KMeansResult(BaseResource):
 
-    _training_set: Resource = ResourceRField() #pour lier ressources entre elles
+    _training_set: Resource = ResourceRField()
     
     @view(view_type=TableView, human_name="LabelsTable", short_description="Table of labels")
     def view_labels_as_table(self, params: ConfigParams) -> dict:
@@ -30,15 +34,16 @@ class KMeansResult(BaseResource):
         columns = self._training_set.feature_names
         columns.extend(['label'])
         train_set = self._training_set.get_features().values
-        label = kmeans.labels_
-        label = label[:, None]
+        label = kmeans.labels_[:, None]
         data = concatenate((train_set, label), axis=1)       
-        data = DataFrame(data, columns=columns)
+        table = Table(data, column_names=columns, row_names=self._training_set.row_names)
+        return TableView(table)
 
-        return TableView(data=data)
-
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# KMeansTrainer
+#
+# *****************************************************************************
 
 @task_decorator("KMeansTrainer")
 class KMeansTrainer(Task):
@@ -61,8 +66,11 @@ class KMeansTrainer(Task):
         result._training_set = dataset
         return {'result': result}
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# KMeansPredictor
+#
+# *****************************************************************************
 
 @task_decorator("KMeansPredictor")
 class KMeansPredictor(Task):
@@ -80,5 +88,10 @@ class KMeansPredictor(Task):
         learned_model = inputs['learned_model']
         kmeans = learned_model.result
         y = kmeans.predict(dataset.get_features().values)
-        result_dataset = Dataset(targets = DataFrame(y))
+        result_dataset = Dataset(
+            data = DataFrame(y),
+            row_names = dataset.row_names,
+            column_names = ["label"],
+            target_names = ["label"],
+        )
         return {'result': result_dataset}

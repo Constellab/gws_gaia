@@ -12,12 +12,21 @@ from gws_core import (Task, Resource, task_decorator, resource_decorator,
 from gws_core import Dataset
 from ..base.base_resource import BaseResource
 
+# *****************************************************************************
+#
+# AdaBoostRegressorResult
+#
+# *****************************************************************************
+
 @resource_decorator("AdaBoostRegressorResult", hide=True)
 class AdaBoostRegressorResult(BaseResource):
     pass
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# AdaBoostRegressorTrainer
+#
+# *****************************************************************************
 
 @task_decorator("AdaBoostRegressorTrainer")
 class AdaBoostRegressorTrainer(Task):
@@ -39,8 +48,11 @@ class AdaBoostRegressorTrainer(Task):
         result = AdaBoostRegressorResult(result = abr)
         return {'result': result}
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# AdaBoostRegressorPredictor
+#
+# *****************************************************************************
 
 @task_decorator("AdaBoostRegressorPredictor")
 class AdaBoostRegressorPredictor(Task):
@@ -59,5 +71,10 @@ class AdaBoostRegressorPredictor(Task):
         learned_model = inputs['learned_model']
         abr = learned_model.result
         y = abr.predict(dataset.get_features().values)
-        result_dataset = Dataset(targets = DataFrame(y))
+        result_dataset = Dataset(
+            data=y, 
+            row_names=dataset.row_names, 
+            column_names=dataset.target_names, 
+            target_names=dataset.target_names
+        )
         return {'result': result_dataset}

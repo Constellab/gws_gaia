@@ -12,15 +12,21 @@ from gws_core import (Task, Resource, task_decorator, resource_decorator,
 from gws_core import Dataset
 from ..base.base_resource import BaseResource
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# ExtraTreesClassifierResult
+#
+# *****************************************************************************
 
 @resource_decorator("ExtraTreesClassifierResult", hide=True)
 class ExtraTreesClassifierResult(BaseResource):
     pass
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# ExtraTreesClassifierTrainer
+#
+# *****************************************************************************
 
 @task_decorator("ExtraTreesClassifierTrainer")
 class ExtraTreesClassifierTrainer(Task):
@@ -42,8 +48,11 @@ class ExtraTreesClassifierTrainer(Task):
         result = ExtraTreesClassifierResult(result = etc)
         return {'result': result}
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# ExtraTreesClassifierPredictor
+#
+# *****************************************************************************
 
 @task_decorator("ExtraTreesClassifierPredictor")
 class ExtraTreesClassifierPredictor(Task):
@@ -61,5 +70,10 @@ class ExtraTreesClassifierPredictor(Task):
         learned_model = inputs['learned_model']
         etc = learned_model.result
         y = etc.predict(dataset.get_features().values)
-        result_dataset = Dataset(targets = DataFrame(y))
+        result_dataset = Dataset(
+            data=y, 
+            row_names=dataset.row_names, 
+            column_names=dataset.target_names, 
+            target_names=dataset.target_names
+        )
         return {'result': result_dataset}

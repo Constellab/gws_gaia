@@ -13,15 +13,21 @@ from gws_core import (Task, Resource, task_decorator, resource_decorator,
 from gws_core import Dataset
 from ..base.base_resource import BaseResource
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# RidgeRegressionResult
+#
+# *****************************************************************************
 
 @resource_decorator("RidgeRegressionResult", hide=True)
 class RidgeRegressionResult(BaseResource):
     pass
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# RidgeRegressionTrainer
+#
+# *****************************************************************************
 
 @task_decorator("RidgeRegressionTrainer")
 class RidgeRegressionTrainer(Task):
@@ -43,8 +49,11 @@ class RidgeRegressionTrainer(Task):
         result = RidgeRegressionResult(result = rir)
         return {'result': result}
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# RidgeRegressionPredictor
+#
+# *****************************************************************************
 
 @task_decorator("RidgeRegressionPredictor")
 class RidgeRegressionPredictor(Task):
@@ -62,5 +71,10 @@ class RidgeRegressionPredictor(Task):
         learned_model = inputs['learned_model']
         rir = learned_model.result
         y = rir.predict(dataset.get_features().values)
-        result_dataset = Dataset(targets = DataFrame(y))
+        result_dataset = Dataset(
+            data=y, 
+            row_names=dataset.row_names, 
+            column_names=dataset.target_names, 
+            target_names=dataset.target_names
+        )
         return {'result': result_dataset}

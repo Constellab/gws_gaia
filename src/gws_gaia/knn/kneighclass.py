@@ -13,22 +13,21 @@ from gws_core import (Task, Resource, task_decorator, resource_decorator,
 from gws_core import Dataset
 from ..base.base_resource import BaseResource
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# KNNClassifierResult
+#
+# *****************************************************************************
 
 @resource_decorator("KNNClassifierResult", hide=True)
 class KNNClassifierResult(BaseResource):
     pass
-    # _training_set: Resource = ResourceRField()
 
-    # def _get_predicted_data(self) -> DataFrame:
-    #     neigh: KNeighborsClassifier = self.get_result() #lir du type Linear Regression
-    #     Y_predicted: DataFrame = neigh.predict(self._training_set.get_features().values)
-    #     Y_predicted = DataFrame(data=Y_predicted)
-    #     return Y_predicted    
-
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# KNNClassifierTrainer
+#
+# *****************************************************************************
 
 @task_decorator("KNNClassifierTrainer")
 class KNNClassifierTrainer(Task):
@@ -50,8 +49,11 @@ class KNNClassifierTrainer(Task):
         result = KNNClassifierResult(result = neigh)
         return {'result': result}
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# KNNClassifierPredictor
+#
+# *****************************************************************************
 
 @task_decorator("KNNClassifierPredictor")
 class KNNClassifierPredictor(Task):
@@ -69,5 +71,10 @@ class KNNClassifierPredictor(Task):
         learned_model = inputs['learned_model']
         neigh = learned_model.result
         y = neigh.predict(dataset.get_features().values)
-        result_dataset = Dataset(targets = DataFrame(y))
+        result_dataset = Dataset(
+            data=y, 
+            row_names=dataset.row_names, 
+            column_names=dataset.target_names, 
+            target_names=dataset.target_names
+        )
         return {'result': result_dataset}

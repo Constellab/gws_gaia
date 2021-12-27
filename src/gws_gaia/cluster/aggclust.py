@@ -12,8 +12,11 @@ from gws_core import (Task, Resource,
 from gws_core import Dataset
 from ..base.base_resource import BaseResource
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# AgglomerativeClusteringResult
+#
+# *****************************************************************************
 
 @resource_decorator("AgglomerativeClusteringResult", hide=True)
 class AgglomerativeClusteringResult(BaseResource):
@@ -27,8 +30,11 @@ class AgglomerativeClusteringResult(BaseResource):
     def view_as_table(self, params: ConfigParams):
         pass
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# AgglomerativeClusteringTrainer
+#
+# *****************************************************************************
 
 @task_decorator("AgglomerativeClusteringTrainer")
 class AgglomerativeClusteringTrainer(Task):

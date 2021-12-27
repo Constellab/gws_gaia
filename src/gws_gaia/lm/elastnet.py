@@ -12,15 +12,21 @@ from gws_core import (Task, Resource, task_decorator, resource_decorator,
 from gws_core import Dataset
 from ..base.base_resource import BaseResource
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# ElasticNetResult
+#
+# *****************************************************************************
 
 @resource_decorator("ElasticNetResult", hide=True)
 class ElasticNetResult(BaseResource):
     pass
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# ElasticNetTrainer
+#
+# *****************************************************************************
 
 @task_decorator("ElasticNetTrainer")
 class ElasticNetTrainer(Task):
@@ -42,8 +48,11 @@ class ElasticNetTrainer(Task):
         result = ElasticNetResult(result = eln)
         return {'result': result}
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# ElasticNetPredictor
+#
+# *****************************************************************************
 
 @task_decorator("ElasticNetPredictor")
 class ElasticNetPredictor(Task):
@@ -61,5 +70,10 @@ class ElasticNetPredictor(Task):
         learned_model = inputs['learned_model']
         eln = learned_model.result
         y = eln.predict(dataset.get_features().values)
-        result_dataset = Dataset(targets = DataFrame(y))
+        result_dataset = Dataset(
+            data=y, 
+            row_names=dataset.row_names, 
+            column_names=dataset.target_names, 
+            target_names=dataset.target_names
+        )
         return {'result': result_dataset}

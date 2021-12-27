@@ -13,15 +13,21 @@ from gws_core import (Task, Resource, task_decorator, resource_decorator,
 from gws_core import Dataset
 from ..base.base_resource import BaseResource
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# GaussianNaiveBayesResult
+#
+# *****************************************************************************
 
 @resource_decorator("GaussianNaiveBayesResult", hide=True)
 class GaussianNaiveBayesResult(BaseResource):
     pass
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# GaussianNaiveBayesTrainer
+#
+# *****************************************************************************
 
 @task_decorator("GaussianNaiveBayesTrainer")
 class GaussianNaiveBayesTrainer(Task):
@@ -43,8 +49,11 @@ class GaussianNaiveBayesTrainer(Task):
         result = GaussianNaiveBayesResult(result=gnb)
         return {'result': result}
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# GaussianNaiveBayesPredictor
+#
+# *****************************************************************************
 
 @task_decorator("GaussianNaiveBayesPredictor")
 class GaussianNaiveBayesPredictor(Task):
@@ -62,5 +71,10 @@ class GaussianNaiveBayesPredictor(Task):
         learned_model = inputs['learned_model']
         gnb = learned_model.result
         y = gnb.predict(dataset.get_features().values)
-        result_dataset = Dataset(targets = DataFrame(y))
+        result_dataset = Dataset(
+            data=y, 
+            row_names=dataset.row_names, 
+            column_names=dataset.target_names, 
+            target_names=dataset.target_names
+        )
         return {'result': result_dataset}

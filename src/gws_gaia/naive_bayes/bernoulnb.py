@@ -13,15 +13,21 @@ from gws_core import (Task, Resource, task_decorator, resource_decorator,
 from gws_core import Dataset
 from ..base.base_resource import BaseResource
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# BernoulliNaiveBayesClassifierResult
+#
+# *****************************************************************************
 
 @resource_decorator("BernoulliNaiveBayesClassifierResult", hide=True)
 class BernoulliNaiveBayesClassifierResult(BaseResource):
     pass
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# BernoulliNaiveBayesClassifierTrainer
+#
+# *****************************************************************************
 
 @task_decorator("BernoulliNaiveBayesClassifierTrainer")
 class BernoulliNaiveBayesClassifierTrainer(Task):
@@ -43,8 +49,11 @@ class BernoulliNaiveBayesClassifierTrainer(Task):
         result = BernoulliNaiveBayesClassifierResult(result = bnb)
         return {'result': result}
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# BernoulliNaiveBayesClassifierPredictor
+#
+# *****************************************************************************
 
 @task_decorator("BernoulliNaiveBayesClassifierPredictor")
 class BernoulliNaiveBayesClassifierPredictor(Task):
@@ -62,5 +71,10 @@ class BernoulliNaiveBayesClassifierPredictor(Task):
         learned_model = inputs['learned_model']
         bnb = learned_model.result
         y = bnb.predict(dataset.get_features().values)
-        result_dataset = Dataset(targets = DataFrame(y))
+        result_dataset = Dataset(
+            data=y, 
+            row_names=dataset.row_names, 
+            column_names=dataset.target_names, 
+            target_names=dataset.target_names
+        )
         return {'result': result_dataset}

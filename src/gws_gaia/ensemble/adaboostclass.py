@@ -12,13 +12,22 @@ from gws_core import (Task, Resource, task_decorator, resource_decorator,
 from gws_core import Dataset
 from ..base.base_resource import BaseResource
 
+# *****************************************************************************
+#
+# AdaBoostClassifierResult
+#
+# *****************************************************************************
+
 @resource_decorator("AdaBoostClassifierResult", hide=True)
 class AdaBoostClassifierResult(BaseResource):
     """AdaBoostClassifierResult"""
     pass
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# AdaBoostClassifierTrainer
+#
+# *****************************************************************************
 
 @task_decorator("AdaBoostClassifierTrainer")
 class AdaBoostClassifierTrainer(Task):
@@ -40,8 +49,11 @@ class AdaBoostClassifierTrainer(Task):
         result = AdaBoostClassifierResult(result = abc)
         return {"result" : result}
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# AdaBoostClassifierPredictor
+#
+# *****************************************************************************
 
 @task_decorator("AdaBoostClassifierPredictor")
 class AdaBoostClassifierPredictor(Task):
@@ -60,5 +72,10 @@ class AdaBoostClassifierPredictor(Task):
         learned_model = inputs['learned_model']
         abc = learned_model.result
         y = abc.predict(dataset.get_features().values)
-        result_dataset = Dataset(targets=DataFrame(y))
+        result_dataset = Dataset(
+            data=y, 
+            row_names=dataset.row_names, 
+            column_names=dataset.target_names, 
+            target_names=dataset.target_names
+        )
         return {'result' : result_dataset}

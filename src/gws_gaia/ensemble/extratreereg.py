@@ -12,15 +12,21 @@ from gws_core import (Task, Resource, task_decorator, resource_decorator,
 from gws_core import Dataset
 from ..base.base_resource import BaseResource
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# ExtraTreesRegressorResult
+#
+# *****************************************************************************
 
 @resource_decorator("ExtraTreesRegressorResult", hide=True)
 class ExtraTreesRegressorResult(BaseResource):
     pass
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# ExtraTreesRegressorTrainer
+#
+# *****************************************************************************
 
 @task_decorator("ExtraTreesRegressorTrainer")
 class ExtraTreesRegressorTrainer(Task):
@@ -42,8 +48,11 @@ class ExtraTreesRegressorTrainer(Task):
         result = ExtraTreesRegressorResult(result = etr)
         return {'result': result}
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# ExtraTreesRegressorPredictor
+#
+# *****************************************************************************
 
 @task_decorator("ExtraTreesRegressorPredictor")
 class ExtraTreesRegressorPredictor(Task):
@@ -61,5 +70,10 @@ class ExtraTreesRegressorPredictor(Task):
         learned_model = inputs['learned_model']
         etr = learned_model.result
         y = etr.predict(dataset.get_features().values)
-        result_dataset = Dataset(targets = DataFrame(y))
+        result_dataset = Dataset(
+            data=y, 
+            row_names=dataset.row_names, 
+            column_names=dataset.target_names, 
+            target_names=dataset.target_names
+        )
         return {'result': result_dataset}

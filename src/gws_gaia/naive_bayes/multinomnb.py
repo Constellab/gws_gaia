@@ -13,15 +13,21 @@ from gws_core import (Task, Resource, task_decorator, resource_decorator,
 from gws_core import Dataset
 from ..base.base_resource import BaseResource
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# MultinomialNaiveBayesClassifierResult
+#
+# *****************************************************************************
 
 @resource_decorator("MultinomialNaiveBayesClassifierResult", hide=True)
 class MultinomialNaiveBayesClassifierResult(BaseResource):
     pass
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# MultinomialNaiveBayesClassifierTrainer
+#
+# *****************************************************************************
 
 @task_decorator("MultinomialNaiveBayesClassifierTrainer")
 class MultinomialNaiveBayesClassifierTrainer(Task):
@@ -43,8 +49,11 @@ class MultinomialNaiveBayesClassifierTrainer(Task):
         result = MultinomialNaiveBayesClassifierResult(result = mnb)
         return {'result': result}
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# MultinomialNaiveBayesClassifierPredictor
+#
+# *****************************************************************************
 
 @task_decorator("MultinomialNaiveBayesClassifierPredictor")
 class MultinomialNaiveBayesClassifierPredictor(Task):
@@ -62,5 +71,10 @@ class MultinomialNaiveBayesClassifierPredictor(Task):
         learned_model = inputs['learned_model']
         mnb = learned_model.result
         y = mnb.predict(dataset.get_features().values)
-        result_dataset = Dataset(targets = DataFrame(y))
+        result_dataset = Dataset(
+            data=y, 
+            row_names=dataset.row_names, 
+            column_names=dataset.target_names, 
+            target_names=dataset.target_names
+        )
         return {'result': result_dataset}

@@ -11,15 +11,21 @@ from gws_core import (Task, Resource, task_decorator, resource_decorator,
 from gws_core import Dataset
 from ..base.base_resource import BaseResource
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# LocallyLinearEmbeddingResult
+#
+# *****************************************************************************
 
 @resource_decorator("LocallyLinearEmbeddingResult", hide=True)
 class LocallyLinearEmbeddingResult(BaseResource):
     pass
 
-#==============================================================================
-#==============================================================================
+# *****************************************************************************
+#
+# LocallyLinearEmbeddingTrainer
+#
+# *****************************************************************************
 
 @task_decorator("LocallyLinearEmbeddingTrainer")
 class LocallyLinearEmbeddingTrainer(Task):

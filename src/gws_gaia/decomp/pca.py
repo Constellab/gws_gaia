@@ -142,6 +142,7 @@ class PCATrainer(Task):
         dataset = inputs['dataset']
         ncomp = params["nb_components"]
         pca = PCA(n_components=ncomp)
+        print(dataset.get_features().values)
         pca.fit(dataset.get_features().values)
         result = PCATrainerResult(result=pca)
         result._training_set = dataset

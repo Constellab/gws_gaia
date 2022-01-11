@@ -4,7 +4,7 @@
 # About us: https://gencovery.com
 
 from pandas import DataFrame, concat
-from numpy import concatenate, transpose, ndarray, vstack
+from numpy import concatenate, transpose, ndarray, vstack, unique
 from sklearn.cluster import KMeans
 
 from gws_core import (Task, task_decorator, resource_decorator,
@@ -13,6 +13,7 @@ from gws_core import (Task, task_decorator, resource_decorator,
                         FloatRField, Resource, Table)
 from gws_core import Dataset
 from ..base.base_resource import BaseResource
+import numpy as np
 
 # *****************************************************************************
 #
@@ -38,6 +39,31 @@ class KMeansResult(BaseResource):
         data = concatenate((train_set, label), axis=1)       
         table = Table(data, column_names=columns, row_names=self._training_set.row_names)
         return TableView(table)
+
+    @view(view_type=ScatterPlot2DView, human_name='ScorePlot2D', short_description='2D score plot')
+    def view_labels_as_2d_plot(self, params: ConfigParams) -> dict:
+        """
+        View 2D scatter plot
+        """
+
+        kmeans = self.get_result()
+        columns = self._training_set.feature_names
+        train_set = self._training_set.get_features().values
+        label = kmeans.labels_[:, None]
+        label_values = unique(label)
+        flatten_label = label.flatten()
+        
+        _view = ScatterPlot2DView()        
+        for l in label_values:
+            data = train_set[flatten_label==l]   
+            _view.add_series(
+                x = data[:,0].tolist(),
+                y = data[:,1].tolist()
+            )
+        
+        _view.x_label = columns[0]
+        _view.y_label = columns[1]
+        return _view
 
 # *****************************************************************************
 #

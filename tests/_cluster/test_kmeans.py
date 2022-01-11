@@ -27,8 +27,15 @@ class TestTrainer(BaseTestCase):
         )
         dic = tester.to_dict()
         self.assertEqual(dic["type"], "table-view")
+
+        tester = ViewTester(
+            view=trainer_result.view_labels_as_2d_plot({})
+        )
+        dic = tester.to_dict()
+        self.assertEqual(dic["type"], "scatter-plot-2d-view")
+        
         # ---------------------------------------------------------------------
-        # run predictior
+        # run predictor
         tester = TaskRunner(
             params={},
             inputs={

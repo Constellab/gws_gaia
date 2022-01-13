@@ -22,7 +22,7 @@ from ..base.base_resource import BaseResource
 
 @resource_decorator("LogisticRegressionResult", hide=True)
 class LogisticRegressionResult(BaseResource):
-    pass
+    pass    
 
 # *****************************************************************************
 #

@@ -10,6 +10,7 @@ class TestTrainer(BaseTestCase):
         self.print("Linear discriminant analysis classifier")
         dataset = DataProvider.get_iris_dataset()
 
+        #--------------------------------------------------------------
         # run trainer
         tester = TaskRunner(
             params={
@@ -22,6 +23,8 @@ class TestTrainer(BaseTestCase):
         outputs = await tester.run()
         trainer_result = outputs['result']
 
+        #--------------------------------------------------------------
+        # run views
         tester = ViewTester(
             view=trainer_result.view_transformed_data_as_table({})
         )
@@ -36,12 +39,19 @@ class TestTrainer(BaseTestCase):
         #self.assertTrue(numpy.all(numpy.isclose(dic["data"]["ExplainedVariance"], [0.92461, 0.053066], atol=1e-3)))
 
         tester = ViewTester(
+            view=trainer_result.view_variance_as_barplot({})
+        )
+        dic = tester.to_dict()
+        self.assertEqual(dic["type"], "bar-plot-view")
+        
+        tester = ViewTester(
             view=trainer_result.view_scores_as_2d_plot({})
         )
         dic = tester.to_dict()
         self.assertEqual(dic["type"], "scatter-plot-2d-view")
         #self.assertTrue(numpy.all(numpy.isclose(dic["series"][0]["data"]["x"][0:3], [-2.6841, -2.714, -2.8889], atol=1e-3)))
 
+        #--------------------------------------------------------------
         # run predictior
         tester = TaskRunner(
             params={},
@@ -54,6 +64,7 @@ class TestTrainer(BaseTestCase):
         outputs = await tester.run()
         predictor_result = outputs['result']
 
+        #--------------------------------------------------------------
         # run transformer
         tester = TaskRunner(
             params={},

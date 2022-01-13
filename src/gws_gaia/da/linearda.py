@@ -3,13 +3,13 @@
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
-from numpy import ravel
+from numpy import ravel, unique, shape
 from pandas import DataFrame
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 
 from gws_core import (Task, Resource, task_decorator, resource_decorator,
                         ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam,
-                        StrParam, ScatterPlot2DView, ScatterPlot3DView, TableView, 
+                        StrParam, ScatterPlot2DView, ScatterPlot3DView, TableView, BarPlotView,
                         view, ResourceRField, FloatRField, IntRField, Table)
 from gws_core import Dataset
 from ..base.base_resource import BaseResource
@@ -65,6 +65,26 @@ class LDAResult(BaseResource):
         table = Table(data)
         return TableView(table)
 
+    @view(view_type=BarPlotView, human_name="VarianceBarPlot", short_description="Barplot of explained variances")
+    def view_variance_as_barplot(self, params: ConfigParams) -> dict:
+        """
+        View bar plot of explained variances
+        """
+
+        lda = self.get_result()
+        ncomp = self._nb_components
+        explained_var: DataFrame = lda.explained_variance_ratio_
+        columns = [f"PC{n+1}" for n in range(0, ncomp)]
+        _view = BarPlotView()
+        _view.add_series(
+            x=columns,
+            y=explained_var.tolist()
+        )
+        _view.x_label = 'Principal components'
+        _view.y_label = 'Explained variance'
+
+        return _view
+
     @view(view_type=ScatterPlot2DView, human_name='ScorePlot2D', short_description='2D score plot')
     def view_scores_as_2d_plot(self, params: ConfigParams) -> dict:
         """
@@ -80,6 +100,28 @@ class LDAResult(BaseResource):
         _view.x_label = 'PC1'
         _view.y_label = 'PC2'
         return _view
+
+        # data = self._get_transformed_data()
+        # data_x = data['PC1'].to_list()
+        # data_y = data['PC2'].to_list()
+
+        # labels = self._training_set.get_targets().values
+        # label_values = unique(labels)
+        # flatten_labels = labels.flatten()
+        # print(shape(labels))
+        
+        # _view = ScatterPlot2DView()        
+        # for l in label_values:
+        #     extr_data_x = data_x[flatten_labels==l]   
+        #     extr_data_y = data_y[flatten_labels==l]               
+        #     _view.add_series(
+        #         x = extr_data_x,
+        #         y = extr_data_y
+        #     )
+        
+        # _view.x_label = 'PC1'
+        # _view.y_label = 'PC2'
+        # return _view
 
     @view(view_type=ScatterPlot3DView, human_name='ScorePlot3D', short_description='3D score plot')
     def view_scores_as_3d_plot(self, params: ConfigParams) -> dict:

@@ -59,13 +59,18 @@ class LinearRegressionResult(BaseResource):
         View the target data and the predicted data in a 2d scatter plot. Works for data with only one target
         """
 
-        Y_data = self._training_set.get_targets()
-        Y_predicted = self._get_predicted_data()
-        Y = concat([Y_data, Y_predicted],axis=1)
-        data = Y.set_axis(["YData", "YPredicted"], axis=1)
-        table = Table(data=data)
-        view_model = ScatterPlot2DView(table)
-        return view_model
+        y_data = self._training_set.get_targets()
+        y_predicted = self._get_predicted_data()
+        _view = ScatterPlot2DView()
+        for name in y_data.columns:
+            _view.add_series(
+                x=y_data.loc[:, name].values.tolist(),
+                y=y_predicted.loc[:, name].values.tolist(),
+                y_name=name
+            )
+        _view.x_label = 'YData'
+        _view.y_label = 'YPredicted'
+        return _view
 
 # *****************************************************************************
 #

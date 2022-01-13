@@ -46,6 +46,7 @@ class TestTrainer(BaseTestCase):
         )
         outputs = await tester.run()
         predictor_result = outputs['result']
+        # ---------------------------------------------------------------------
 
         print(trainer_result)
         print(predictor_result)

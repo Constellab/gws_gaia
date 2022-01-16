@@ -6,9 +6,9 @@
 import numpy as np
 from gws_core import (BarPlotView, ConfigParams, Dataset, FloatParam,
                       FloatRField, IntParam, Resource, ResourceRField,
-                      ScatterPlot2DView, ScatterPlot3DView, StrParam,
+                      ScatterPlot2DView, ScatterPlot3DView, StrParam, Table,
                       TableView, Task, TaskInputs, TaskOutputs,
-                      resource_decorator, task_decorator, view, Table)
+                      resource_decorator, task_decorator, view)
 from pandas import DataFrame
 from sklearn.decomposition import PCA
 
@@ -41,8 +41,8 @@ class PCATrainerResult(BaseResource):
             self._log_likelihood = pca.score(self._training_set.get_features().values)
         return self._log_likelihood
 
-    @view(view_type=TableView, human_name="ProjectedDataTable table",
-          short_description="Table of data in the score plot")
+    @view(view_type=TableView, human_name="Projected data table",
+          short_description="Table of data projected in the score plot")
     def view_transformed_data_as_table(self, params: ConfigParams) -> dict:
         """
         View 2D score plot
@@ -52,7 +52,7 @@ class PCATrainerResult(BaseResource):
         table = Table(x_transformed)
         return TableView(table)
 
-    @view(view_type=TableView, human_name="VarianceTable", short_description="Table of explained variances")
+    @view(view_type=TableView, human_name="Variance table", short_description="Table of explained variances")
     def view_variance_as_table(self, params: ConfigParams) -> dict:
         """
         View 2D score plot
@@ -65,7 +65,7 @@ class PCATrainerResult(BaseResource):
         table = Table(data)
         return TableView(table)
 
-    @view(view_type=BarPlotView, human_name="VarianceBarPlot", short_description="Barplot of explained variances")
+    @view(view_type=BarPlotView, human_name="Variance bar plot", short_description="Barplot of explained variances")
     def view_variance_as_barplot(self, params: ConfigParams) -> dict:
         """
         View bar plot of explained variances
@@ -84,7 +84,7 @@ class PCATrainerResult(BaseResource):
 
         return _view
 
-    @view(view_type=ScatterPlot2DView, human_name='ScorePlot2D', short_description='2D score plot')
+    @view(view_type=ScatterPlot2DView, human_name='2D-score plot', short_description='2D score plot')
     def view_scores_as_2d_plot(self, params: ConfigParams) -> dict:
         """
         View 2D score plot
@@ -100,23 +100,23 @@ class PCATrainerResult(BaseResource):
         _view.y_label = 'PC2'
         return _view
 
-    @view(view_type=ScatterPlot3DView, human_name='ScorePlot3D', short_description='3D score plot')
-    def view_scores_as_3d_plot(self, params: ConfigParams) -> dict:
-        """
-        View 3D score plot
-        """
+    # @view(view_type=ScatterPlot3DView, human_name='3D-score plot', short_description='3D-score plot')
+    # def view_scores_as_3d_plot(self, params: ConfigParams) -> dict:
+    #     """
+    #     View 3D score plot
+    #     """
 
-        data: DataFrame = self._get_transformed_data()
-        _view = ScatterPlot2DView()
-        view.add_series(
-            x=data['PC1'].to_list(),
-            y=data['PC2'].to_list(),
-            z=data['PC3'].to_list()
-        )
-        _view.x_label = 'PC1'
-        _view.y_label = 'PC2'
-        _view.z_label = 'PC3'
-        return _view
+    #     data: DataFrame = self._get_transformed_data()
+    #     _view = ScatterPlot2DView()
+    #     view.add_series(
+    #         x=data['PC1'].to_list(),
+    #         y=data['PC2'].to_list(),
+    #         z=data['PC3'].to_list()
+    #     )
+    #     _view.x_label = 'PC1'
+    #     _view.y_label = 'PC2'
+    #     _view.z_label = 'PC3'
+    #     return _view
 
 # *****************************************************************************
 #
@@ -175,7 +175,7 @@ class PCATransformer(Task):
         ncomp = x_transformed.shape[1]
         result = Dataset(
             data=x_transformed,
-            row_names=dataset.row_names, 
-            column_names=[ "PC"+str(i+1) for i in range(0,ncomp) ]
+            row_names=dataset.row_names,
+            column_names=["PC"+str(i+1) for i in range(0, ncomp)]
         )
         return {'result': result}

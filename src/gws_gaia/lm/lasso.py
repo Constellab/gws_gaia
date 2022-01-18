@@ -10,7 +10,7 @@ from sklearn.linear_model import Lasso
 
 from gws_core import (Task, Resource, task_decorator, resource_decorator,
                         ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam,
-                        view, TableView, ResourceRField, ScatterPlot2DView, ScatterPlot3DView, FloatRField, 
+                        view, TabularView, ResourceRField, ScatterPlot2DView, ScatterPlot3DView, FloatRField, 
                         DataFrameRField, BadRequestException, Table, Dataset)
 from gws_core import Dataset
 from ..base.base_resource import BaseResource
@@ -43,7 +43,7 @@ class LassoResult(BaseResource):
             self._R2 = las.score(X=self._training_set.get_features().values, y=self._training_set.get_targets().values)
         return self._R2
 
-    @view(view_type=TableView, human_name="PredictionTable", short_description="Prediction Table")
+    @view(view_type=TabularView, human_name="PredictionTable", short_description="Prediction Table")
     def view_predictions_as_table(self, params: ConfigParams) -> dict:
         """
         View the target data and the predicted data in a table. Works for data with only one target
@@ -52,8 +52,9 @@ class LassoResult(BaseResource):
         Y_predicted = self._get_predicted_data()
         Y = concat([Y_data, Y_predicted],axis=1)
         data = Y.set_axis(["YData", "YPredicted"], axis=1)
-        table = Table(data=data)
-        return TableView(table)
+        t_view = TabularView()
+        t_view.set_data(data=data)
+        return t_view
 
     @view(view_type=ScatterPlot2DView, human_name='ScorePlot2D', short_description='2D data plot')
     def view_predictions_as_2d_plot(self, params: ConfigParams) -> dict:

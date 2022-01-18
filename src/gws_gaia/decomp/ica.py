@@ -26,7 +26,7 @@ class ICAResult(BaseResource):
 #
 # *****************************************************************************
 
-@task_decorator("ICATrainer")
+@task_decorator("ICATrainer", human_name="ICA trainer", short_description="Trainer of an Independant Component Analysis (ICA)")
 class ICATrainer(Task):
     """
     Trainer of an Independant Component Analysis (ICA). Fit a model of ICA to a training dataset.

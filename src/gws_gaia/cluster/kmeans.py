@@ -6,7 +6,7 @@
 import numpy as np
 from gws_core import (ConfigParams, Dataset, FloatParam, FloatRField, IntParam,
                       Resource, ResourceRField, ScatterPlot2DView,
-                      ScatterPlot3DView, StrParam, Table, TableView, Task,
+                      ScatterPlot3DView, StrParam, Table, TabularView, Task,
                       TaskInputs, TaskOutputs, resource_decorator,
                       task_decorator, view)
 from numpy import concatenate, ndarray, transpose, unique, vstack
@@ -22,12 +22,12 @@ from ..base.base_resource import BaseResource
 # *****************************************************************************
 
 
-@resource_decorator("KMeansResult")
+@resource_decorator("KMeansResult", hide=True)
 class KMeansResult(BaseResource):
 
     _training_set: Resource = ResourceRField()
 
-    @view(view_type=TableView, human_name="Label table", short_description="Table of labels")
+    @view(view_type=TabularView, human_name="Label table", short_description="Table of labels")
     def view_labels_as_table(self, params: ConfigParams) -> dict:
         """
         View Table
@@ -38,8 +38,9 @@ class KMeansResult(BaseResource):
         train_set = self._training_set.get_features().values
         label = kmeans.labels_[:, None]
         data = concatenate((train_set, label), axis=1)
-        table = Table(data, column_names=columns, row_names=self._training_set.row_names)
-        return TableView(table)
+        data = DataFrame(data, index = self._training_set.row_names, columns=columns)
+        t_view = TabularView()
+        return t_view
 
     @view(view_type=ScatterPlot2DView, human_name='2D-score plot', short_description='2D-score plot')
     def view_labels_as_2d_plot(self, params: ConfigParams) -> dict:
@@ -73,7 +74,7 @@ class KMeansResult(BaseResource):
 # *****************************************************************************
 
 
-@task_decorator("KMeansTrainer")
+@task_decorator("KMeansTrainer", human_name="KMeans trainer", short_description="Trainer of a trained k-means clustering model")
 class KMeansTrainer(Task):
     """
     Trainer of a trained k-means clustering model. Compute a k-means clustering from a dataset.
@@ -101,7 +102,7 @@ class KMeansTrainer(Task):
 # *****************************************************************************
 
 
-@task_decorator("KMeansPredictor")
+@task_decorator("KMeansPredictor", human_name="KMeans predicton", short_description="Predictor of a K-means clustering model")
 class KMeansPredictor(Task):
     """
     Predictor of a K-means clustering model. Predict the closest cluster each sample in a dataset belongs to.

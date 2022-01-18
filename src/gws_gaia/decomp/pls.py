@@ -7,7 +7,7 @@
 from gws_core import (BadRequestException, ConfigParams, DataFrameRField,
                       Dataset, FloatParam, FloatRField, IntParam, Resource,
                       ResourceRField, ScatterPlot2DView, ScatterPlot3DView,
-                      StrParam, Table, TableView, Task, TaskInputs,
+                      StrParam, Table, TabularView, Task, TaskInputs,
                       TaskOutputs, resource_decorator, task_decorator, view)
 from pandas import DataFrame, concat
 from pandas.api.types import is_string_dtype
@@ -59,15 +59,16 @@ class PLSTrainerResult(BaseResource):
             )
         return self._R2
 
-    @view(view_type=TableView, human_name="Projected data table", short_description="Table of data in the score plot")
+    @view(view_type=TabularView, human_name="Projected data table", short_description="Table of data in the score plot")
     def view_transformed_data_as_table(self, params: ConfigParams) -> dict:
         """
         View 2D score plot
         """
 
         x_transformed = self._get_transformed_data()
-        table = Table(data=x_transformed)
-        return TableView(table)
+        t_view = TabularView()
+        t_view.set_data(data=x_transformed)
+        return t_view
 
     @view(view_type=ScatterPlot2DView, human_name='2D-score plot', short_description='2D-score plot')
     def view_scores_as_2d_plot(self, params: ConfigParams) -> dict:
@@ -103,7 +104,7 @@ class PLSTrainerResult(BaseResource):
     #     _view.z_label = 'PC3'
     #     return _view
 
-    @view(view_type=TableView, human_name="Prediction table", short_description="Prediction table")
+    @view(view_type=TabularView, human_name="Prediction table", short_description="Prediction table")
     def view_predictions_as_table(self, params: ConfigParams) -> dict:
         """
         View the target data and the predicted data in a table. Works for data with only one target.
@@ -112,8 +113,9 @@ class PLSTrainerResult(BaseResource):
         y_predicted = self._get_predicted_data()
         Y = concat([y_data, y_predicted], axis=1)
         data = Y.set_axis(["YData", "YPredicted"], axis=1)
-        table = Table(data=data)
-        return TableView(table)
+        t_view = TabularView()
+        t_view.set_data(data=data)
+        return t_view
 
     @view(view_type=ScatterPlot2DView, human_name='Prediction plot', short_description='Prediction plot')
     def view_predictions_as_2d_plot(self, params: ConfigParams) -> dict:
@@ -141,7 +143,7 @@ class PLSTrainerResult(BaseResource):
 # *****************************************************************************
 
 
-@task_decorator("PLSTrainer")
+@task_decorator("PLSTrainer", human_name="PLS trainer", short_description="Trainer of a Partial Least Squares (PLS) regression model")
 class PLSTrainer(Task):
     """
     Trainer of a Partial Least Squares (PLS) regression model. Fit a PLS regression model to a training dataset.
@@ -174,10 +176,10 @@ class PLSTrainer(Task):
 # *****************************************************************************
 
 
-@task_decorator("PLSTransformer")
+@task_decorator("PLSTransformer", human_name="PLS transformer", short_description="Apply the PLS dimension reduction on a trained data")
 class PLSTransformer(Task):
     """
-    Learn and apply the dimension reduction on the train data.
+    Transformer of a Partial Least Squares (PLS) regression model. Apply the dimensionality reduction to a dataset.
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.cross_decomposition.PLSRegression.html for more details
     """

@@ -6,7 +6,7 @@
 from gws_core import (BarPlotView, ConfigParams, Dataset, FloatParam,
                       FloatRField, IntParam, IntRField, Resource,
                       ResourceRField, ScatterPlot2DView, ScatterPlot3DView,
-                      StrParam, Table, TableView, Task, TaskInputs,
+                      StrParam, Table, TabularView, Task, TaskInputs,
                       TaskOutputs, resource_decorator, task_decorator, view)
 from numpy import ravel, shape, unique
 from pandas import DataFrame
@@ -22,7 +22,7 @@ from ..base.base_resource import BaseResource
 
 
 @resource_decorator("LDAResult",
-                    human_name="LDA Result",
+                    human_name="LDA result",
                     short_description="Linear Discriminant Analysis result",
                     hide=True)
 class LDAResult(BaseResource):
@@ -42,7 +42,7 @@ class LDAResult(BaseResource):
         )
         return x_transformed
 
-    @view(view_type=TableView, human_name="Projected data table",
+    @view(view_type=TabularView, human_name="Projected data table",
           short_description="Table of data projected in the score plot")
     def view_transformed_data_as_table(self, params: ConfigParams) -> dict:
         """
@@ -50,10 +50,11 @@ class LDAResult(BaseResource):
         """
 
         x_transformed = self._get_transformed_data()
-        table = Table(data=x_transformed)
-        return TableView(table)
+        t_view = TabularView()
+        t_view.set_data(data=x_transformed)
+        return t_view
 
-    @view(view_type=TableView, human_name="Variance table", short_description="Table of explained variances")
+    @view(view_type=TabularView, human_name="Variance table", short_description="Table of explained variances")
     def view_variance_as_table(self, params: ConfigParams) -> dict:
         """
         View table data
@@ -64,8 +65,9 @@ class LDAResult(BaseResource):
         index = [f"PC{i+1}" for i in range(0, ncomp)]
         columns = ["ExplainedVariance"]
         data = DataFrame(lda.explained_variance_ratio_, index=index, columns=columns)
-        table = Table(data)
-        return TableView(table)
+        t_view = TabularView()
+        t_view.set_data(data=data)
+        return t_view
 
     @view(view_type=BarPlotView, human_name="Variance bar plot", short_description="Bar plot of explained variances")
     def view_variance_as_barplot(self, params: ConfigParams) -> dict:
@@ -128,7 +130,8 @@ class LDAResult(BaseResource):
 # *****************************************************************************
 
 
-@task_decorator("LDATrainer")
+@task_decorator("LDATrainer", human_name="LDA trainer",
+                short_description="Trainer of a linear discriminant analysis classifier")
 class LDATrainer(Task):
     """
     Trainer of a linear discriminant analysis classifier. Fit Linear Discriminant Analysis model according to a training dataset.
@@ -158,7 +161,8 @@ class LDATrainer(Task):
 # *****************************************************************************
 
 
-@task_decorator("LDATransformer")
+@task_decorator("LDATransformer", human_name="LDA transformer",
+                short_description="Transformer of a linear discriminant analysis classifier")
 class LDATransformer(Task):
     """
     Transformer of a linear discriminant analysis classifier. Project data to maximize class separation.
@@ -190,7 +194,8 @@ class LDATransformer(Task):
 # *****************************************************************************
 
 
-@task_decorator("LDAPredictor")
+@task_decorator("LDAPredictor", human_name="LDA predictor",
+                short_description="Predictor of a linear discriminant analysis classifier")
 class LDAPredictor(Task):
     """
     Predictor of a linear discriminant analysis classifier. Predict class labels for samples in a dataset.

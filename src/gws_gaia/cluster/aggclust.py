@@ -7,7 +7,7 @@ from typing import List
 
 from gws_core import (ConfigParams, Dataset, FloatParam, FloatRField, IntParam,
                       Resource, ResourceRField, ScatterPlot2DView,
-                      ScatterPlot3DView, StrParam, Table, TableView, Task,
+                      ScatterPlot3DView, StrParam, Table, TabularView, Task,
                       TaskInputs, TaskOutputs, resource_decorator,
                       task_decorator, view)
 from numpy import concatenate, ndarray, transpose, unique, vstack
@@ -28,7 +28,7 @@ class AgglomerativeClusteringResult(BaseResource):
 
     _training_set: Resource = ResourceRField()
 
-    @view(view_type=TableView, human_name="Label table", short_description="Table of labels")
+    @view(view_type=TabularView, human_name="Label table", short_description="Table of labels")
     def view_labels_as_table(self, params: ConfigParams) -> dict:
         """
         View Table
@@ -39,8 +39,10 @@ class AgglomerativeClusteringResult(BaseResource):
         train_set = self._training_set.get_features().values
         label = aggclust.labels_[:, None]
         data = concatenate((train_set, label), axis=1)
-        table = Table(data, column_names=columns, row_names=self._training_set.row_names)
-        return TableView(table)
+        data = DataFrame(data, index = self._training_set.row_names, columns=columns)
+        t_view = TabularView()
+        t_view.set_data(data=data)
+        return t_view
 
     @view(view_type=ScatterPlot2DView, human_name='2D-score plot', short_description='2D-score plot')
     def view_labels_as_2d_plot(self, params: ConfigParams) -> dict:
@@ -77,7 +79,8 @@ class AgglomerativeClusteringResult(BaseResource):
 # *****************************************************************************
 
 
-@task_decorator("AgglomerativeClusteringTrainer")
+@task_decorator("AgglomerativeClusteringTrainer", human_name="Agglomerative clustering trainer",
+                short_description="Trainer of the hierarchical clustering")
 class AgglomerativeClusteringTrainer(Task):
     """ Trainer of the hierarchical clustering. Fits the hierarchical clustering from features, or distance matrix.
 

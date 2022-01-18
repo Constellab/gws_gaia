@@ -6,10 +6,10 @@ import numpy
 from pandas import DataFrame
 from scipy.cluster import hierarchy
 
-from gws_core import StrParam, ViewSpecs, View, TableView, BadRequestException
+from gws_core import StrParam, ViewSpecs, View, BadRequestException
 
 
-class DendrogramView(TableView):
+class DendrogramView(View):
     """
     DendrogramView
 

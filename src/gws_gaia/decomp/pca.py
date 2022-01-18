@@ -7,7 +7,7 @@ import numpy as np
 from gws_core import (BarPlotView, ConfigParams, Dataset, FloatParam,
                       FloatRField, IntParam, Resource, ResourceRField,
                       ScatterPlot2DView, ScatterPlot3DView, StrParam, Table,
-                      TableView, Task, TaskInputs, TaskOutputs,
+                      TabularView, Task, TaskInputs, TaskOutputs,
                       resource_decorator, task_decorator, view)
 from pandas import DataFrame
 from sklearn.decomposition import PCA
@@ -41,7 +41,7 @@ class PCATrainerResult(BaseResource):
             self._log_likelihood = pca.score(self._training_set.get_features().values)
         return self._log_likelihood
 
-    @view(view_type=TableView, human_name="Projected data table",
+    @view(view_type=TabularView, human_name="Projected data table",
           short_description="Table of data projected in the score plot")
     def view_transformed_data_as_table(self, params: ConfigParams) -> dict:
         """
@@ -49,10 +49,11 @@ class PCATrainerResult(BaseResource):
         """
 
         x_transformed = self._get_transformed_data()
-        table = Table(x_transformed)
-        return TableView(table)
+        t_view = TabularView()
+        t_view.set_data(data=x_transformed)
+        return t_view
 
-    @view(view_type=TableView, human_name="Variance table", short_description="Table of explained variances")
+    @view(view_type=TabularView, human_name="Variance table", short_description="Table of explained variances")
     def view_variance_as_table(self, params: ConfigParams) -> dict:
         """
         View 2D score plot
@@ -62,8 +63,9 @@ class PCATrainerResult(BaseResource):
         index = [f"PC{n+1}" for n in range(0, pca.n_components_)]
         columns = ["ExplainedVariance"]
         data = DataFrame(pca.explained_variance_ratio_, columns=columns, index=index)
-        table = Table(data)
-        return TableView(table)
+        t_view = TabularView()
+        t_view.set_data(data=data)
+        return t_view
 
     @view(view_type=BarPlotView, human_name="Variance bar plot", short_description="Barplot of explained variances")
     def view_variance_as_barplot(self, params: ConfigParams) -> dict:
@@ -125,7 +127,7 @@ class PCATrainerResult(BaseResource):
 # *****************************************************************************
 
 
-@task_decorator("PCATrainer")
+@task_decorator("PCATrainer", human_name="PCA trainer", short_description="Trainer of a Principal Component Analysis (PCA) model")
 class PCATrainer(Task):
     """
     Trainer of a Principal Component Analysis (PCA) model. Fit a PCA model with a training dataset.
@@ -155,10 +157,10 @@ class PCATrainer(Task):
 # *****************************************************************************
 
 
-@task_decorator("PCATransformer")
+@task_decorator("PCATransformer", human_name="PCA transformer", short_description="Transform a data using a Principal Component Analysis (PCA) model. Apply dimensionality reduction to a dataset")
 class PCATransformer(Task):
     """
-    Transformer of a Principal Component Analysis (PCA) model. Apply dimensionality reduction to a dataset.
+    Transformer using Principal Component Analysis (PCA) model. Apply dimensionality reduction to a dataset
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.PCA.html for more details
 

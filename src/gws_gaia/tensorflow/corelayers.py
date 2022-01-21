@@ -1,16 +1,16 @@
 # LICENSE
-# This software is the exclusive property of Gencovery SAS. 
+# This software is the exclusive property of Gencovery SAS.
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
 import numpy as np
 import tensorflow as tf
-from tensorflow.keras.layers import Dense as Kerasdense
-from tensorflow.keras.layers import Activation as Kerasactivation
-from tensorflow.keras.layers import Embedding as Kerasembedding
-from tensorflow.keras.layers import Masking as Kerasmasking
-from tensorflow.keras.layers import Dropout as Kerasdropout
-from tensorflow.keras.layers import Flatten as Kerasflatten
+from tensorflow.keras.layers import Dense as KerasDense
+from tensorflow.keras.layers import Activation as KerasActivation
+from tensorflow.keras.layers import Embedding as KerasEmbedding
+from tensorflow.keras.layers import Masking as KerasMasking
+from tensorflow.keras.layers import Dropout as KerasDropout
+from tensorflow.keras.layers import Flatten as KerasFlatten
 from pandas import DataFrame
 
 from gws_core import (Task, Resource, task_decorator, resource_decorator,
@@ -25,10 +25,11 @@ from .data import Tensor
 #
 # *****************************************************************************
 
-@task_decorator("Dense")
+@task_decorator("TFDense", human_name="Dense",
+                short_description="Densely connected neural network layer")
 class Dense(Task):
     """
-    Densely connected Neural Network layer.
+    Densely connected neural network layer.
 
     See https://keras.io/api/layers/core_layers/dense/ for more details
     """
@@ -43,7 +44,7 @@ class Dense(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['tensor']
         y = x.result
-        z = Kerasdense(params["units"],activation=params["activation"],use_bias=params["use_bias"])(y)        
+        z = KerasDense(params["units"],activation=params["activation"],use_bias=params["use_bias"])(y)
         result = Tensor(result = z)
         return {'result': result}
 
@@ -53,7 +54,8 @@ class Dense(Task):
 #
 # *****************************************************************************
 
-@task_decorator("Activation")
+@task_decorator("TFActivation", human_name="Activation",
+                short_description="Applies an activation function to an output")
 class Activation(Task):
     """
     Applies an activation function to an output.
@@ -69,7 +71,7 @@ class Activation(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['tensor']
         y = x.result
-        z = Kerasactivation(params["activation_type"])(y)
+        z = KerasActivation(params["activation_type"])(y)
         result = Tensor(result = z)
         return {'result': result}
 
@@ -79,7 +81,8 @@ class Activation(Task):
 #
 # *****************************************************************************
 
-@task_decorator("Embedding")
+@task_decorator("TFEmbedding", human_name="Embedding",
+                short_description="Turns positive integers (indexes) into dense vectors of fixed size")
 class Embedding(Task):
     """
     Turns positive integers (indexes) into dense vectors of fixed size.
@@ -97,9 +100,9 @@ class Embedding(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['tensor']
         y = x.result
-        z = Kerasembedding(
-            input_dim=params["input_dimension"], 
-            output_dim=params["output_dimension"], 
+        z = KerasEmbedding(
+            input_dim=params["input_dimension"],
+            output_dim=params["output_dimension"],
             input_length=params["input_length"])(y)
         result = Tensor(result = z)
         return {'result': result}
@@ -110,11 +113,12 @@ class Embedding(Task):
 #
 # *****************************************************************************
 
-@task_decorator("Masking")
+@task_decorator("TFMasking", human_name="Masking",
+                short_description="Masks a sequence by using a mask value to skip timesteps")
 class Masking(Task):
     """
     Masks a sequence by using a mask value to skip timesteps.
-    
+
     See https://keras.io/api/layers/core_layers/masking/ for more details
     """
     input_specs = {'tensor' : Tensor}
@@ -126,7 +130,7 @@ class Masking(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['tensor']
         y = x.result
-        z = Kerasmasking(mask_value=params["mask_value"])(y)
+        z = KerasMasking(mask_value=params["mask_value"])(y)
         result = Tensor(result = z)
         return {'result': result}
 
@@ -136,7 +140,8 @@ class Masking(Task):
 #
 # *****************************************************************************
 
-@task_decorator("Dropout")
+@task_decorator("TFDropout", human_name="Dropout",
+                short_description="Dropout layer")
 class Dropout(Task):
     """
     Dropout layer
@@ -152,7 +157,7 @@ class Dropout(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['tensor']
         y = x.result
-        z = Kerasdropout(params["rate"])(y)
+        z = KerasDropout(params["rate"])(y)
         result = Tensor(result = z)
         return {'result': result}
 
@@ -162,7 +167,8 @@ class Dropout(Task):
 #
 # *****************************************************************************
 
-@task_decorator("Flatten")
+@task_decorator("TFFlatten", human_name="Flatten",
+                short_description="Flatten layer")
 class Flatten(Task):
     """
     Flatten layer
@@ -176,6 +182,6 @@ class Flatten(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['tensor']
         y = x.result
-        z = Kerasflatten()(y)
+        z = KerasFlatten()(y)
         result = Tensor(result = z)
         return {'result': result}

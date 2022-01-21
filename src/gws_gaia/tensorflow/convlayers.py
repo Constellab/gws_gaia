@@ -1,5 +1,5 @@
 # LICENSE
-# This software is the exclusive property of Gencovery SAS. 
+# This software is the exclusive property of Gencovery SAS.
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
@@ -23,10 +23,11 @@ from .data import Tensor
 #
 # *****************************************************************************
 
-@task_decorator("Conv1D")
+@task_decorator("TFConv1D", human_name="Convolution 2D",
+                short_description="1D-convolution layer (e.g. temporal convolution)")
 class Conv1D(Task):
     """
-    1D convolution layer (e.g. temporal convolution).
+    1D convolution layer (e.g. temporal convolution)
 
     See https://keras.io/api/layers/convolution_layers/convolution1d/ for more details
     """
@@ -41,7 +42,7 @@ class Conv1D(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['tensor']
         y = x.result
-        z = Kerasconv1d(filters=params['nb_filters'], kernel_size=params['kernel_size'], activation=params['activation_type'])(y)        
+        z = Kerasconv1d(filters=params['nb_filters'], kernel_size=params['kernel_size'], activation=params['activation_type'])(y)
         result = Tensor(result = z)
         return {'result': result}
 
@@ -51,7 +52,8 @@ class Conv1D(Task):
 #
 # *****************************************************************************
 
-@task_decorator("Conv2D")
+@task_decorator("TFConv2D", human_name="Convolution 2D",
+                short_description="2D-convolution layer (e.g. spatial convolution over images)")
 class Conv2D(Task):
     """
     2D convolution layer (e.g. spatial convolution over images).
@@ -71,10 +73,10 @@ class Conv2D(Task):
         y = x.result
         kernel_size = tuple(params['kernel_size'])
         z = Kerasconv2d(
-            filters=params['nb_filters'], 
-            kernel_size=kernel_size, 
+            filters=params['nb_filters'],
+            kernel_size=kernel_size,
             activation=params['activation_type']
-        )(y)        
+        )(y)
         result = Tensor(result = z)
         return {'result': result}
 
@@ -84,11 +86,12 @@ class Conv2D(Task):
 #
 # *****************************************************************************
 
-@task_decorator("Conv3D")
+@task_decorator("TFConv3D", human_name="Convolution 3D",
+                short_description="3D-convolution layer (e.g. spatial convolution over volumes)")
 class Conv3D(Task):
     """
     3D convolution layer (e.g. spatial convolution over volumes).
-    
+
     See https://keras.io/api/layers/convolution_layers/convolution3d/ for more details
     """
     input_specs = {'tensor' : Tensor}
@@ -103,6 +106,6 @@ class Conv3D(Task):
         x = inputs['tensor']
         y = x.result
         kernel_size = tuple(params['kernel_size'])
-        z = Kerasconv3d(filters=params['nb_filters'], kernel_size=kernel_size, activation=params['activation_type'])(y)        
+        z = Kerasconv3d(filters=params['nb_filters'], kernel_size=kernel_size, activation=params['activation_type'])(y)
         result = Tensor(result = z)
         return {'result': result}

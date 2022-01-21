@@ -1,18 +1,18 @@
 # LICENSE
-# This software is the exclusive property of Gencovery SAS. 
+# This software is the exclusive property of Gencovery SAS.
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
 
+from gws_core import (BadRequestException, ConfigParams, DataFrameRField,
+                      Dataset, FloatParam, FloatRField, IntParam, Resource,
+                      ResourceRField, ScatterPlot2DView, ScatterPlot3DView,
+                      StrParam, Table, TabularView, Task, TaskInputs,
+                      TaskOutputs, resource_decorator, task_decorator, view)
 from numpy import ravel
 from pandas import DataFrame, concat
 from sklearn.linear_model import Lasso
 
-from gws_core import (Task, Resource, task_decorator, resource_decorator,
-                        ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam,
-                        view, TabularView, ResourceRField, ScatterPlot2DView, ScatterPlot3DView, FloatRField, 
-                        DataFrameRField, BadRequestException, Table, Dataset)
-from gws_core import Dataset
 from ..base.base_resource import BaseResource
 
 # *****************************************************************************
@@ -21,6 +21,7 @@ from ..base.base_resource import BaseResource
 #
 # *****************************************************************************
 
+
 @resource_decorator("LassoResult", hide=True)
 class LassoResult(BaseResource):
 
@@ -28,11 +29,11 @@ class LassoResult(BaseResource):
     _R2: int = FloatRField()
 
     def _get_predicted_data(self) -> DataFrame:
-        las: Lasso = self.get_result() #lir du type Linear Regression
+        las: Lasso = self.get_result()  # lir du type Linear Regression
         Y_predicted: DataFrame = las.predict(self._training_set.get_features().values)
         Y_predicted = DataFrame(
-            data=Y_predicted, 
-            index=self._training_set.row_names, 
+            data=Y_predicted,
+            index=self._training_set.row_names,
             columns=self._training_set.target_names
         )
         return Y_predicted
@@ -50,7 +51,7 @@ class LassoResult(BaseResource):
         """
         Y_data = self._training_set.get_targets()
         Y_predicted = self._get_predicted_data()
-        Y = concat([Y_data, Y_predicted],axis=1)
+        Y = concat([Y_data, Y_predicted], axis=1)
         data = Y.set_axis(["YData", "YPredicted"], axis=1)
         t_view = TabularView()
         t_view.set_data(data=data)
@@ -81,15 +82,17 @@ class LassoResult(BaseResource):
 #
 # *****************************************************************************
 
-@task_decorator("LassoTrainer")
+
+@task_decorator("LassoTrainer", human_name="Lasso trainer",
+                short_description="Train a Lasso model")
 class LassoTrainer(Task):
     """
     Trainer of a lasso model. Fit a lasso model with a training dataset.
 
     See https://scikit-learn.org/0.15/modules/generated/sklearn.linear_model.Lasso.html for more details.
     """
-    input_specs = {'dataset' : Dataset}
-    output_specs = {'result' : LassoResult}
+    input_specs = {'dataset': Dataset}
+    output_specs = {'result': LassoResult}
     config_specs = {
         'alpha': FloatParam(default_value=1, min_value=0)
     }
@@ -98,8 +101,8 @@ class LassoTrainer(Task):
         dataset = inputs['dataset']
         las = Lasso(alpha=params["alpha"])
         las.fit(dataset.get_features().values, ravel(dataset.get_targets().values))
-        result = LassoResult(result = las)
-        result._training_set = dataset                
+        result = LassoResult(result=las)
+        result._training_set = dataset
         return {'result': result}
 
 # *****************************************************************************
@@ -108,16 +111,18 @@ class LassoTrainer(Task):
 #
 # *****************************************************************************
 
-@task_decorator("LassoPredictor")
+
+@task_decorator("LassoPredictor", human_name="Lasso predictor",
+                short_description="Predict dataset targets using a trained Lasso model")
 class LassoPredictor(Task):
     """
     Predictor of a lasso model. Predict target values from a dataset with a trained lasso model.
 
     See https://scikit-learn.org/0.15/modules/generated/sklearn.linear_model.Lasso.html for more details.
     """
-    input_specs = {'dataset' : Dataset, 'learned_model': LassoResult}
-    output_specs = {'result' : Dataset}
-    config_specs = {   }
+    input_specs = {'dataset': Dataset, 'learned_model': LassoResult}
+    output_specs = {'result': Dataset}
+    config_specs = {}
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
@@ -125,9 +130,9 @@ class LassoPredictor(Task):
         las = learned_model.result
         y = las.predict(dataset.get_features().values)
         result_dataset = Dataset(
-            data=y, 
-            row_names=dataset.row_names, 
-            column_names=dataset.target_names, 
+            data=y,
+            row_names=dataset.row_names,
+            column_names=dataset.target_names,
             target_names=dataset.target_names
         )
         return {'result': result_dataset}

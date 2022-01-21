@@ -1,5 +1,5 @@
 # LICENSE
-# This software is the exclusive property of Gencovery SAS. 
+# This software is the exclusive property of Gencovery SAS.
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
@@ -19,7 +19,7 @@ from ..base.base_resource import BaseResource
 #
 # *****************************************************************************
 
-@resource_decorator("DecisionTreeClassifierResult")
+@resource_decorator("DecisionTreeClassifierResult", hide=True)
 class DecisionTreeClassifierResult(BaseResource):
     pass
 
@@ -29,10 +29,11 @@ class DecisionTreeClassifierResult(BaseResource):
 #
 # *****************************************************************************
 
-@task_decorator("DecisionTreeClassifierTrainer")
+@task_decorator("DecisionTreeClassifierTrainer", human_name="Decision tree classifier trainer",
+                short_description="Train a decision tree classifier model")
 class DecisionTreeClassifierTrainer(Task):
-    """ Trainer of the decision tree classifier. Build a decision tree classifier from the training set. 
-    
+    """ Trainer of the decision tree classifier. Build a decision tree classifier from the training set.
+
     See https://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeClassifier.html for more details
     """
     input_specs = {'dataset' : Dataset}
@@ -54,9 +55,11 @@ class DecisionTreeClassifierTrainer(Task):
 #
 # *****************************************************************************
 
-@task_decorator("DecisionTreeClassifierPredictor")
+@task_decorator("DecisionTreeClassifierPredictor", human_name="Decision tree classifier predictor",
+                short_description="Predict class labels for a dataset using a decision tree classifier model")
 class DecisionTreeClassifierPredictor(Task):
-    """ Predictor of a trained decision tree classifier. Predict class or regression value for a dataset. For a classification model, the predicted class for each sample in the dataset is returned. For a regression model, the predicted value based on the dataset is returned.
+    """ Predictor of a trained decision tree classifier.
+    Predict class for a dataset. The predicted class for each sample in the dataset is returned.
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeClassifier.html for more details
     """
@@ -70,9 +73,9 @@ class DecisionTreeClassifierPredictor(Task):
         dtc = learned_model.result
         y = dtc.predict(dataset.get_features().values)
         result_dataset = Dataset(
-            data=y, 
-            row_names=dataset.row_names, 
-            column_names=dataset.target_names, 
+            data=y,
+            row_names=dataset.row_names,
+            column_names=dataset.target_names,
             target_names=dataset.target_names
         )
         return {'result': result_dataset}

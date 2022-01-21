@@ -1,5 +1,5 @@
 # LICENSE
-# This software is the exclusive property of Gencovery SAS. 
+# This software is the exclusive property of Gencovery SAS.
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
@@ -17,12 +17,13 @@ from .data import Tensor, DeepModel
 
 # *****************************************************************************
 #
-# DeepModelerBuilder
+# DeepModelBuilder
 #
 # *****************************************************************************
 
-@task_decorator("DeepModelerBuilder")
-class DeepModelerBuilder(Task):
+@task_decorator("DeepModelBuilder", human_name="Deep modeler builder",
+                short_description="Groups layers into a model")
+class DeepModelBuilder(Task):
     """
     Build the model from layers specifications
     """
@@ -41,12 +42,13 @@ class DeepModelerBuilder(Task):
 
 # *****************************************************************************
 #
-# DeepModelerCompiler
+# DeepModelCompiler
 #
 # *****************************************************************************
 
-@task_decorator("DeepModelerCompiler")
-class DeepModelerCompiler(Task):
+@task_decorator("DeepModelCompiler", human_name="Deep model compiler",
+                short_description="Configures a model for training")
+class DeepModelCompiler(Task):
     """
     Configures the model for training.
 

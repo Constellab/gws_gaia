@@ -80,7 +80,7 @@ class AgglomerativeClusteringResult(BaseResource):
 
 
 @task_decorator("AgglomerativeClusteringTrainer", human_name="Agglomerative clustering trainer",
-                short_description="Trainer of the hierarchical clustering")
+                short_description="Train a the hierarchical clustering model")
 class AgglomerativeClusteringTrainer(Task):
     """ Trainer of the hierarchical clustering. Fits the hierarchical clustering from features, or distance matrix.
 

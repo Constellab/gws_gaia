@@ -31,7 +31,7 @@ class QDAResult(BaseResource):
 
 
 @task_decorator("QDATrainer", human_name="QDA trainer",
-                short_description="Trainer of quadratic discriminant analysis model")
+                short_description="Train a Quadratic Discriminant Analysis (QDA) model")
 class QDATrainer(Task):
     """
     Trainer of quadratic discriminant analysis model. Fit a quadratic discriminant analysis model with a training dataset.
@@ -59,7 +59,7 @@ class QDATrainer(Task):
 
 
 @task_decorator("QDAPredictor", human_name="QDA predictor",
-                short_description="Predictor of quadratic discriminant analysis model")
+                short_description="Predict class labels using a Quadratic Discriminant Analysis (QDA) model")
 class QDAPredictor(Task):
     """
     Predictor of quadratic discriminant analysis model. Predic class labels of a dataset with a trained quadratic discriminant analysis model.

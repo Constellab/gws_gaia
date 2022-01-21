@@ -3,12 +3,11 @@
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
-import numpy as np
-from gws_core import (BarPlotView, ConfigParams, Dataset, FloatParam,
+from gws_core import (BarPlotView, BoolParam, ConfigParams, Dataset,
                       FloatRField, IntParam, Resource, ResourceRField,
-                      ScatterPlot2DView, ScatterPlot3DView, StrParam, Table,
-                      TabularView, Task, TaskInputs, TaskOutputs,
-                      resource_decorator, task_decorator, view)
+                      ScatterPlot2DView, ScatterPlot3DView, TabularView, Task,
+                      TaskInputs, TaskOutputs, resource_decorator,
+                      task_decorator, view)
 from pandas import DataFrame
 from sklearn.decomposition import PCA
 
@@ -86,7 +85,12 @@ class PCATrainerResult(BaseResource):
 
         return _view
 
-    @view(view_type=ScatterPlot2DView, human_name='2D-score plot', short_description='2D score plot')
+    @view(view_type=ScatterPlot2DView, default_view=True, human_name='2D-score plot', short_description='2D score plot',
+          specs={
+              'show_labels':
+              BoolParam(
+                  default_value=False, human_name="Show labels",
+                  short_description="Set True to see sample labels if they are provided; False otherwise")})
     def view_scores_as_2d_plot(self, params: ConfigParams) -> dict:
         """
         View 2D score plot
@@ -94,10 +98,29 @@ class PCATrainerResult(BaseResource):
 
         data: DataFrame = self._get_transformed_data()
         _view = ScatterPlot2DView()
-        _view.add_series(
-            x=data['PC1'].to_list(),
-            y=data['PC2'].to_list()
-        )
+
+        show_labels = params.get('show_labels')
+        targets = self._training_set.get_targets()
+        if targets.shape[1] == 1:
+            if self._training_set.has_string_targets():
+                show_labels = True
+        else:
+            show_labels = False
+
+        if show_labels:
+            labels = sorted(list(set(targets.transpose().values.tolist()[0])))
+            for lbl in labels:
+                idx = (targets == lbl)
+                _view.add_series(
+                    x=data[idx, 'PC1'].to_list(),
+                    y=data[idx, 'PC2'].to_list(),
+                    y_name=lbl
+                )
+        else:
+            _view.add_series(
+                x=data['PC1'].to_list(),
+                y=data['PC2'].to_list()
+            )
         _view.x_label = 'PC1'
         _view.y_label = 'PC2'
         return _view
@@ -127,7 +150,8 @@ class PCATrainerResult(BaseResource):
 # *****************************************************************************
 
 
-@task_decorator("PCATrainer", human_name="PCA trainer", short_description="Trainer of a Principal Component Analysis (PCA) model")
+@task_decorator("PCATrainer", human_name="PCA trainer",
+                short_description="Train a Principal Component Analysis (PCA) model")
 class PCATrainer(Task):
     """
     Trainer of a Principal Component Analysis (PCA) model. Fit a PCA model with a training dataset.
@@ -157,7 +181,8 @@ class PCATrainer(Task):
 # *****************************************************************************
 
 
-@task_decorator("PCATransformer", human_name="PCA transformer", short_description="Transform a data using a Principal Component Analysis (PCA) model. Apply dimensionality reduction to a dataset")
+@task_decorator("PCATransformer", human_name="PCA transformer",
+                short_description="Transform a data using a Principal Component Analysis (PCA) model. Apply dimensionality reduction to a dataset")
 class PCATransformer(Task):
     """
     Transformer using Principal Component Analysis (PCA) model. Apply dimensionality reduction to a dataset

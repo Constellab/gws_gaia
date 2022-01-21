@@ -1,5 +1,5 @@
 # LICENSE
-# This software is the exclusive property of Gencovery SAS. 
+# This software is the exclusive property of Gencovery SAS.
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
@@ -30,7 +30,8 @@ class SVCResult(BaseResource):
 #
 # *****************************************************************************
 
-@task_decorator("SVCTrainer")
+@task_decorator("SVCTrainer", human_name="SVC trainer",
+                short_description="Train a C-Support Vector Classifier (SVC) model")
 class SVCTrainer(Task):
     """
     Trainer of a C-Support Vector Classifier (SVC) model. Fit a SVC model according to a training dataset.
@@ -57,13 +58,14 @@ class SVCTrainer(Task):
 #
 # *****************************************************************************
 
-@task_decorator("SVCPredictor")
+@task_decorator("SVCPredictor", human_name="SVC predictor",
+                short_description="Predict dataset class labels using a trained C-Support Vector Classifier (SVC) model")
 class SVCPredictor(Task):
     """
     Predictor of a C-Support Vector Classifier (SVC) model. Predict class labels of a dataset with a trained SVC model.
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html for more details.
-    """    
+    """
     input_specs = {'dataset' : Dataset, 'learned_model': SVCResult}
     output_specs = {'result' : Dataset}
     config_specs = {   }
@@ -74,9 +76,9 @@ class SVCPredictor(Task):
         svc = learned_model.result
         y = svc.predict(dataset.get_features().values)
         result_dataset = Dataset(
-            data=y, 
-            row_names=dataset.row_names, 
-            column_names=dataset.target_names, 
+            data=y,
+            row_names=dataset.row_names,
+            column_names=dataset.target_names,
             target_names=dataset.target_names
         )
         return {'result': result_dataset}

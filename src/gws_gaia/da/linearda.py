@@ -131,7 +131,7 @@ class LDAResult(BaseResource):
 
 
 @task_decorator("LDATrainer", human_name="LDA trainer",
-                short_description="Trainer of a linear discriminant analysis classifier")
+                short_description="Train a linear discriminant analysis classifier")
 class LDATrainer(Task):
     """
     Trainer of a linear discriminant analysis classifier. Fit Linear Discriminant Analysis model according to a training dataset.
@@ -162,7 +162,7 @@ class LDATrainer(Task):
 
 
 @task_decorator("LDATransformer", human_name="LDA transformer",
-                short_description="Transformer of a linear discriminant analysis classifier")
+                short_description="Transform a dataset using of a Linear Discriminant Analysis (LDA) classifier")
 class LDATransformer(Task):
     """
     Transformer of a linear discriminant analysis classifier. Project data to maximize class separation.
@@ -195,7 +195,7 @@ class LDATransformer(Task):
 
 
 @task_decorator("LDAPredictor", human_name="LDA predictor",
-                short_description="Predictor of a linear discriminant analysis classifier")
+                short_description="Predict class labels using a Linear Discriminant Analysis (LDA) classifier")
 class LDAPredictor(Task):
     """
     Predictor of a linear discriminant analysis classifier. Predict class labels for samples in a dataset.

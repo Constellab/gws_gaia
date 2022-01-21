@@ -1,5 +1,5 @@
 # LICENSE
-# This software is the exclusive property of Gencovery SAS. 
+# This software is the exclusive property of Gencovery SAS.
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
@@ -27,7 +27,8 @@ class LocallyLinearEmbeddingResult(BaseResource):
 #
 # *****************************************************************************
 
-@task_decorator("LocallyLinearEmbeddingTrainer")
+@task_decorator("LocallyLinearEmbeddingTrainer", human_name="LLE trainer",
+                short_description="Trainer of a Locally Linear Embedding (LLE) model")
 class LocallyLinearEmbeddingTrainer(Task):
     """
     Trainer of a locally linear embedding model. Compute the embedding vectors for a dataset.

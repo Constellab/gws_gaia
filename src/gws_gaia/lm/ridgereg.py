@@ -1,5 +1,5 @@
 # LICENSE
-# This software is the exclusive property of Gencovery SAS. 
+# This software is the exclusive property of Gencovery SAS.
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
@@ -29,10 +29,11 @@ class RidgeRegressionResult(BaseResource):
 #
 # *****************************************************************************
 
-@task_decorator("RidgeRegressionTrainer")
+@task_decorator("RidgeRegressionTrainer", human_name="Ridge regression trainer",
+                short_description="Train a ridge regression model")
 class RidgeRegressionTrainer(Task):
     """
-    Trainer of a Ridge regression model. Fit a Ridge regression model with a training dataset. 
+    Trainer of a Ridge regression model. Fit a Ridge regression model with a training dataset.
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Ridge.html for more details.
     """
@@ -55,10 +56,11 @@ class RidgeRegressionTrainer(Task):
 #
 # *****************************************************************************
 
-@task_decorator("RidgeRegressionPredictor")
+@task_decorator("RidgeRegressionPredictor", human_name="Ridge regression predictor",
+                short_description="Predict dataset targets using a trained ridge regression model")
 class RidgeRegressionPredictor(Task):
     """
-    Predictor of a Ridge regression model. Predict target values of a dataset with a trained Ridge regression model. 
+    Predictor of a Ridge regression model. Predict target values of a dataset with a trained Ridge regression model.
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Ridge.html for more details.
     """
@@ -72,9 +74,9 @@ class RidgeRegressionPredictor(Task):
         rir = learned_model.result
         y = rir.predict(dataset.get_features().values)
         result_dataset = Dataset(
-            data=y, 
-            row_names=dataset.row_names, 
-            column_names=dataset.target_names, 
+            data=y,
+            row_names=dataset.row_names,
+            column_names=dataset.target_names,
             target_names=dataset.target_names
         )
         return {'result': result_dataset}

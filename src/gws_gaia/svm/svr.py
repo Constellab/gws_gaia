@@ -1,5 +1,5 @@
 # LICENSE
-# This software is the exclusive property of Gencovery SAS. 
+# This software is the exclusive property of Gencovery SAS.
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
@@ -28,7 +28,8 @@ class SVRResult(BaseResource):
 #
 # *****************************************************************************
 
-@task_decorator("SVRTrainer")
+@task_decorator("SVRTrainer", human_name="SVC trainer",
+                short_description="Train a C-Support Vector Regression (SVC) model")
 class SVRTrainer(Task):
     """
     Trainer of a Epsilon-Support Vector Regression (SVR) model. Fit a SVR model according to a training dataset.
@@ -54,13 +55,14 @@ class SVRTrainer(Task):
 #
 # *****************************************************************************
 
-@task_decorator("SVRPredictor")
+@task_decorator("SVRPredictor", human_name="SVR predictor",
+                short_description="Predict dataset targets using a trained Epsilon-Support Vector Regression (SVR) model")
 class SVRPredictor(Task):
     """
     Predictor of a Epsilon-Support Vector Regression (SVR) model. Predict target values of a dataset with a trained SVR model.
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVR.html for more details.
-    """    
+    """
     input_specs = {'dataset' : Dataset, 'learned_model': SVRResult}
     output_specs = {'result' : Dataset}
     config_specs = {   }
@@ -71,9 +73,9 @@ class SVRPredictor(Task):
         svr = learned_model.result
         y = svr.predict(dataset.get_features().values)
         result_dataset = Dataset(
-            data=y, 
-            row_names=dataset.row_names, 
-            column_names=dataset.target_names, 
+            data=y,
+            row_names=dataset.row_names,
+            column_names=dataset.target_names,
             target_names=dataset.target_names
         )
         return {'result': result_dataset}

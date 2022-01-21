@@ -1,5 +1,5 @@
 # LICENSE
-# This software is the exclusive property of Gencovery SAS. 
+# This software is the exclusive property of Gencovery SAS.
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
@@ -22,7 +22,7 @@ from ..base.base_resource import BaseResource
 
 @resource_decorator("LogisticRegressionResult", hide=True)
 class LogisticRegressionResult(BaseResource):
-    pass    
+    pass
 
 # *****************************************************************************
 #
@@ -30,7 +30,8 @@ class LogisticRegressionResult(BaseResource):
 #
 # *****************************************************************************
 
-@task_decorator("LogisticRegressionTrainer")
+@task_decorator("LogisticRegressionTrainer", human_name="Logistic regression trainer",
+                short_description="Train a logistic regression classifier")
 class LogisticRegressionTrainer(Task):
     """
     Trainer of a logistic regression classifier. Fit a logistic regression model according to a training dataset.
@@ -56,7 +57,8 @@ class LogisticRegressionTrainer(Task):
 #
 # *****************************************************************************
 
-@task_decorator("LogisticRegressionPredictor")
+@task_decorator("LogisticRegressionPredictor", human_name="Logistic regression predictor",
+                short_description="Predict dataset labels using a trained logistic regression classifier")
 class LogisticRegressionPredictor(Task):
     """
     Predictor of a logistic regression classifier. Predict class labels for samples in a dataset with a trained logistic regression classifier.
@@ -73,9 +75,9 @@ class LogisticRegressionPredictor(Task):
         logreg = learned_model.result
         y = logreg.predict(dataset.get_features().values)
         result_dataset = Dataset(
-            data=y, 
-            row_names=dataset.row_names, 
-            column_names=dataset.target_names, 
+            data=y,
+            row_names=dataset.row_names,
+            column_names=dataset.target_names,
             target_names=dataset.target_names
         )
         return {'result': result_dataset}

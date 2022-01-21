@@ -1,5 +1,5 @@
 # LICENSE
-# This software is the exclusive property of Gencovery SAS. 
+# This software is the exclusive property of Gencovery SAS.
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
@@ -29,7 +29,8 @@ class GaussianNaiveBayesResult(BaseResource):
 #
 # *****************************************************************************
 
-@task_decorator("GaussianNaiveBayesTrainer")
+@task_decorator("GaussianNaiveBayesTrainer", human_name="GNB classifier trainer",
+                short_description="Train a Gaussian naive Bayes (GNB) classifier")
 class GaussianNaiveBayesTrainer(Task):
     """
     Trainer of a gaussian naive Bayes model. Fit a gaussian naive Bayes according to a training set.
@@ -55,11 +56,12 @@ class GaussianNaiveBayesTrainer(Task):
 #
 # *****************************************************************************
 
-@task_decorator("GaussianNaiveBayesPredictor")
+@task_decorator("GaussianNaiveBayesPredictor", human_name="GNB predictor",
+                short_description="Predict the class labels using Gaussian naive Bayes (GNB) classifier")
 class GaussianNaiveBayesPredictor(Task):
     """
-    Predictor of a gaussian naïve Bayes model. Perform classification on a dataset.
-    
+    Predictor of a gaussian naive Bayes model. Perform classification on a dataset.
+
     See https://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.GaussianNB.html for more details
     """
     input_specs = {'dataset' : Dataset, 'learned_model': GaussianNaiveBayesResult}
@@ -72,9 +74,9 @@ class GaussianNaiveBayesPredictor(Task):
         gnb = learned_model.result
         y = gnb.predict(dataset.get_features().values)
         result_dataset = Dataset(
-            data=y, 
-            row_names=dataset.row_names, 
-            column_names=dataset.target_names, 
+            data=y,
+            row_names=dataset.row_names,
+            column_names=dataset.target_names,
             target_names=dataset.target_names
         )
         return {'result': result_dataset}

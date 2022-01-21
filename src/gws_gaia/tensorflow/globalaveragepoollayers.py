@@ -1,5 +1,5 @@
 # LICENSE
-# This software is the exclusive property of Gencovery SAS. 
+# This software is the exclusive property of Gencovery SAS.
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
@@ -22,7 +22,8 @@ from gws_core import Dataset
 #
 # *****************************************************************************
 
-@task_decorator("GlobalAveragePooling1D")
+@task_decorator("GlobalAveragePooling1D", human_name="Global average pooling 1D",
+                short_description="Global average pooling operation for 1D data (temporal data)")
 class GlobalAveragePooling1D(Task):
     """
     Global average pooling operation for 1D data (temporal data)
@@ -44,7 +45,8 @@ class GlobalAveragePooling1D(Task):
 #
 # *****************************************************************************
 
-@task_decorator("GlobalAveragePooling2D")
+@task_decorator("GlobalAveragePooling2D", human_name="Global average pooling 2D",
+                short_description="Global average pooling operation for 2D data (spatial data)")
 class GlobalAveragePooling2D(Task):
     """
     Global average pooling operation for 2D data (spatial data)
@@ -66,7 +68,8 @@ class GlobalAveragePooling2D(Task):
 #
 # *****************************************************************************
 
-@task_decorator("GlobalAveragePooling3D")
+@task_decorator("GlobalAveragePooling3D", human_name="Global average pooling 3D",
+                short_description="Global average pooling operation for 3D data (spatial or spatio-temporal data)")
 class GlobalAveragePooling3D(Task):
     """
     Global average pooling operation for 3D data (spatial or spatio-temporal data)

@@ -1,5 +1,5 @@
 # LICENSE
-# This software is the exclusive property of Gencovery SAS. 
+# This software is the exclusive property of Gencovery SAS.
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
@@ -29,7 +29,8 @@ class BernoulliNaiveBayesClassifierResult(BaseResource):
 #
 # *****************************************************************************
 
-@task_decorator("BernoulliNaiveBayesClassifierTrainer")
+@task_decorator("BernoulliNaiveBayesClassifierTrainer", human_name="BNB classifier trainer",
+                short_description="Train a Bernoulli naive Bayes (BNB) classifier model")
 class BernoulliNaiveBayesClassifierTrainer(Task):
     """
     Trainer of a Naive Bayes classifier. Fit Naive Bayes classifier with dataset.
@@ -55,7 +56,8 @@ class BernoulliNaiveBayesClassifierTrainer(Task):
 #
 # *****************************************************************************
 
-@task_decorator("BernoulliNaiveBayesClassifierPredictor")
+@task_decorator("BernoulliNaiveBayesClassifierPredictor", human_name="BNB classifier predictor",
+                short_description="Predict the class labels using Bernoulli naive Bayes (BNB) classifier")
 class BernoulliNaiveBayesClassifierPredictor(Task):
     """
     Predictor of a Naive Bayes classifier. Perform classification on a dataset.
@@ -72,9 +74,9 @@ class BernoulliNaiveBayesClassifierPredictor(Task):
         bnb = learned_model.result
         y = bnb.predict(dataset.get_features().values)
         result_dataset = Dataset(
-            data=y, 
-            row_names=dataset.row_names, 
-            column_names=dataset.target_names, 
+            data=y,
+            row_names=dataset.row_names,
+            column_names=dataset.target_names,
             target_names=dataset.target_names
         )
         return {'result': result_dataset}

@@ -1,6 +1,6 @@
 
 # LICENSE
-# This software is the exclusive property of Gencovery SAS. 
+# This software is the exclusive property of Gencovery SAS.
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
@@ -16,12 +16,12 @@ from ..data.core import GenericResult
 
 # *****************************************************************************
 #
-# ImporterPKL
+# PickleImporter
 #
 # *****************************************************************************
 
-@task_decorator("ImporterPKL")
-class ImporterPKL(Task):
+@task_decorator("PickleImporter", human_name="Pickle importer")
+class PickleImporter(Task):
     input_specs = {}
     output_specs = {'result': GenericResult}
     config_specs = {
@@ -56,7 +56,7 @@ class Preprocessor(Task):
         x = inputs['data']
         data = x.result
 
-        (x_train, y_train), (x_test, y_test) = data  
+        (x_train, y_train), (x_test, y_test) = data
         x_train = x_train.astype("float32") / 255
         x_test = x_test.astype("float32") / 255
         y_train = tf.keras.utils.to_categorical(y_train, params['number_classes'])
@@ -80,7 +80,7 @@ class AdhocExtractor(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['data']
         data = x.result
-        (x_train, _), (_, _) = data  
+        (x_train, _), (_, _) = data
         data = x_train
         result = GenericResult(result = data)
         return {'result': result}

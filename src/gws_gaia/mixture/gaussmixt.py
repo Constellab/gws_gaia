@@ -1,5 +1,5 @@
 # LICENSE
-# This software is the exclusive property of Gencovery SAS. 
+# This software is the exclusive property of Gencovery SAS.
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
@@ -29,7 +29,8 @@ class GaussianMixtureResult(BaseResource):
 #
 # *****************************************************************************
 
-@task_decorator("GaussianMixtureTrainer")
+@task_decorator("GaussianMixtureTrainer", human_name="Gaussian mixture trainer",
+                short_description="Train a Gaussian mixture model")
 class GaussianMixtureTrainer(Task):
     """
     Trainer of a Gaussian mixture model. Estimate model parameters with a training set.
@@ -56,7 +57,8 @@ class GaussianMixtureTrainer(Task):
 #
 # *****************************************************************************
 
-@task_decorator("GaussianMixturePredictor")
+@task_decorator("GaussianMixturePredictor", human_name="Gaussian mixture predictor",
+                short_description="Predict the class labels for a dataset using a Gaussian mixture model")
 class GaussianMixturePredictor(Task):
     """
     Predictor of a Gaussian mixture model. Predict the labels for a dataset.
@@ -73,9 +75,9 @@ class GaussianMixturePredictor(Task):
         gmixt = learned_model.result
         y = gmixt.predict(dataset.get_features().values)
         result_dataset = Dataset(
-            data=y, 
-            row_names=dataset.row_names, 
-            column_names=dataset.target_names, 
+            data=y,
+            row_names=dataset.row_names,
+            column_names=dataset.target_names,
             target_names=dataset.target_names
         )
         return {'result': result_dataset}

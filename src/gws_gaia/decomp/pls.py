@@ -4,13 +4,11 @@
 # About us: https://gencovery.com
 
 
-from gws_core import (BadRequestException, ConfigParams, DataFrameRField,
-                      Dataset, FloatParam, FloatRField, IntParam, Resource,
-                      ResourceRField, ScatterPlot2DView, ScatterPlot3DView,
-                      StrParam, Table, TabularView, Task, TaskInputs,
+from gws_core import (BoolParam, ConfigParams, Dataset, FloatRField, IntParam,
+                      Resource, ResourceRField, ScatterPlot2DView,
+                      ScatterPlot3DView, TabularView, Task, TaskInputs,
                       TaskOutputs, resource_decorator, task_decorator, view)
 from pandas import DataFrame, concat
-from pandas.api.types import is_string_dtype
 from sklearn.cross_decomposition import PLSRegression
 
 from ..base.base_resource import BaseResource
@@ -70,7 +68,12 @@ class PLSTrainerResult(BaseResource):
         t_view.set_data(data=x_transformed)
         return t_view
 
-    @view(view_type=ScatterPlot2DView, human_name='2D-score plot', short_description='2D-score plot')
+    @view(view_type=ScatterPlot2DView, default_view=True, human_name='2D-score plot', short_description='2D-score plot',
+          specs={
+              'show_labels':
+              BoolParam(
+                  default_value=False, human_name="Show labels",
+                  short_description="Set True to see sample labels if they are provided; False otherwise")})
     def view_scores_as_2d_plot(self, params: ConfigParams) -> dict:
         """
         View 2D score plot
@@ -78,10 +81,29 @@ class PLSTrainerResult(BaseResource):
 
         data: DataFrame = self._get_transformed_data()
         _view = ScatterPlot2DView()
-        _view.add_series(
-            x=data['PC1'].to_list(),
-            y=data['PC2'].to_list()
-        )
+        targets = self._training_set.get_targets()
+        show_labels = params.get('show_labels')
+        targets = self._training_set.get_targets()
+        if targets.shape[1] == 1:
+            if self._training_set.has_string_targets():
+                show_labels = True
+        else:
+            show_labels = False
+
+        if show_labels:
+            labels = sorted(list(set(targets.transpose().values.tolist()[0])))
+            for lbl in labels:
+                idx = (targets == lbl)
+                _view.add_series(
+                    x=data[idx, 'PC1'].to_list(),
+                    y=data[idx, 'PC2'].to_list(),
+                    y_name=lbl
+                )
+        else:
+            _view.add_series(
+                x=data['PC1'].to_list(),
+                y=data['PC2'].to_list()
+            )
         _view.x_label = 'PC1'
         _view.y_label = 'PC2'
         return _view
@@ -143,7 +165,8 @@ class PLSTrainerResult(BaseResource):
 # *****************************************************************************
 
 
-@task_decorator("PLSTrainer", human_name="PLS trainer", short_description="Trainer of a Partial Least Squares (PLS) regression model")
+@task_decorator("PLSTrainer", human_name="PLS trainer",
+                short_description="Train a Partial Least Squares (PLS) regression model")
 class PLSTrainer(Task):
     """
     Trainer of a Partial Least Squares (PLS) regression model. Fit a PLS regression model to a training dataset.
@@ -176,7 +199,8 @@ class PLSTrainer(Task):
 # *****************************************************************************
 
 
-@task_decorator("PLSTransformer", human_name="PLS transformer", short_description="Apply the PLS dimension reduction on a trained data")
+@task_decorator("PLSTransformer", human_name="PLS transformer",
+                short_description="Apply the PLS dimension reduction on a training dataset")
 class PLSTransformer(Task):
     """
     Transformer of a Partial Least Squares (PLS) regression model. Apply the dimensionality reduction to a dataset.
@@ -207,7 +231,8 @@ class PLSTransformer(Task):
 # *****************************************************************************
 
 
-@task_decorator("PLSPredictor")
+@task_decorator("PLSPredictor", human_name="PLS predictor",
+                short_description="Predict dataset targets using a trained PLS regression model")
 class PLSPredictor(Task):
     """
     Predictor of a Partial Least Squares (PLS) regression model. Predict targets of a dataset with a trained PLS regression model.

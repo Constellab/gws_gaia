@@ -1,5 +1,5 @@
 # LICENSE
-# This software is the exclusive property of Gencovery SAS. 
+# This software is the exclusive property of Gencovery SAS.
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
@@ -30,7 +30,8 @@ class SGDClassifierResult(BaseResource):
 #
 # *****************************************************************************
 
-@task_decorator("SGDClassifierTrainer")
+@task_decorator("SGDClassifierTrainer", human_name="SGD classifier trainer",
+                short_description="Train a stochastic gradient descent (SGD) linear classifier")
 class SGDClassifierTrainer(Task):
     """
     Trainer of a linear classifier with stochastic gradient descent (SGD). Fit a SGD linear classifier with a training dataset.
@@ -58,13 +59,14 @@ class SGDClassifierTrainer(Task):
 #
 # *****************************************************************************
 
-@task_decorator("SGDClassifierPredictor")
+@task_decorator("SGDClassifierPredictor", human_name="SGD classifier predictor",
+                short_description="Predict class labels using a trained SGD classifier")
 class SGDClassifierPredictor(Task):
     """
     Predictor of a linear classifier with stochastic gradient descent (SGD). Predict class labels of a dataset with a trained SGD linear classifier.
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.SGDClassifier.html for more details.
-    """    
+    """
     input_specs = {'dataset' : Dataset, 'learned_model': SGDClassifierResult}
     output_specs = {'result' : Dataset}
     config_specs = {   }
@@ -75,9 +77,9 @@ class SGDClassifierPredictor(Task):
         sgdc = learned_model.result
         y = sgdc.predict(dataset.get_features().values)
         result_dataset = Dataset(
-            data=y, 
-            row_names=dataset.row_names, 
-            column_names=dataset.target_names, 
+            data=y,
+            row_names=dataset.row_names,
+            column_names=dataset.target_names,
             target_names=dataset.target_names
         )
         return {'result': result_dataset}

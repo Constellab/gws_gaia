@@ -1,5 +1,5 @@
 # LICENSE
-# This software is the exclusive property of Gencovery SAS. 
+# This software is the exclusive property of Gencovery SAS.
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
@@ -29,7 +29,8 @@ class RidgeClassifierResult(BaseResource):
 #
 # *****************************************************************************
 
-@task_decorator("RidgeClassifierTrainer")
+@task_decorator("RidgeClassifierTrainer", human_name="Ridge classifier trainer",
+                short_description="Train a ridge classifier")
 class RidgeClassifierTrainer(Task):
     """
     Trainer of a Ridge regression classifier. Fit a Ridge classifier model with a training dataset.
@@ -55,13 +56,14 @@ class RidgeClassifierTrainer(Task):
 #
 # *****************************************************************************
 
-@task_decorator("RidgeClassifierPredictor")
+@task_decorator("RidgeClassifierPredictor", human_name="Ridge classifier predictor",
+                short_description="Predict class labels using a trained Ridge classifier")
 class RidgeClassifierPredictor(Task):
     """
     Predictor of a Ridge regression classifier. Predict class labels for samples in a datatset with a trained Ridge classifier.
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.RidgeClassifier.html for more details.
-    """    
+    """
     input_specs = {'dataset' : Dataset, 'learned_model': RidgeClassifierResult}
     output_specs = {'result' : Dataset}
     config_specs = {   }
@@ -72,9 +74,9 @@ class RidgeClassifierPredictor(Task):
         ric = learned_model.result
         y = ric.predict(dataset.get_features().values)
         result_dataset = Dataset(
-            data=y, 
-            row_names=dataset.row_names, 
-            column_names=dataset.target_names, 
+            data=y,
+            row_names=dataset.row_names,
+            column_names=dataset.target_names,
             target_names=dataset.target_names
         )
         return {'result': result_dataset}

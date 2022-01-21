@@ -1,5 +1,5 @@
 # LICENSE
-# This software is the exclusive property of Gencovery SAS. 
+# This software is the exclusive property of Gencovery SAS.
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
@@ -22,7 +22,8 @@ from gws_core import Dataset
 #
 # *****************************************************************************
 
-@task_decorator("LSTM")
+@task_decorator("LSTM", human_name="LSTM",
+                short_description="Long Short-Term Memory (LSTM) layer")
 class LSTM(Task):
     """
     Long Short-Term Memory (LSTM) layer
@@ -51,7 +52,8 @@ class LSTM(Task):
 #
 # *****************************************************************************
 
-@task_decorator("GRU")
+@task_decorator("GRU", human_name="GRU",
+                short_description="Gated Recurrent Unit (GRU) layer")
 class GRU(Task):
     """
     Gated Recurrent Unit (GRU) layer
@@ -70,7 +72,7 @@ class GRU(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['tensor']
         y = x.result
-        z = KerasGRU(params['units'], activation=params['activation_type'], recurrent_activation=params['recurrent_activation_type'], use_bias=params['use_bias'])(y)        
+        z = KerasGRU(params['units'], activation=params['activation_type'], recurrent_activation=params['recurrent_activation_type'], use_bias=params['use_bias'])(y)
         result = Tensor(result = z)
         return {'result': result}
 
@@ -80,7 +82,8 @@ class GRU(Task):
 #
 # *****************************************************************************
 
-@task_decorator("SimpleRNN")
+@task_decorator("SimpleRNN", human_name="SimpleRNN",
+                short_description="Fully-connected RNN where the output is to be fed back to input")
 class SimpleRNN(Task):
     """
     Fully-connected RNN where the output is to be fed back to input.

@@ -74,7 +74,7 @@ class KMeansResult(BaseResource):
 # *****************************************************************************
 
 
-@task_decorator("KMeansTrainer", human_name="KMeans trainer", short_description="Trainer of a trained k-means clustering model")
+@task_decorator("KMeansTrainer", human_name="KMeans trainer", short_description="Train a K-Means clustering model")
 class KMeansTrainer(Task):
     """
     Trainer of a trained k-means clustering model. Compute a k-means clustering from a dataset.
@@ -102,10 +102,10 @@ class KMeansTrainer(Task):
 # *****************************************************************************
 
 
-@task_decorator("KMeansPredictor", human_name="KMeans predicton", short_description="Predictor of a K-means clustering model")
+@task_decorator("KMeansPredictor", human_name="KMeans predicton", short_description="Predict the closest cluster each sample using a K-Means model")
 class KMeansPredictor(Task):
     """
-    Predictor of a K-means clustering model. Predict the closest cluster each sample in a dataset belongs to.
+    Predictor of a K-means clustering model. Predict the closest cluster of each sample in a dataset belongs to.
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html for more details.
     """

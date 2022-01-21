@@ -1,5 +1,5 @@
 # LICENSE
-# This software is the exclusive property of Gencovery SAS. 
+# This software is the exclusive property of Gencovery SAS.
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
@@ -29,7 +29,8 @@ class MultinomialNaiveBayesClassifierResult(BaseResource):
 #
 # *****************************************************************************
 
-@task_decorator("MultinomialNaiveBayesClassifierTrainer")
+@task_decorator("MultinomialNaiveBayesClassifierTrainer", human_name="MNB trainer",
+                short_description="Predict the class labels using a Multinomial Naive Bayes (MNB) classifier")
 class MultinomialNaiveBayesClassifierTrainer(Task):
     """
     Trainer of a naive Bayes classifier for a multinomial model. Fit a naive Bayes classifier according to a training dataset.
@@ -55,7 +56,8 @@ class MultinomialNaiveBayesClassifierTrainer(Task):
 #
 # *****************************************************************************
 
-@task_decorator("MultinomialNaiveBayesClassifierPredictor")
+@task_decorator("MultinomialNaiveBayesClassifierPredictor", human_name="MNB classifier predictor",
+                short_description="Predict the class labels using Multinomial Naive Bayes (MNB) classifier")
 class MultinomialNaiveBayesClassifierPredictor(Task):
     """
     Predictor of a naïve Bayes classifier for a multinomial model. Predict class labels for a dataset using a trained naïve Bayes classifier.
@@ -72,9 +74,9 @@ class MultinomialNaiveBayesClassifierPredictor(Task):
         mnb = learned_model.result
         y = mnb.predict(dataset.get_features().values)
         result_dataset = Dataset(
-            data=y, 
-            row_names=dataset.row_names, 
-            column_names=dataset.target_names, 
+            data=y,
+            row_names=dataset.row_names,
+            column_names=dataset.target_names,
             target_names=dataset.target_names
         )
         return {'result': result_dataset}

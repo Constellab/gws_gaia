@@ -1,16 +1,17 @@
 # LICENSE
-# This software is the exclusive property of Gencovery SAS. 
+# This software is the exclusive property of Gencovery SAS.
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
+from gws_core import (BadRequestException, ConfigParams, DataFrameRField,
+                      Dataset, FloatParam, FloatRField, IntParam, Resource,
+                      ResourceRField, ScatterPlot2DView, ScatterPlot3DView,
+                      StrParam, Table, TabularView, Task, TaskInputs,
+                      TaskOutputs, resource_decorator, task_decorator, view)
 from numpy import ravel
 from pandas import DataFrame, concat
 from sklearn.linear_model import ElasticNet
 
-from gws_core import (Task, Resource, task_decorator, resource_decorator,
-                        ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam,
-                        view, TabularView, ResourceRField, ScatterPlot2DView, ScatterPlot3DView, FloatRField, 
-                        DataFrameRField, BadRequestException, Table, Dataset)
 from ..base.base_resource import BaseResource
 
 # *****************************************************************************
@@ -19,6 +20,7 @@ from ..base.base_resource import BaseResource
 #
 # *****************************************************************************
 
+
 @resource_decorator("ElasticNetResult", hide=True)
 class ElasticNetResult(BaseResource):
 
@@ -26,11 +28,11 @@ class ElasticNetResult(BaseResource):
     _R2: int = FloatRField()
 
     def _get_predicted_data(self) -> DataFrame:
-        eln: ElasticNet = self.get_result() #lir du type Linear Regression
+        eln: ElasticNet = self.get_result()  # lir du type Linear Regression
         Y_predicted: DataFrame = eln.predict(self._training_set.get_features().values)
         Y_predicted = DataFrame(
-            data=Y_predicted, 
-            index=self._training_set.row_names, 
+            data=Y_predicted,
+            index=self._training_set.row_names,
             columns=self._training_set.target_names
         )
         return Y_predicted
@@ -48,7 +50,7 @@ class ElasticNetResult(BaseResource):
         """
         Y_data = self._training_set.get_targets()
         Y_predicted = self._get_predicted_data()
-        Y = concat([Y_data, Y_predicted],axis=1)
+        Y = concat([Y_data, Y_predicted], axis=1)
         data = Y.set_axis(["YData", "YPredicted"], axis=1)
         t_view = TabularView()
         t_view.set_data(data=data)
@@ -79,15 +81,17 @@ class ElasticNetResult(BaseResource):
 #
 # *****************************************************************************
 
-@task_decorator("ElasticNetTrainer")
+
+@task_decorator("ElasticNetTrainer", human_name="ElasticNet trainer",
+                short_description="Train an ElasticNet model")
 class ElasticNetTrainer(Task):
-    """ 
+    """
     Trainer of an elastic net model. Fit model with coordinate descent.
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.ElasticNet.html for more details
     """
-    input_specs = {'dataset' : Dataset}
-    output_specs = {'result' : ElasticNetResult}
+    input_specs = {'dataset': Dataset}
+    output_specs = {'result': ElasticNetResult}
     config_specs = {
         'alpha': FloatParam(default_value=1, min_value=0)
     }
@@ -96,8 +100,8 @@ class ElasticNetTrainer(Task):
         dataset = inputs['dataset']
         eln = ElasticNet(alpha=params["alpha"])
         eln.fit(dataset.get_features().values, dataset.get_targets().values)
-        result = ElasticNetResult(result = eln)
-        result._training_set = dataset        
+        result = ElasticNetResult(result=eln)
+        result._training_set = dataset
         return {'result': result}
 
 # *****************************************************************************
@@ -106,16 +110,18 @@ class ElasticNetTrainer(Task):
 #
 # *****************************************************************************
 
-@task_decorator("ElasticNetPredictor")
+
+@task_decorator("ElasticNetPredictor", human_name="Elastic-Net predictor",
+                short_description="Predict dataset targets using a trained Elastic-Net model")
 class ElasticNetPredictor(Task):
     """
     Predictor of a trained elastic net model. Predict from a dataset using the trained model.
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.ElasticNet.html for more details
     """
-    input_specs = {'dataset' : Dataset, 'learned_model': ElasticNetResult}
-    output_specs = {'result' : Dataset}
-    config_specs = {   }
+    input_specs = {'dataset': Dataset, 'learned_model': ElasticNetResult}
+    output_specs = {'result': Dataset}
+    config_specs = {}
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
@@ -123,9 +129,9 @@ class ElasticNetPredictor(Task):
         eln = learned_model.result
         y = eln.predict(dataset.get_features().values)
         result_dataset = Dataset(
-            data=y, 
-            row_names=dataset.row_names, 
-            column_names=dataset.target_names, 
+            data=y,
+            row_names=dataset.row_names,
+            column_names=dataset.target_names,
             target_names=dataset.target_names
         )
         return {'result': result_dataset}

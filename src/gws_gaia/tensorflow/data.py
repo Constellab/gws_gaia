@@ -1,6 +1,6 @@
 
 # LICENSE
-# This software is the exclusive property of Gencovery SAS. 
+# This software is the exclusive property of Gencovery SAS.
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
@@ -11,8 +11,8 @@ from tensorflow.python.framework.ops import Tensor as KerasTensor
 from tensorflow.keras import Model as KerasModel
 from tensorflow.keras.models import save_model, load_model
 
-from gws_core import (Task, Resource, task_decorator, resource_decorator, 
-                        BadRequestException, ConfigParams, TaskInputs, 
+from gws_core import (Task, Resource, task_decorator, resource_decorator,
+                        BadRequestException, ConfigParams, TaskInputs,
                         TaskOutputs, IntParam, FloatParam, StrParam, ListParam, RField)
 from ..data.core import GenericResult
 
@@ -42,7 +42,8 @@ class DeepModel(Resource):
 #
 # *****************************************************************************
 
-@task_decorator("InputConverter")
+@task_decorator("InputConverter", human_name="Input converter",
+                short_description="Input converter")
 class InputConverter(Task):
     input_specs = {}
     output_specs = {'result' : Tensor}

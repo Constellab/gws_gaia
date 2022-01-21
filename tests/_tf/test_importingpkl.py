@@ -3,7 +3,7 @@ import asyncio
 
 
 from gws_core import Dataset
-from gws_gaia.tf import ImporterPKL, Preprocessor, AdhocExtractor
+from gws_gaia.tf import PickleImporter, Preprocessor, AdhocExtractor
 from gws_core import Settings, GTest, BaseTestCase, TaskRunner
 
 class TestTrainer(BaseTestCase):
@@ -12,16 +12,16 @@ class TestTrainer(BaseTestCase):
         self.print("Importing and Preprocessing of PKL files")
         settings = Settings.retrieve()
         test_dir = settings.get_variable("gws_gaia:testdata_dir")
-        
-        #run importerpkl
+
+        #run PickleImporter
         tester = TaskRunner(
            params = {'file_path': os.path.join(test_dir, "./mnist.pkl")},
            inputs = {},
-           task_type = ImporterPKL
+           task_type = PickleImporter
          )
         outputs = await tester.run()
         dataset = outputs['result']
-        
+
         # run preprocessor
         tester = TaskRunner(
             params = {'number_classes': 10},

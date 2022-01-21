@@ -1,15 +1,13 @@
 # LICENSE
-# This software is the exclusive property of Gencovery SAS. 
+# This software is the exclusive property of Gencovery SAS.
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
+from gws_core import (ConfigParams, Dataset, IntParam, Task, TaskInputs,
+                      TaskOutputs, resource_decorator, task_decorator)
 from numpy import ravel
-from pandas import DataFrame
 from sklearn.ensemble import AdaBoostRegressor
 
-from gws_core import (Task, Resource, task_decorator, resource_decorator,
-                        ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam)
-from gws_core import Dataset
 from ..base.base_resource import BaseResource
 
 # *****************************************************************************
@@ -17,6 +15,7 @@ from ..base.base_resource import BaseResource
 # AdaBoostRegressorResult
 #
 # *****************************************************************************
+
 
 @resource_decorator("AdaBoostRegressorResult", hide=True)
 class AdaBoostRegressorResult(BaseResource):
@@ -28,24 +27,26 @@ class AdaBoostRegressorResult(BaseResource):
 #
 # *****************************************************************************
 
-@task_decorator("AdaBoostRegressorTrainer")
+
+@task_decorator("AdaBoostRegressorTrainer", human_name="AdaBoost regression trainer",
+                short_description="Train an AdaBoost regression model")
 class AdaBoostRegressorTrainer(Task):
     """
     Trainer of an Adaboost regressor. This process build a boosted regressor from a training set.
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.AdaBoostRegressor.html for more details
     """
-    input_specs = {'dataset' : Dataset}
-    output_specs = {'result' : AdaBoostRegressorResult}
+    input_specs = {'dataset': Dataset}
+    output_specs = {'result': AdaBoostRegressorResult}
     config_specs = {
-        'nb_estimators':IntParam(default_value=50, min_value=0)
+        'nb_estimators': IntParam(default_value=50, min_value=0)
     }
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         abr = AdaBoostRegressor(n_estimators=params["nb_estimators"])
         abr.fit(dataset.get_features().values, ravel(dataset.get_targets().values))
-        result = AdaBoostRegressorResult(result = abr)
+        result = AdaBoostRegressorResult(result=abr)
         return {'result': result}
 
 # *****************************************************************************
@@ -54,17 +55,19 @@ class AdaBoostRegressorTrainer(Task):
 #
 # *****************************************************************************
 
-@task_decorator("AdaBoostRegressorPredictor")
+
+@task_decorator("AdaBoostRegressorPredictor", human_name="AdaBoost regression predictor",
+                short_description="Predict dataset targets using a trained AdaBoost regression model")
 class AdaBoostRegressorPredictor(Task):
     """
-    Predictor of a trained Adaboost regressor. The predicted regression value of an input sample is computed as the weighted median 
+    Predictor of a trained Adaboost regressor. The predicted regression value of an input sample is computed as the weighted median
     prediction of the classifiers in the ensemble.
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.AdaBoostRegressor.html for more details
     """
-    input_specs = {'dataset' : Dataset, 'learned_model': AdaBoostRegressorResult}
-    output_specs = {'result' : Dataset}
-    config_specs = {   }
+    input_specs = {'dataset': Dataset, 'learned_model': AdaBoostRegressorResult}
+    output_specs = {'result': Dataset}
+    config_specs = {}
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
@@ -72,9 +75,9 @@ class AdaBoostRegressorPredictor(Task):
         abr = learned_model.result
         y = abr.predict(dataset.get_features().values)
         result_dataset = Dataset(
-            data=y, 
-            row_names=dataset.row_names, 
-            column_names=dataset.target_names, 
+            data=y,
+            row_names=dataset.row_names,
+            column_names=dataset.target_names,
             target_names=dataset.target_names
         )
         return {'result': result_dataset}

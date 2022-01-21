@@ -1,5 +1,5 @@
 # LICENSE
-# This software is the exclusive property of Gencovery SAS. 
+# This software is the exclusive property of Gencovery SAS.
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
@@ -22,7 +22,8 @@ from gws_core import Dataset
 #
 # *****************************************************************************
 
-@task_decorator("GlobalMaxPooling1D")
+@task_decorator("GlobalMaxPooling1D", human_name="Global max pooling 1D",
+                short_description="Global max pooling operation for 1D data (temporal data)")
 class GlobalMaxPooling1D(Task):
     """
     Global max pooling operation for 1D data (temporal data)
@@ -44,7 +45,8 @@ class GlobalMaxPooling1D(Task):
 #
 # *****************************************************************************
 
-@task_decorator("GlobalMaxPooling2D")
+@task_decorator("GlobalMaxPooling2D", human_name="Global max pooling 2D",
+                short_description="Global max pooling operation for 2D data (spatial data)")
 class GlobalMaxPooling2D(Task):
     """
     Global max pooling operation for 2D data (spatial data)
@@ -66,7 +68,8 @@ class GlobalMaxPooling2D(Task):
 #
 # *****************************************************************************
 
-@task_decorator("GlobalMaxPooling3D")
+@task_decorator("GlobalMaxPooling3D", human_name="Global max pooling 3D",
+                short_description="Global max pooling operation for 3D data (spatial or spatio-temporal data)")
 class GlobalMaxPooling3D(Task):
     """
     Global max pooling operation for 3D data (spatial or spatio-temporal data)

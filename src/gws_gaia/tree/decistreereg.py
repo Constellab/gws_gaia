@@ -1,5 +1,5 @@
 # LICENSE
-# This software is the exclusive property of Gencovery SAS. 
+# This software is the exclusive property of Gencovery SAS.
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
@@ -30,9 +30,10 @@ class DecisionTreeRegressorResult(BaseResource):
 #
 # *****************************************************************************
 
-@task_decorator("DecisionTreeRegressorTrainer")
+@task_decorator("DecisionTreeRegressorTrainer", human_name="Decision tree regressor trainer",
+                short_description="Train a decision tree regressor model")
 class DecisionTreeRegressorTrainer(Task):
-    """ Trainer of a decision tree regressor. Build a decision tree regressor from a training set   
+    """ Trainer of a decision tree regressor. Build a decision tree regressor from a training dataset
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeRegressor.html for more details
     """
@@ -55,9 +56,11 @@ class DecisionTreeRegressorTrainer(Task):
 #
 # *****************************************************************************
 
-@task_decorator("DecisionTreeRegressorPredictor")
+@task_decorator("DecisionTreeRegressorPredictor", human_name="Decision tree regressor predictor",
+                short_description="Predict targets for a dataset using a decision tree regressor model")
 class DecisionTreeRegressorPredictor(Task):
-    """ Predictor of a trained decision tree regressor. Predict class or regression value for the dataset. For a classification model, the predicted class for each sample in the dataset is returned. For a regression model, the predicted value based on the dataset is returned.
+    """ Predictor of a trained decision tree regressor.
+    Predict regression value for the dataset.
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeRegressor.html for more details
     """
@@ -71,9 +74,9 @@ class DecisionTreeRegressorPredictor(Task):
         dtr = learned_model.result
         y = dtr.predict(dataset.get_features().values)
         result_dataset = Dataset(
-            data=y, 
-            row_names=dataset.row_names, 
-            column_names=dataset.target_names, 
+            data=y,
+            row_names=dataset.row_names,
+            column_names=dataset.target_names,
             target_names=dataset.target_names
         )
         return {'result': result_dataset}

@@ -108,24 +108,6 @@ class PLSTrainerResult(BaseResource):
         _view.y_label = 'PC2'
         return _view
 
-    # @view(view_type=ScatterPlot3DView, human_name='3D-score plot', short_description='3D-score plot')
-    # def view_scores_as_3d_plot(self, params: ConfigParams) -> dict:
-    #     """
-    #     View 3D score plot
-    #     """
-
-    #     data: DataFrame = self._get_transformed_data()
-    #     _view = ScatterPlot2DView()
-    #     view.add_series(
-    #         x=data['PC1'].to_list(),
-    #         y=data['PC2'].to_list(),
-    #         z=data['PC3'].to_list()
-    #     )
-    #     _view.x_label = 'PC1'
-    #     _view.y_label = 'PC2'
-    #     _view.z_label = 'PC3'
-    #     return _view
-
     @view(view_type=TabularView, human_name="Prediction table", short_description="Prediction table")
     def view_predictions_as_table(self, params: ConfigParams) -> dict:
         """

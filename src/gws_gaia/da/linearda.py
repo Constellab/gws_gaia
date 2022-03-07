@@ -81,9 +81,9 @@ class LDAResult(BaseResource):
         columns = [f"PC{n+1}" for n in range(0, ncomp)]
         _view = BarPlotView()
         _view.add_series(
-            x=columns,
             y=explained_var.tolist()
         )
+        _view.x_tick_labels = columns
         _view.x_label = 'Principal components'
         _view.y_label = 'Explained variance'
 

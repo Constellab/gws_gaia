@@ -38,8 +38,9 @@ class KMeansResult(BaseResource):
         train_set = self._training_set.get_features().values
         label = kmeans.labels_[:, None]
         data = concatenate((train_set, label), axis=1)
-        data = DataFrame(data, index = self._training_set.row_names, columns=columns)
+        data = DataFrame(data, index=self._training_set.row_names, columns=columns)
         t_view = TabularView()
+        t_view.set_data(data=data)
         return t_view
 
     @view(view_type=ScatterPlot2DView, human_name='2D-score plot', short_description='2D-score plot')
@@ -102,7 +103,8 @@ class KMeansTrainer(Task):
 # *****************************************************************************
 
 
-@task_decorator("KMeansPredictor", human_name="KMeans predicton", short_description="Predict the closest cluster each sample using a K-Means model")
+@task_decorator("KMeansPredictor", human_name="KMeans predicton",
+                short_description="Predict the closest cluster each sample using a K-Means model")
 class KMeansPredictor(Task):
     """
     Predictor of a K-means clustering model. Predict the closest cluster of each sample in a dataset belongs to.

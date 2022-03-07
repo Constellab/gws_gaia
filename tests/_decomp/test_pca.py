@@ -35,7 +35,8 @@ class TestTrainer(BaseTestCase):
         )
         dic = tester.to_dict()
         self.assertEqual(dic["type"], "table-view")
-        self.assertTrue(numpy.all(numpy.isclose(dic["data"]["ExplainedVariance"], [0.92461, 0.053066], atol=1e-3)))
+        self.assertTrue(numpy.all(numpy.isclose(
+            dic["data"], [[0.9246187232017271], [0.053066483117067804]], atol=1e-3)))
 
         # -----------------------------------------
         tester = ViewTester(
@@ -43,7 +44,8 @@ class TestTrainer(BaseTestCase):
         )
         dic = tester.to_dict()
         self.assertEqual(dic["type"], "bar-plot-view")
-        self.assertEqual(dic["data"]["series"][0]["data"]["x"], ['PC1', 'PC2'])
+        self.assertEqual(dic["data"]["series"][0]["data"]["x"], [0, 1])
+        self.assertEqual(dic["data"]["x_tick_labels"], ['PC1', 'PC2'])
         self.assertTrue(numpy.all(
             numpy.isclose(
                 dic["data"]["series"][0]["data"]["y"],
@@ -55,6 +57,7 @@ class TestTrainer(BaseTestCase):
             view=trainer_result.view_scores_as_2d_plot({})
         )
         dic = tester.to_dict()
+        print(dic)
         self.assertEqual(dic["type"], "scatter-plot-2d-view")
         self.assertTrue(numpy.all(
             numpy.isclose(

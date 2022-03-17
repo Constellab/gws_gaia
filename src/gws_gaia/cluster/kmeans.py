@@ -6,7 +6,7 @@
 import numpy as np
 from gws_core import (ConfigParams, Dataset, FloatParam, FloatRField, IntParam,
                       Resource, ResourceRField, ScatterPlot2DView,
-                      ScatterPlot3DView, StrParam, Table, TabularView, Task,
+                      ScatterPlot3DView, StrParam, Dataset, TabularView, Task,
                       TaskInputs, TaskOutputs, resource_decorator,
                       task_decorator, view)
 from numpy import concatenate, ndarray, transpose, unique, vstack
@@ -103,7 +103,7 @@ class KMeansTrainer(Task):
 # *****************************************************************************
 
 
-@task_decorator("KMeansPredictor", human_name="KMeans predicton",
+@task_decorator("KMeansPredictor", human_name="KMeans predictor",
                 short_description="Predict the closest cluster each sample using a K-Means model")
 class KMeansPredictor(Task):
     """

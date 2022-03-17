@@ -5,9 +5,9 @@
 
 from typing import List
 
-from gws_core import (ConfigParams, Dataset, FloatParam, FloatRField, IntParam,
+from gws_core import (ConfigParams, FloatParam, FloatRField, IntParam,
                       Resource, ResourceRField, ScatterPlot2DView,
-                      ScatterPlot3DView, StrParam, Table, TabularView, Task,
+                      ScatterPlot3DView, StrParam, Dataset, TabularView, Task,
                       TaskInputs, TaskOutputs, resource_decorator,
                       task_decorator, view)
 from numpy import concatenate, ndarray, transpose, unique, vstack
@@ -51,7 +51,7 @@ class AgglomerativeClusteringResult(BaseResource):
         """
 
         aggclust = self.get_result()
-        columns = self._training_set.feature_names
+        columns = self._training_set.row_names
         train_set = self._training_set.get_features().values
         label = aggclust.labels_[:, None]
         label_values = unique(label)
@@ -83,7 +83,7 @@ class AgglomerativeClusteringResult(BaseResource):
                 short_description="Train a the hierarchical clustering model")
 class AgglomerativeClusteringTrainer(Task):
     """ Trainer of the hierarchical clustering. Fits the hierarchical clustering from features, or distance matrix.
-
+@
     See https://scikit-learn.org/stable/modules/generated/sklearn.cluster.AgglomerativeClustering.html for more details
     """
     input_specs = {'dataset': Dataset}

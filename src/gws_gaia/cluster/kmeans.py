@@ -6,7 +6,7 @@
 import numpy as np
 from gws_core import (ConfigParams, Dataset, FloatParam, FloatRField, IntParam,
                       Resource, ResourceRField, ScatterPlot2DView,
-                      ScatterPlot3DView, StrParam, Dataset, TabularView, Task,
+                      ScatterPlot3DView, StrParam, TabularView, Task,
                       TaskInputs, TaskOutputs, resource_decorator,
                       task_decorator, view)
 from numpy import concatenate, ndarray, transpose, unique, vstack
@@ -92,8 +92,7 @@ class KMeansTrainer(Task):
         dataset = inputs['dataset']
         kmeans = KMeans(n_clusters=params["nb_clusters"])
         kmeans.fit(dataset.get_features().values)
-        result = KMeansResult(result=kmeans)
-        result._training_set = dataset
+        result = KMeansResult(training_set=dataset, result=kmeans)
         return {'result': result}
 
 # *****************************************************************************
@@ -118,7 +117,7 @@ class KMeansPredictor(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
-        kmeans = learned_model.result
+        kmeans = learned_model.get_result()
         y = kmeans.predict(dataset.get_features().values)
         result_dataset = Dataset(
             data=DataFrame(y),

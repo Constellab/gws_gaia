@@ -3,14 +3,13 @@
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
+from gws_core import (ConfigParams, Dataset, FloatParam, IntParam, Resource,
+                      StrParam, Task, TaskInputs, TaskOutputs,
+                      resource_decorator, task_decorator)
 from numpy import ravel
 from pandas import DataFrame
 from sklearn.tree import DecisionTreeClassifier
 
-from gws_core import (Task, Resource, task_decorator, resource_decorator,
-                        ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam)
-
-from gws_core import Dataset
 from ..base.base_resource import BaseResource
 
 # *****************************************************************************
@@ -18,6 +17,7 @@ from ..base.base_resource import BaseResource
 # DecisionTreeClassifierResult
 #
 # *****************************************************************************
+
 
 @resource_decorator("DecisionTreeClassifierResult", hide=True)
 class DecisionTreeClassifierResult(BaseResource):
@@ -29,6 +29,7 @@ class DecisionTreeClassifierResult(BaseResource):
 #
 # *****************************************************************************
 
+
 @task_decorator("DecisionTreeClassifierTrainer", human_name="Decision tree classifier trainer",
                 short_description="Train a decision tree classifier model")
 class DecisionTreeClassifierTrainer(Task):
@@ -36,17 +37,17 @@ class DecisionTreeClassifierTrainer(Task):
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeClassifier.html for more details
     """
-    input_specs = {'dataset' : Dataset}
-    output_specs = {'result' : DecisionTreeClassifierResult}
+    input_specs = {'dataset': Dataset}
+    output_specs = {'result': DecisionTreeClassifierResult}
     config_specs = {
-        'max_depth':IntParam(default_value=None, min_value=0)
+        'max_depth': IntParam(default_value=None, min_value=0)
     }
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         dtc = DecisionTreeClassifier(max_depth=params["max_depth"])
         dtc.fit(dataset.get_features().values, ravel(dataset.get_targets().values))
-        result = DecisionTreeClassifierResult(result = dtc)
+        result = DecisionTreeClassifierResult(training_set=dataset, result=dtc)
         return {'result': result}
 
 # *****************************************************************************
@@ -54,6 +55,7 @@ class DecisionTreeClassifierTrainer(Task):
 # DecisionTreeClassifierPredictor
 #
 # *****************************************************************************
+
 
 @task_decorator("DecisionTreeClassifierPredictor", human_name="Decision tree classifier predictor",
                 short_description="Predict class labels for a dataset using a decision tree classifier model")
@@ -63,14 +65,14 @@ class DecisionTreeClassifierPredictor(Task):
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeClassifier.html for more details
     """
-    input_specs = {'dataset' : Dataset, 'learned_model': DecisionTreeClassifierResult}
-    output_specs = {'result' : Dataset}
-    config_specs = {   }
+    input_specs = {'dataset': Dataset, 'learned_model': DecisionTreeClassifierResult}
+    output_specs = {'result': Dataset}
+    config_specs = {}
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
-        dtc = learned_model.result
+        dtc = learned_model.get_result()
         y = dtc.predict(dataset.get_features().values)
         result_dataset = Dataset(
             data=y,

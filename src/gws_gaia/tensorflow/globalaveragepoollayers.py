@@ -3,18 +3,18 @@
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
-import numpy as np
-import tensorflow as tf
-from tensorflow.keras.layers import GlobalAveragePooling1D as Kerasglobalaveragepooling1d
-from tensorflow.keras.layers import GlobalAveragePooling2D as Kerasglobalaveragepooling2d
-from tensorflow.keras.layers import GlobalAveragePooling3D as Kerasglobalaveragepooling3d
-from pandas import DataFrame
+from gws_core import (ConfigParams, Dataset, FloatParam, IntParam, ListParam,
+                      Resource, StrParam, Task, TaskInputs, TaskOutputs,
+                      resource_decorator, task_decorator)
 
-from gws_core import (Task, Resource, task_decorator, resource_decorator,
-                        ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam, ListParam)
+from tensorflow.keras.layers import \
+    GlobalAveragePooling1D as Kerasglobalaveragepooling1d
+from tensorflow.keras.layers import \
+    GlobalAveragePooling2D as Kerasglobalaveragepooling2d
+from tensorflow.keras.layers import \
+    GlobalAveragePooling3D as Kerasglobalaveragepooling3d
 
 from .data import Tensor
-from gws_core import Dataset
 
 # *****************************************************************************
 #
@@ -22,21 +22,22 @@ from gws_core import Dataset
 #
 # *****************************************************************************
 
+
 @task_decorator("GlobalAveragePooling1D", human_name="Global average pooling 1D",
                 short_description="Global average pooling operation for 1D data (temporal data)")
 class GlobalAveragePooling1D(Task):
     """
     Global average pooling operation for 1D data (temporal data)
     """
-    input_specs = {'tensor' : Tensor}
-    output_specs = {'result' : Tensor}
+    input_specs = {'tensor': Tensor}
+    output_specs = {'result': Tensor}
     config_specs = {'pool_size': IntParam(default_value=2, min_value=0)}
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['tensor']
-        y = x.result
+        y = x.get_result()
         z = Kerasglobalaveragepooling1d()(y)
-        result = Tensor(result = z)
+        result = Tensor(result=z)
         return {'result': result}
 
 # *****************************************************************************
@@ -45,21 +46,22 @@ class GlobalAveragePooling1D(Task):
 #
 # *****************************************************************************
 
+
 @task_decorator("GlobalAveragePooling2D", human_name="Global average pooling 2D",
                 short_description="Global average pooling operation for 2D data (spatial data)")
 class GlobalAveragePooling2D(Task):
     """
     Global average pooling operation for 2D data (spatial data)
     """
-    input_specs = {'tensor' : Tensor}
-    output_specs = {'result' : Tensor}
-    config_specs = {'pool_size': ListParam(default_value=[2,2])}
+    input_specs = {'tensor': Tensor}
+    output_specs = {'result': Tensor}
+    config_specs = {'pool_size': ListParam(default_value=[2, 2])}
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['tensor']
-        y = x.result
+        y = x.get_result()
         z = Kerasglobalaveragepooling2d()(y)
-        result = Tensor(result = z)
+        result = Tensor(result=z)
         return {'result': result}
 
 # *****************************************************************************
@@ -68,19 +70,20 @@ class GlobalAveragePooling2D(Task):
 #
 # *****************************************************************************
 
+
 @task_decorator("GlobalAveragePooling3D", human_name="Global average pooling 3D",
                 short_description="Global average pooling operation for 3D data (spatial or spatio-temporal data)")
 class GlobalAveragePooling3D(Task):
     """
     Global average pooling operation for 3D data (spatial or spatio-temporal data)
     """
-    input_specs = {'tensor' : Tensor}
-    output_specs = {'result' : Tensor}
-    config_specs = {'pool_size': ListParam(default_value=[2,2,2])}
+    input_specs = {'tensor': Tensor}
+    output_specs = {'result': Tensor}
+    config_specs = {'pool_size': ListParam(default_value=[2, 2, 2])}
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['tensor']
-        y = x.result
+        y = x.get_result()
         z = Kerasglobalaveragepooling3d()(y)
-        result = Tensor(result = z)
+        result = Tensor(result=z)
         return {'result': result}

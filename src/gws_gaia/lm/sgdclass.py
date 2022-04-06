@@ -4,14 +4,13 @@
 # About us: https://gencovery.com
 
 
+from gws_core import (ConfigParams, Dataset, FloatParam, IntParam, Resource,
+                      StrParam, Task, TaskInputs, TaskOutputs,
+                      resource_decorator, task_decorator)
 from numpy import ravel
 from pandas import DataFrame
 from sklearn.linear_model import SGDClassifier
 
-from gws_core import (Task, Resource, task_decorator, resource_decorator,
-                        ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam)
-
-from gws_core import Dataset
 from ..base.base_resource import BaseResource
 
 # *****************************************************************************
@@ -50,7 +49,7 @@ class SGDClassifierTrainer(Task):
         dataset = inputs['dataset']
         sgdc = SGDClassifier(max_iter=params["max_iter"],alpha=params["alpha"],loss=params["loss"])
         sgdc.fit(dataset.get_features().values, ravel(dataset.get_targets().values))
-        result = SGDClassifierResult(result = sgdc)
+        result = SGDClassifierResult(training_set=dataset,result = sgdc)
         return {'result': result}
 
 # *****************************************************************************
@@ -74,7 +73,7 @@ class SGDClassifierPredictor(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
-        sgdc = learned_model.result
+        sgdc = learned_model.get_result()
         y = sgdc.predict(dataset.get_features().values)
         result_dataset = Dataset(
             data=y,

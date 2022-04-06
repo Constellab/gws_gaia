@@ -46,7 +46,7 @@ class ExtraTreesRegressorTrainer(Task):
         dataset = inputs['dataset']
         etr = ExtraTreesRegressor(n_estimators=params["nb_estimators"])
         etr.fit(dataset.get_features().values, ravel(dataset.get_targets().values))
-        result = ExtraTreesRegressorResult(result=etr)
+        result = ExtraTreesRegressorResult(training_set=dataset, result=etr)
         return {'result': result}
 
 # *****************************************************************************
@@ -71,7 +71,7 @@ class ExtraTreesRegressorPredictor(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
-        etr = learned_model.result
+        etr = learned_model.get_result()
         y = etr.predict(dataset.get_features().values)
         result_dataset = Dataset(
             data=y,

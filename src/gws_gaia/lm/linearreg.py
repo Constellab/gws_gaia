@@ -98,8 +98,7 @@ class LinearRegressionTrainer(Task):
         dataset = inputs['dataset']
         lir = LinearRegression()
         lir.fit(dataset.get_features().values, ravel(dataset.get_targets().values))
-        result = LinearRegressionResult(result=lir)
-        result._training_set = dataset
+        result = LinearRegressionResult(training_set=dataset, result=lir)
         return {'result': result}
 
 # *****************************************************************************
@@ -124,7 +123,7 @@ class LinearRegressionPredictor(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
-        lir = learned_model.result
+        lir = learned_model.get_result()
         y = lir.predict(dataset.get_features().values)
         result_dataset = Dataset(
             data=DataFrame(y),

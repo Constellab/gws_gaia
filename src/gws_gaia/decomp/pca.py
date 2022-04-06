@@ -5,13 +5,13 @@
 
 from gws_core import (BarPlotView, BoolParam, ConfigParams, Dataset,
                       FloatRField, IntParam, Resource, ResourceRField,
-                      ScatterPlot2DView, ScatterPlot3DView, TabularView, Task,
-                      TaskInputs, TaskOutputs, resource_decorator,
+                      ScatterPlot2DView, ScatterPlot3DView, Table, TabularView,
+                      Task, TaskInputs, TaskOutputs, resource_decorator,
                       task_decorator, view)
 from pandas import DataFrame
 from sklearn.decomposition import PCA
 
-from ..base.base_resource import BaseResource
+from ..base.base_resource import BaseResourceSet
 
 # *****************************************************************************
 #
@@ -21,18 +21,52 @@ from ..base.base_resource import BaseResource
 
 
 @resource_decorator("PCATrainerResult", hide=True)
-class PCATrainerResult(BaseResource):
+class PCATrainerResult(BaseResourceSet):
 
-    _training_set: Resource = ResourceRField()  # pour lier ressources entre elles
-    _log_likelihood: int = FloatRField()  # list, float, dict,...
+    _log_likelihood: int = FloatRField()
 
-    def _get_transformed_data(self) -> DataFrame:  # retourne DataFrame
+    TRANSFORMED_TABLE_NAME = "Transformed data table"
+    VARIANCE_TABLE_NAME = "Variance table"
+
+    def __init__(self, training_set=None, result=None):
+        super().__init__(training_set=training_set, result=result)
+        # append tables
+        if training_set is not None:
+            self._create_transformed_table()
+            self._create_variance_table()
+
+    def _create_transformed_table(self):
         pca: PCA = self.get_result()  # typage de pca du type PCA
         ncomp = pca.n_components_
         x_transformed: DataFrame = pca.transform(self._training_set.get_features().values)
         columns = [f"PC{n+1}" for n in range(0, ncomp)]
-        x_transformed = DataFrame(data=x_transformed, columns=columns, index=self._training_set.instance_names)
-        return x_transformed
+        data = DataFrame(data=x_transformed, columns=columns, index=self._training_set.instance_names)
+        table = Table(data=data)
+        row_tags = self._training_set.get_row_tags()
+        table.name = self.TRANSFORMED_TABLE_NAME
+        table.set_row_tags(row_tags)
+        return table
+
+    def _create_variance_table(self):
+        pca = self.get_result()
+        index = [f"PC{n+1}" for n in range(0, pca.n_components_)]
+        columns = ["ExplainedVariance"]
+        data = DataFrame(pca.explained_variance_ratio_, columns=columns, index=index)
+        table = Table(data=data)
+        table.name = self.VARIANCE_TABLE_NAME
+        self.add_resource(table)
+
+    def get_transformed_table(self):
+        if self.resource_exists(self.TRANSFORMED_TABLE_NAME):
+            return self.get_resource(self.TRANSFORMED_TABLE_NAME)
+        else:
+            return None
+
+    def get_variance_table(self):
+        if self.resource_exists(self.VARIANCE_TABLE_NAME):
+            return self.get_resource(self.VARIANCE_TABLE_NAME)
+        else:
+            return None
 
     def _get_log_likelihood(self) -> float:
         if not self._log_likelihood:
@@ -40,108 +74,23 @@ class PCATrainerResult(BaseResource):
             self._log_likelihood = pca.score(self._training_set.get_features().values)
         return self._log_likelihood
 
-    @view(view_type=TabularView, human_name="Projected data table",
-          short_description="Table of data projected in the score plot")
-    def view_transformed_data_as_table(self, params: ConfigParams) -> dict:
-        """
-        View 2D score plot
-        """
-
-        x_transformed = self._get_transformed_data()
-        t_view = TabularView()
-        t_view.set_data(data=x_transformed)
-        return t_view
-
-    @view(view_type=TabularView, human_name="Variance table", short_description="Table of explained variances")
-    def view_variance_as_table(self, params: ConfigParams) -> dict:
-        """
-        View 2D score plot
-        """
-
-        pca = self.get_result()
-        index = [f"PC{n+1}" for n in range(0, pca.n_components_)]
-        columns = ["ExplainedVariance"]
-        data = DataFrame(pca.explained_variance_ratio_, columns=columns, index=index)
-        t_view = TabularView()
-        t_view.set_data(data=data)
-        return t_view
-
-    @view(view_type=BarPlotView, human_name="Variance bar plot", short_description="Barplot of explained variances")
-    def view_variance_as_barplot(self, params: ConfigParams) -> dict:
-        """
-        View bar plot of explained variances
-        """
-
-        pca = self.get_result()
-        explained_var: DataFrame = pca.explained_variance_ratio_
-        columns = [f"PC{n+1}" for n in range(0, pca.n_components_)]
-        _view = BarPlotView()
-        _view.add_series(
-            y=explained_var.tolist()
-        )
-        _view.x_tick_labels = columns
-        _view.x_label = 'Principal components'
-        _view.y_label = 'Explained variance'
-
-        return _view
-
-    @view(view_type=ScatterPlot2DView, default_view=True, human_name='2D-score plot', short_description='2D score plot',
-          specs={
-              'show_labels':
-              BoolParam(
-                  default_value=False, human_name="Show labels",
-                  short_description="Set True to see sample labels if they are provided; False otherwise")})
+    @view(view_type=ScatterPlot2DView, default_view=True, human_name='2D-score plot', short_description='2D score plot')
     def view_scores_as_2d_plot(self, params: ConfigParams) -> dict:
         """
         View 2D score plot
         """
 
-        data: DataFrame = self._get_transformed_data()
+        data: DataFrame = self.get_transformed_table().get_data()
         _view = ScatterPlot2DView()
-
-        show_labels = params.get('show_labels')
-        targets = self._training_set.get_targets()
-        if targets.shape[1] == 1:
-            if self._training_set.has_string_targets():
-                show_labels = True
-        else:
-            show_labels = False
-
-        if show_labels:
-            labels = sorted(list(set(targets.transpose().values.tolist()[0])))
-            for lbl in labels:
-                idx = (targets == lbl)
-                _view.add_series(
-                    x=data[idx, 'PC1'].to_list(),
-                    y=data[idx, 'PC2'].to_list(),
-                    y_name=lbl
-                )
-        else:
-            _view.add_series(
-                x=data['PC1'].to_list(),
-                y=data['PC2'].to_list()
-            )
+        row_tags = self._training_set.get_row_tags()
+        _view.add_series(
+            x=data['PC1'].to_list(),
+            y=data['PC2'].to_list(),
+            tags=row_tags
+        )
         _view.x_label = 'PC1'
         _view.y_label = 'PC2'
         return _view
-
-    # @view(view_type=ScatterPlot3DView, human_name='3D-score plot', short_description='3D-score plot')
-    # def view_scores_as_3d_plot(self, params: ConfigParams) -> dict:
-    #     """
-    #     View 3D score plot
-    #     """
-
-    #     data: DataFrame = self._get_transformed_data()
-    #     _view = ScatterPlot2DView()
-    #     view.add_series(
-    #         x=data['PC1'].to_list(),
-    #         y=data['PC2'].to_list(),
-    #         z=data['PC3'].to_list()
-    #     )
-    #     _view.x_label = 'PC1'
-    #     _view.y_label = 'PC2'
-    #     _view.z_label = 'PC3'
-    #     return _view
 
 # *****************************************************************************
 #
@@ -150,8 +99,8 @@ class PCATrainerResult(BaseResource):
 # *****************************************************************************
 
 
-@task_decorator("PCATrainer", human_name="PCA trainer",
-                short_description="Train a Principal Component Analysis (PCA) model")
+@ task_decorator("PCATrainer", human_name="PCA trainer",
+                 short_description="Train a Principal Component Analysis (PCA) model")
 class PCATrainer(Task):
     """
     Trainer of a Principal Component Analysis (PCA) model. Fit a PCA model with a training dataset.
@@ -168,10 +117,8 @@ class PCATrainer(Task):
         dataset = inputs['dataset']
         ncomp = params["nb_components"]
         pca = PCA(n_components=ncomp)
-        print(dataset.get_features().values)
         pca.fit(dataset.get_features().values)
-        result = PCATrainerResult(result=pca)
-        result._training_set = dataset
+        result = PCATrainerResult(training_set=dataset, result=pca)
         return {'result': result}
 
 # *****************************************************************************
@@ -181,8 +128,8 @@ class PCATrainer(Task):
 # *****************************************************************************
 
 
-@task_decorator("PCATransformer", human_name="PCA transformer",
-                short_description="Transform a data using a Principal Component Analysis (PCA) model. Apply dimensionality reduction to a dataset")
+@ task_decorator("PCATransformer", human_name="PCA transformer",
+                 short_description="Transform a data using a Principal Component Analysis (PCA) model. Apply dimensionality reduction to a dataset")
 class PCATransformer(Task):
     """
     Transformer using Principal Component Analysis (PCA) model. Apply dimensionality reduction to a dataset

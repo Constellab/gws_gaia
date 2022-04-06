@@ -4,14 +4,13 @@
 # About us: https://gencovery.com
 
 
+from gws_core import (BoolParam, ConfigParams, Dataset, FloatParam, IntParam,
+                      Resource, StrParam, Task, TaskInputs, TaskOutputs,
+                      resource_decorator, task_decorator)
 from numpy import ravel
 from pandas import DataFrame
 from sklearn.svm import SVC
 
-from gws_core import (Task, Resource, task_decorator, resource_decorator,
-                        ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam, BoolParam)
-
-from gws_core import Dataset
 from ..base.base_resource import BaseResource
 
 # *****************************************************************************
@@ -19,6 +18,7 @@ from ..base.base_resource import BaseResource
 # SVCResult
 #
 # *****************************************************************************
+
 
 @resource_decorator("SVCResult", hide=True)
 class SVCResult(BaseResource):
@@ -30,6 +30,7 @@ class SVCResult(BaseResource):
 #
 # *****************************************************************************
 
+
 @task_decorator("SVCTrainer", human_name="SVC trainer",
                 short_description="Train a C-Support Vector Classifier (SVC) model")
 class SVCTrainer(Task):
@@ -38,18 +39,18 @@ class SVCTrainer(Task):
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html for more details.
     """
-    input_specs = {'dataset' : Dataset}
-    output_specs = {'result' : SVCResult}
+    input_specs = {'dataset': Dataset}
+    output_specs = {'result': SVCResult}
     config_specs = {
         'probability': BoolParam(default_value=False),
-        'kernel':StrParam(default_value='rbf')
+        'kernel': StrParam(default_value='rbf')
     }
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
-        svc = SVC(probability=params["probability"],kernel=params["kernel"])
+        svc = SVC(probability=params["probability"], kernel=params["kernel"])
         svc.fit(dataset.get_features().values, ravel(dataset.get_targets().values))
-        result = SVCResult(result=svc)
+        result = SVCResult(training_set=dataset, result=svc)
         return {'result': result}
 
 # *****************************************************************************
@@ -57,6 +58,7 @@ class SVCTrainer(Task):
 # SVCPredictor
 #
 # *****************************************************************************
+
 
 @task_decorator("SVCPredictor", human_name="SVC predictor",
                 short_description="Predict dataset class labels using a trained C-Support Vector Classifier (SVC) model")
@@ -66,14 +68,14 @@ class SVCPredictor(Task):
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html for more details.
     """
-    input_specs = {'dataset' : Dataset, 'learned_model': SVCResult}
-    output_specs = {'result' : Dataset}
-    config_specs = {   }
+    input_specs = {'dataset': Dataset, 'learned_model': SVCResult}
+    output_specs = {'result': Dataset}
+    config_specs = {}
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
-        svc = learned_model.result
+        svc = learned_model.get_result()
         y = svc.predict(dataset.get_features().values)
         result_dataset = Dataset(
             data=y,

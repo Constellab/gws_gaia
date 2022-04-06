@@ -101,8 +101,7 @@ class LassoTrainer(Task):
         dataset = inputs['dataset']
         las = Lasso(alpha=params["alpha"])
         las.fit(dataset.get_features().values, ravel(dataset.get_targets().values))
-        result = LassoResult(result=las)
-        result._training_set = dataset
+        result = LassoResult(training_set=dataset, result=las)
         return {'result': result}
 
 # *****************************************************************************
@@ -127,7 +126,7 @@ class LassoPredictor(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
-        las = learned_model.result
+        las = learned_model.get_result()
         y = las.predict(dataset.get_features().values)
         result_dataset = Dataset(
             data=y,

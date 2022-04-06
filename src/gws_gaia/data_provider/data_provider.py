@@ -29,7 +29,13 @@ class DataProvider():
         return DatasetImporter.call(cls.get_digits_file(), {
             "delimiter": ",",
             "header": header,
-            "targets": targets
+            #"targets": targets,
+            "metadata_columns": [{
+                "column": k,
+                "type": Table.CATEGORICAL_TAG_TYPE,
+                "keep_in_data": True,
+                "is_target": True
+            } for k in targets]
         })
 
     @classmethod
@@ -37,5 +43,11 @@ class DataProvider():
         return DatasetImporter.call(cls.get_diabetes_file(), {
             "delimiter": ",",
             "header": header,
-            "targets": targets
+            #"targets": targets,
+            "metadata_columns": [{
+                "column": k,
+                "type": Table.CATEGORICAL_TAG_TYPE,
+                "keep_in_data": True,
+                "is_target": True
+            } for k in targets]
         })

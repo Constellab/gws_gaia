@@ -4,17 +4,17 @@
 # About us: https://gencovery.com
 
 import os
-from gws_core import (Protocol, User, Experiment,
-                        protocol_decorator, ProcessSpec,
-                        ConfigParams, Settings, File)
 
-from gws_core import Dataset, DatasetImporter
-from gws_gaia import  LDATrainer, LDAPredictor, LDATransformer
-from gws_gaia import PCATrainer, PCATransformer
+from gws_core import (ConfigParams, Dataset, DatasetImporter, Experiment, File,
+                      ProcessSpec, Protocol, Settings, Table, User,
+                      protocol_decorator)
+from gws_gaia import (LDAPredictor, LDATrainer, LDATransformer, PCATrainer,
+                      PCATransformer)
 
-@protocol_decorator("LDATutorialProto",
-                    human_name="LDA Proto",
-                    short_description="Tutorial: short LDA and PCA protocol", hide=True)
+
+@ protocol_decorator("LDATutorialProto",
+                     human_name="LDA Proto",
+                     short_description="Tutorial: short LDA and PCA protocol", hide=True)
 class LDATutorialProto(Protocol):
 
     def configure_protocol(self, config_params: ConfigParams) -> None:
@@ -30,19 +30,25 @@ class LDATutorialProto(Protocol):
 
         importer.set_param("delimiter", ",")
         importer.set_param("header", 0)
-        importer.set_param('targets', ['variety'])
+        importer.set_param("metadata_columns", [{
+            "column": "variety",
+            "type": Table.CATEGORICAL_TAG_TYPE,
+            "keep_in_data": True,
+            "is_target": True
+        }])
+
         lda_trainer.set_param('nb_components', 2)
         pca_trainer.set_param('nb_components', 2)
 
         self.add_connectors([
-            (importer>>'resource', pca_trainer<<'dataset'),
-            (importer>>'resource', pca_trans<<'dataset'),
-            (pca_trainer>>'result', pca_trans<<'learned_model'),
-            (importer>>'resource', lda_trainer<<'dataset'),
-            (importer>>'resource', lda_trans<<'dataset'),
-            (lda_trainer>>'result', lda_trans<<'learned_model'),
-            (importer>>'resource', lda_pred<<'dataset'),
-            (lda_trainer>>'result', lda_pred<<'learned_model'),
+            (importer >> 'target', pca_trainer << 'dataset'),
+            (importer >> 'target', pca_trans << 'dataset'),
+            (pca_trainer >> 'result', pca_trans << 'learned_model'),
+            (importer >> 'target', lda_trainer << 'dataset'),
+            (importer >> 'target', lda_trans << 'dataset'),
+            (lda_trainer >> 'result', lda_trans << 'learned_model'),
+            (importer >> 'target', lda_pred << 'dataset'),
+            (lda_trainer >> 'result', lda_pred << 'learned_model'),
         ])
 
-        self.add_interface('file', importer, 'file')
+        self.add_interface('file', importer, 'source')

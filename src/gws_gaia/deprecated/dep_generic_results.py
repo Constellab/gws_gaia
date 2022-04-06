@@ -4,20 +4,19 @@
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
-import os
 from typing import Any
-from tensorflow.keras import Model as KerasModel
-from tensorflow.keras.models import save_model, load_model
-from dill import load, dump
 
-from gws_core import Serializer, resource_decorator, RField
+from gws_core import RField, resource_decorator
+
 from ..base.base_resource import BaseResource
 
-@resource_decorator("GenericResult", hide=True)
+
+@resource_decorator("GenericResult", hide=True, deprecated_since='0.3.1',
+                    deprecated_message="Use DeepResult instead")
 class GenericResult(BaseResource):
-    result: Any = RField(default_value=None)
+    _result: Any = RField(default_value=None)
 
     def __init__(self, result=None):
         super().__init__()
         if result is not None:
-            self.result = result
+            self._result = result

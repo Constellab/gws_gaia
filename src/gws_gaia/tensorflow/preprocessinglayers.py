@@ -1,16 +1,15 @@
 # LICENSE
-# This software is the exclusive property of Gencovery SAS. 
+# This software is the exclusive property of Gencovery SAS.
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
 import numpy as np
-import tensorflow as tf
+from gws_core import (ConfigParams, Dataset, FloatParam, IntParam, Resource,
+                      StrParam, Task, TaskInputs, TaskOutputs,
+                      resource_decorator, task_decorator)
 from pandas import DataFrame
 
-from gws_core import (Task, Resource, task_decorator, resource_decorator,
-                        ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam)
-
-from gws_core import Dataset
+import tensorflow as tf
 
 # class Rescaler(Task):
 #     input_specs = {'tensor' : Tensor}
@@ -23,10 +22,10 @@ from gws_core import Dataset
 #         x = inputs['tensor']
 #         y = x.result
 #         z = Kerasaveragepooling1d(pool_size=params['pool_size'])(y)
-        
-#         
+
+#
 #         result = t(tensor=z)
 #         return {'result': result}
 
-#================================================================================
-#================================================================================
+# ================================================================================
+# ================================================================================

@@ -2,7 +2,7 @@
 
 import os
 
-from gws_core import Dataset, DatasetImporter, File, Settings
+from gws_core import Dataset, DatasetImporter, File, Settings, Table
 
 
 class GWSGaiaTestHelper():
@@ -24,5 +24,11 @@ class GWSGaiaTestHelper():
         return DatasetImporter.call(cls.get_data_file(index=index), {
             "delimiter": ",",
             "header": header,
-            "targets": targets
+            #"targets": targets,
+            "metadata_columns": [{
+                "column": k,
+                "type": Table.CATEGORICAL_TAG_TYPE,
+                "keep_in_data": True,
+                "is_target": True
+            } for k in targets]
         })

@@ -47,7 +47,7 @@ class AdaBoostClassifierTrainer(Task):
         dataset = inputs['dataset']
         abc = AdaBoostClassifier(n_estimators=params["nb_estimators"])
         abc.fit(dataset.get_features().values, ravel(dataset.get_targets().values))
-        result = AdaBoostClassifierResult(result=abc)
+        result = AdaBoostClassifierResult(training_set=dataset, result=abc)
         return {"result": result}
 
 # *****************************************************************************
@@ -73,7 +73,7 @@ class AdaBoostClassifierPredictor(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
-        abc = learned_model.result
+        abc = learned_model.get_result()
         y = abc.predict(dataset.get_features().values)
         result_dataset = Dataset(
             data=y,

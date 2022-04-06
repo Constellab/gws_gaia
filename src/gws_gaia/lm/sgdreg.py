@@ -3,14 +3,13 @@
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
+from gws_core import (ConfigParams, Dataset, FloatParam, IntParam, Resource,
+                      StrParam, Task, TaskInputs, TaskOutputs,
+                      resource_decorator, task_decorator)
 from numpy import ravel
 from pandas import DataFrame
 from sklearn.linear_model import SGDRegressor
 
-from gws_core import (Task, Resource, task_decorator, resource_decorator,
-                        ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam)
-
-from gws_core import Dataset
 from ..base.base_resource import BaseResource
 
 # *****************************************************************************
@@ -18,6 +17,7 @@ from ..base.base_resource import BaseResource
 # SGDRegressorResult
 #
 # *****************************************************************************
+
 
 @resource_decorator("SGDRegressorResult", hide=True)
 class SGDRegressorResult(BaseResource):
@@ -29,6 +29,7 @@ class SGDRegressorResult(BaseResource):
 #
 # *****************************************************************************
 
+
 @task_decorator("SGDRegressorTrainer", human_name="SGD regressor trainer",
                 short_description="Train a stochastic gradient descent (SGD) linear regressor")
 class SGDRegressorTrainer(Task):
@@ -37,19 +38,19 @@ class SGDRegressorTrainer(Task):
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.SGDRegressor.html for more details.
     """
-    input_specs = {'dataset' : Dataset}
-    output_specs = {'result' : SGDRegressorResult}
+    input_specs = {'dataset': Dataset}
+    output_specs = {'result': SGDRegressorResult}
     config_specs = {
-        'loss':StrParam(default_value='squared_loss'),
+        'loss': StrParam(default_value='squared_loss'),
         'alpha': FloatParam(default_value=0.0001, min_value=0),
-        'max_iter':IntParam(default_value=1000, min_value=0)
+        'max_iter': IntParam(default_value=1000, min_value=0)
     }
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
-        sgdr = SGDRegressor(max_iter=params["max_iter"],alpha=params["alpha"],loss=params["loss"])
+        sgdr = SGDRegressor(max_iter=params["max_iter"], alpha=params["alpha"], loss=params["loss"])
         sgdr.fit(dataset.get_features().values, ravel(dataset.get_targets().values))
-        result = SGDRegressorResult(result = sgdr)
+        result = SGDRegressorResult(training_set=dataset, result=sgdr)
         return {'result': result}
 
 # *****************************************************************************
@@ -57,6 +58,7 @@ class SGDRegressorTrainer(Task):
 # SGDRegressorPredictor
 #
 # *****************************************************************************
+
 
 @task_decorator("SGDRegressorPredictor", human_name="SGD regressor predictor",
                 short_description="Predict targets using a trained SGD linear regressor")
@@ -66,14 +68,14 @@ class SGDRegressorPredictor(Task):
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.SGDRegressor.html for more details.
     """
-    input_specs = {'dataset' : Dataset, 'learned_model': SGDRegressorResult}
-    output_specs = {'result' : Dataset}
-    config_specs = {   }
+    input_specs = {'dataset': Dataset, 'learned_model': SGDRegressorResult}
+    output_specs = {'result': Dataset}
+    config_specs = {}
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
-        sgdr = learned_model.result
+        sgdr = learned_model.get_result()
         y = sgdr.predict(dataset.get_features().values)
         result_dataset = Dataset(
             data=y,

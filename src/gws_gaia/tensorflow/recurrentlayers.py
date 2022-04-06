@@ -4,23 +4,24 @@
 # About us: https://gencovery.com
 
 import numpy as np
-import tensorflow as tf
-from tensorflow.keras.layers import LSTM as KerasLSTM
-from tensorflow.keras.layers import GRU as KerasGRU
-from tensorflow.keras.layers import SimpleRNN as KerasSimpleRNN
+from gws_core import (BoolParam, ConfigParams, Dataset, FloatParam, IntParam,
+                      Resource, StrParam, Task, TaskInputs, TaskOutputs,
+                      resource_decorator, task_decorator)
 from pandas import DataFrame
 
-from gws_core import (Task, Resource, task_decorator, resource_decorator,
-                        ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam, BoolParam)
+import tensorflow as tf
+from tensorflow.keras.layers import GRU as KerasGRU
+from tensorflow.keras.layers import LSTM as KerasLSTM
+from tensorflow.keras.layers import SimpleRNN as KerasSimpleRNN
 
 from .data import Tensor
-from gws_core import Dataset
 
 # *****************************************************************************
 #
 # LSTM
 #
 # *****************************************************************************
+
 
 @task_decorator("LSTM", human_name="LSTM",
                 short_description="Long Short-Term Memory (LSTM) layer")
@@ -30,8 +31,8 @@ class LSTM(Task):
 
     See https://keras.io/api/layers/recurrent_layers/lstm/ for more details
     """
-    input_specs = {'tensor' : Tensor}
-    output_specs = {'result' : Tensor}
+    input_specs = {'tensor': Tensor}
+    output_specs = {'result': Tensor}
     config_specs = {
         'units': IntParam(default_value=10),
         'activation_type': StrParam(default_value='tanh'),
@@ -41,9 +42,13 @@ class LSTM(Task):
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['tensor']
-        y = x.result
-        z = KerasLSTM(params['units'], activation=params['activation_type'], recurrent_activation=params['recurrent_activation_type'], use_bias=params['use_bias'])(y)
-        result = Tensor(result = z)
+        y = x.get_result()
+        z = KerasLSTM(
+            params['units'],
+            activation=params['activation_type'],
+            recurrent_activation=params['recurrent_activation_type'],
+            use_bias=params['use_bias'])(y)
+        result = Tensor(result=z)
         return {'result': result}
 
 # *****************************************************************************
@@ -51,6 +56,7 @@ class LSTM(Task):
 # GRU
 #
 # *****************************************************************************
+
 
 @task_decorator("GRU", human_name="GRU",
                 short_description="Gated Recurrent Unit (GRU) layer")
@@ -60,8 +66,8 @@ class GRU(Task):
 
     See https://keras.io/api/layers/recurrent_layers/gru/ for more details
     """
-    input_specs = {'tensor' : Tensor}
-    output_specs = {'result' : Tensor}
+    input_specs = {'tensor': Tensor}
+    output_specs = {'result': Tensor}
     config_specs = {
         'units': IntParam(default_value=10),
         'activation_type': StrParam(default_value='tanh'),
@@ -71,9 +77,13 @@ class GRU(Task):
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['tensor']
-        y = x.result
-        z = KerasGRU(params['units'], activation=params['activation_type'], recurrent_activation=params['recurrent_activation_type'], use_bias=params['use_bias'])(y)
-        result = Tensor(result = z)
+        y = x.get_result()
+        z = KerasGRU(
+            params['units'],
+            activation=params['activation_type'],
+            recurrent_activation=params['recurrent_activation_type'],
+            use_bias=params['use_bias'])(y)
+        result = Tensor(result=z)
         return {'result': result}
 
 # *****************************************************************************
@@ -81,6 +91,7 @@ class GRU(Task):
 # SimpleRNN
 #
 # *****************************************************************************
+
 
 @task_decorator("SimpleRNN", human_name="SimpleRNN",
                 short_description="Fully-connected RNN where the output is to be fed back to input")
@@ -90,8 +101,8 @@ class SimpleRNN(Task):
 
     See https://keras.io/api/layers/recurrent_layers/simple_rnn/ for more details
     """
-    input_specs = {'tensor' : Tensor}
-    output_specs = {'result' : Tensor}
+    input_specs = {'tensor': Tensor}
+    output_specs = {'result': Tensor}
     config_specs = {
         'units': IntParam(default_value=10),
         'activation_type': StrParam(default_value='tanh'),
@@ -100,7 +111,7 @@ class SimpleRNN(Task):
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         x = inputs['tensor']
-        y = x.result
+        y = x.get_result()
         z = KerasSimpleRNN(params['units'], activation=params['activation_type'], use_bias=params['use_bias'])(y)
-        result = Tensor(result = z)
+        result = Tensor(result=z)
         return {'result': result}

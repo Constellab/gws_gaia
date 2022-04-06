@@ -48,7 +48,7 @@ class QDATrainer(Task):
         dataset = inputs['dataset']
         qda = QuadraticDiscriminantAnalysis(reg_param=params["reg_param"])
         qda.fit(dataset.get_features().values, ravel(dataset.get_targets().values))
-        result = QDAResult(result=qda)
+        result = QDAResult(training_set=dataset, result=qda)
         return {'result': result}
 
 # *****************************************************************************
@@ -73,7 +73,7 @@ class QDAPredictor(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
-        qda = learned_model.result
+        qda = learned_model.get_result()
         y = qda.predict(dataset.get_features().values)
         result_dataset = Dataset(
             data=DataFrame(y),

@@ -5,9 +5,9 @@
 
 from typing import List
 
-from gws_core import (ConfigParams, FloatParam, FloatRField, IntParam,
+from gws_core import (ConfigParams, Dataset, FloatParam, FloatRField, IntParam,
                       Resource, ResourceRField, ScatterPlot2DView,
-                      ScatterPlot3DView, StrParam, Dataset, TabularView, Task,
+                      ScatterPlot3DView, StrParam, TabularView, Task,
                       TaskInputs, TaskOutputs, resource_decorator,
                       task_decorator, view)
 from numpy import concatenate, ndarray, transpose, unique, vstack
@@ -39,7 +39,7 @@ class AgglomerativeClusteringResult(BaseResource):
         train_set = self._training_set.get_features().values
         label = aggclust.labels_[:, None]
         data = concatenate((train_set, label), axis=1)
-        data = DataFrame(data, index = self._training_set.row_names, columns=columns)
+        data = DataFrame(data, index=self._training_set.row_names, columns=columns)
         t_view = TabularView()
         t_view.set_data(data=data)
         return t_view
@@ -100,6 +100,5 @@ class AgglomerativeClusteringTrainer(Task):
         dataset = inputs['dataset']
         aggclust = AgglomerativeClustering(n_clusters=params["nb_clusters"], linkage=params["linkage"])
         aggclust.fit(dataset.get_features().values)
-        result = AgglomerativeClusteringResult(result=aggclust)
-        result._training_set = dataset
+        result = AgglomerativeClusteringResult(training_set=dataset, result=aggclust)
         return {'result': result}

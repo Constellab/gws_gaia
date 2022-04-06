@@ -3,14 +3,13 @@
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
+from gws_core import (ConfigParams, Dataset, FloatParam, IntParam, Resource,
+                      StrParam, Task, TaskInputs, TaskOutputs,
+                      resource_decorator, task_decorator)
 from numpy import ravel
 from pandas import DataFrame
 from sklearn.linear_model import LogisticRegression
 
-from gws_core import (Task, Resource, task_decorator, resource_decorator,
-                        ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam)
-
-from gws_core import Dataset
 from ..base.base_resource import BaseResource
 
 # *****************************************************************************
@@ -30,6 +29,7 @@ class LogisticRegressionResult(BaseResource):
 #
 # *****************************************************************************
 
+
 @task_decorator("LogisticRegressionTrainer", human_name="Logistic regression trainer",
                 short_description="Train a logistic regression classifier")
 class LogisticRegressionTrainer(Task):
@@ -38,8 +38,8 @@ class LogisticRegressionTrainer(Task):
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html for more details.
     """
-    input_specs = {'dataset' : Dataset}
-    output_specs = {'result' : LogisticRegressionResult}
+    input_specs = {'dataset': Dataset}
+    output_specs = {'result': LogisticRegressionResult}
     config_specs = {
         'inv_reg_strength': FloatParam(default_value=1, min_value=0)
     }
@@ -48,7 +48,7 @@ class LogisticRegressionTrainer(Task):
         dataset = inputs['dataset']
         logreg = LogisticRegression(C=params["inv_reg_strength"])
         logreg.fit(dataset.get_features().values, ravel(dataset.get_targets().values))
-        result = LogisticRegressionResult(result=logreg)
+        result = LogisticRegressionResult(training_set=dataset, result=logreg)
         return {'result': result}
 
 # *****************************************************************************
@@ -56,6 +56,7 @@ class LogisticRegressionTrainer(Task):
 # LogisticRegressionPredictor
 #
 # *****************************************************************************
+
 
 @task_decorator("LogisticRegressionPredictor", human_name="Logistic regression predictor",
                 short_description="Predict dataset labels using a trained logistic regression classifier")
@@ -65,14 +66,14 @@ class LogisticRegressionPredictor(Task):
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html for more details.
     """
-    input_specs = {'dataset' : Dataset, 'learned_model': LogisticRegressionResult}
-    output_specs = {'result' : Dataset}
-    config_specs = {   }
+    input_specs = {'dataset': Dataset, 'learned_model': LogisticRegressionResult}
+    output_specs = {'result': Dataset}
+    config_specs = {}
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
-        logreg = learned_model.result
+        logreg = learned_model.get_result()
         y = logreg.predict(dataset.get_features().values)
         result_dataset = Dataset(
             data=y,

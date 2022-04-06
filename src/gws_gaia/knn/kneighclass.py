@@ -46,7 +46,7 @@ class KNNClassifierTrainer(Task):
         dataset = inputs['dataset']
         neigh = KNeighborsClassifier(n_neighbors=params["nb_neighbors"])
         neigh.fit(dataset.get_features().values, ravel(dataset.get_targets().values))
-        result = KNNClassifierResult(result=neigh)
+        result = KNNClassifierResult(training_set=dataset, result=neigh)
         return {'result': result}
 
 # *****************************************************************************
@@ -71,7 +71,7 @@ class KNNClassifierPredictor(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
-        neigh = learned_model.result
+        neigh = learned_model.get_result()
         y = neigh.predict(dataset.get_features().values)
         result_dataset = Dataset(
             data=y,

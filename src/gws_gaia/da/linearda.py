@@ -149,8 +149,7 @@ class LDATrainer(Task):
         dataset = inputs['dataset']
         lda = LinearDiscriminantAnalysis(solver=params["solver"], n_components=params["nb_components"])
         lda.fit(dataset.get_features().values, ravel(dataset.get_targets().values))
-        result = LDAResult(result=lda)
-        result._training_set = dataset
+        result = LDAResult(training_set=dataset, result=lda)
         result._nb_components = params['nb_components']
         return {'result': result}
 
@@ -177,7 +176,7 @@ class LDATransformer(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
-        lda = learned_model.result
+        lda = learned_model.get_result()
         x = lda.transform(dataset.get_features().values)
         ncomp = x.shape[1]
         result_dataset = Dataset(
@@ -209,7 +208,7 @@ class LDAPredictor(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
-        lda = learned_model.result
+        lda = learned_model.get_result()
         y = lda.predict(dataset.get_features().values)
         result_dataset = Dataset(
             data=DataFrame(y),

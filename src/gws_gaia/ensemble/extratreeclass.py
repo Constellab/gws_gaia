@@ -46,7 +46,7 @@ class ExtraTreesClassifierTrainer(Task):
         dataset = inputs['dataset']
         etc = ExtraTreesClassifier(n_estimators=params["nb_estimators"])
         etc.fit(dataset.get_features().values, ravel(dataset.get_targets().values))
-        result = ExtraTreesClassifierResult(result=etc)
+        result = ExtraTreesClassifierResult(training_set=dataset, result=etc)
         return {'result': result}
 
 # *****************************************************************************
@@ -71,7 +71,7 @@ class ExtraTreesClassifierPredictor(Task):
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
-        etc = learned_model.result
+        etc = learned_model.get_result()
         y = etc.predict(dataset.get_features().values)
         result_dataset = Dataset(
             data=y,

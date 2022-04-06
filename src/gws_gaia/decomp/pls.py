@@ -170,8 +170,7 @@ class PLSTrainer(Task):
         else:
             y = dataset.get_targets().values
         pls.fit(dataset.get_features().values, y)
-        result = PLSTrainerResult(result=pls)
-        result._training_set = dataset
+        result = PLSTrainerResult(training_set=dataset, result=pls)
         return {'result': result}
 
 # *****************************************************************************

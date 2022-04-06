@@ -3,12 +3,11 @@
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
+from gws_core import (ConfigParams, Dataset, FloatParam, IntParam, Resource,
+                      StrParam, Task, TaskInputs, TaskOutputs,
+                      resource_decorator, task_decorator)
 from sklearn.manifold import LocallyLinearEmbedding
 
-from gws_core import (Task, Resource, task_decorator, resource_decorator,
-                        ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam)
-
-from gws_core import Dataset
 from ..base.base_resource import BaseResource
 
 # *****************************************************************************
@@ -16,6 +15,7 @@ from ..base.base_resource import BaseResource
 # LocallyLinearEmbeddingResult
 #
 # *****************************************************************************
+
 
 @resource_decorator("LocallyLinearEmbeddingResult", hide=True)
 class LocallyLinearEmbeddingResult(BaseResource):
@@ -27,6 +27,7 @@ class LocallyLinearEmbeddingResult(BaseResource):
 #
 # *****************************************************************************
 
+
 @task_decorator("LocallyLinearEmbeddingTrainer", human_name="LLE trainer",
                 short_description="Trainer of a Locally Linear Embedding (LLE) model")
 class LocallyLinearEmbeddingTrainer(Task):
@@ -35,8 +36,8 @@ class LocallyLinearEmbeddingTrainer(Task):
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.manifold.LocallyLinearEmbedding.html for more details.
     """
-    input_specs = {'dataset' : Dataset}
-    output_specs = {'result' : LocallyLinearEmbeddingResult}
+    input_specs = {'dataset': Dataset}
+    output_specs = {'result': LocallyLinearEmbeddingResult}
     config_specs = {
         'nb_components': IntParam(default_value=2, min_value=0)
     }
@@ -45,5 +46,5 @@ class LocallyLinearEmbeddingTrainer(Task):
         dataset = inputs['dataset']
         lle = LocallyLinearEmbedding(n_components=params["nb_components"])
         lle.fit(dataset.get_features().values)
-        result = LocallyLinearEmbeddingResult(result = lle)
+        result = LocallyLinearEmbeddingResult(training_set=dataset, result=lle)
         return {'result': result}

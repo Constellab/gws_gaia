@@ -3,14 +3,13 @@
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
+from gws_core import (ConfigParams, Dataset, FloatParam, IntParam, Resource,
+                      StrParam, Task, TaskInputs, TaskOutputs,
+                      resource_decorator, task_decorator)
 from numpy import ravel
-from sklearn.mixture import GaussianMixture
 from pandas import DataFrame
+from sklearn.mixture import GaussianMixture
 
-from gws_core import (Task, Resource, task_decorator, resource_decorator,
-                        ConfigParams, TaskInputs, TaskOutputs, IntParam, FloatParam, StrParam)
-
-from gws_core import Dataset
 from ..base.base_resource import BaseResource
 
 # *****************************************************************************
@@ -18,6 +17,7 @@ from ..base.base_resource import BaseResource
 # GaussianMixtureResult
 #
 # *****************************************************************************
+
 
 @resource_decorator("GaussianMixtureResult", hide=True)
 class GaussianMixtureResult(BaseResource):
@@ -29,6 +29,7 @@ class GaussianMixtureResult(BaseResource):
 #
 # *****************************************************************************
 
+
 @task_decorator("GaussianMixtureTrainer", human_name="Gaussian mixture trainer",
                 short_description="Train a Gaussian mixture model")
 class GaussianMixtureTrainer(Task):
@@ -37,8 +38,8 @@ class GaussianMixtureTrainer(Task):
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.mixture.GaussianMixture.html#sklearn.mixture.GaussianMixture.fit for more details
     """
-    input_specs = {'dataset' : Dataset}
-    output_specs = {'result' : GaussianMixtureResult}
+    input_specs = {'dataset': Dataset}
+    output_specs = {'result': GaussianMixtureResult}
     config_specs = {
         'nb_components': IntParam(default_value=1, min_value=0),
         'covariance_type': StrParam(default_value='full')
@@ -46,9 +47,9 @@ class GaussianMixtureTrainer(Task):
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
-        gmixt = GaussianMixture(n_components=params["nb_components"],covariance_type=params["covariance_type"])
+        gmixt = GaussianMixture(n_components=params["nb_components"], covariance_type=params["covariance_type"])
         gmixt.fit(dataset.get_features().values)
-        result = GaussianMixtureResult(result = gmixt)
+        result = GaussianMixtureResult(training_set=dataset, result=gmixt)
         return {'result': result}
 
 # *****************************************************************************
@@ -56,6 +57,7 @@ class GaussianMixtureTrainer(Task):
 # GaussianMixturePredictor
 #
 # *****************************************************************************
+
 
 @task_decorator("GaussianMixturePredictor", human_name="Gaussian mixture predictor",
                 short_description="Predict the class labels for a dataset using a Gaussian mixture model")
@@ -65,14 +67,14 @@ class GaussianMixturePredictor(Task):
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.mixture.GaussianMixture.html#sklearn.mixture.GaussianMixture.fit for more details
     """
-    input_specs = {'dataset' : Dataset, 'learned_model': GaussianMixtureResult}
-    output_specs = {'result' : Dataset}
-    config_specs = {   }
+    input_specs = {'dataset': Dataset, 'learned_model': GaussianMixtureResult}
+    output_specs = {'result': Dataset}
+    config_specs = {}
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']
-        gmixt = learned_model.result
+        gmixt = learned_model.get_result()
         y = gmixt.predict(dataset.get_features().values)
         result_dataset = Dataset(
             data=y,

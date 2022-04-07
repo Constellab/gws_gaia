@@ -45,7 +45,7 @@ class PCATrainerResult(BaseResourceSet):
         row_tags = self._training_set.get_row_tags()
         table.name = self.TRANSFORMED_TABLE_NAME
         table.set_row_tags(row_tags)
-        return table
+        self.add_resource(table)
 
     def _create_variance_table(self):
         pca = self.get_result()

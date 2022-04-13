@@ -22,11 +22,11 @@ from ..base.base_resource import BaseResourceSet
 
 @resource_decorator("PCATrainerResult", hide=True)
 class PCATrainerResult(BaseResourceSet):
-
-    _log_likelihood: int = FloatRField()
+    """PCATrainerResult  """
 
     TRANSFORMED_TABLE_NAME = "Transformed data table"
     VARIANCE_TABLE_NAME = "Variance table"
+    _log_likelihood: int = FloatRField()
 
     def __init__(self, training_set=None, result=None):
         super().__init__(training_set=training_set, result=result)
@@ -38,11 +38,11 @@ class PCATrainerResult(BaseResourceSet):
     def _create_transformed_table(self):
         pca: PCA = self.get_result()  # typage de pca du type PCA
         ncomp = pca.n_components_
-        x_transformed: DataFrame = pca.transform(self._training_set.get_features().values)
+        data: DataFrame = pca.transform(self.get_training_set().get_features().values)
         columns = [f"PC{n+1}" for n in range(0, ncomp)]
-        data = DataFrame(data=x_transformed, columns=columns, index=self._training_set.instance_names)
+        data = DataFrame(data=data, columns=columns, index=self.get_training_set().instance_names)
         table = Table(data=data)
-        row_tags = self._training_set.get_row_tags()
+        row_tags = self.get_training_set().get_row_tags()
         table.name = self.TRANSFORMED_TABLE_NAME
         table.set_row_tags(row_tags)
         self.add_resource(table)
@@ -57,12 +57,15 @@ class PCATrainerResult(BaseResourceSet):
         self.add_resource(table)
 
     def get_transformed_table(self):
+        """ Get transformed table """
         if self.resource_exists(self.TRANSFORMED_TABLE_NAME):
             return self.get_resource(self.TRANSFORMED_TABLE_NAME)
         else:
             return None
 
     def get_variance_table(self):
+        """ Get variance table """
+
         if self.resource_exists(self.VARIANCE_TABLE_NAME):
             return self.get_resource(self.VARIANCE_TABLE_NAME)
         else:
@@ -71,10 +74,10 @@ class PCATrainerResult(BaseResourceSet):
     def _get_log_likelihood(self) -> float:
         if not self._log_likelihood:
             pca = self.get_result()
-            self._log_likelihood = pca.score(self._training_set.get_features().values)
+            self._log_likelihood = pca.score(self.get_training_set().get_features().values)
         return self._log_likelihood
 
-    @view(view_type=ScatterPlot2DView, default_view=True, human_name='2D-score plot', short_description='2D score plot')
+    @view(view_type=ScatterPlot2DView, human_name='2D-score plot', short_description='2D score plot')
     def view_scores_as_2d_plot(self, params: ConfigParams) -> dict:
         """
         View 2D score plot
@@ -82,7 +85,7 @@ class PCATrainerResult(BaseResourceSet):
 
         data: DataFrame = self.get_transformed_table().get_data()
         _view = ScatterPlot2DView()
-        row_tags = self._training_set.get_row_tags()
+        row_tags = self.get_training_set().get_row_tags()
         _view.add_series(
             x=data['PC1'].to_list(),
             y=data['PC2'].to_list(),

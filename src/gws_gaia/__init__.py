@@ -8,6 +8,7 @@ from .da.quadrada import QDAResult, QDATrainer, QDAPredictor
 # decomposition
 from .decomp.ica import ICAResult, ICATrainer
 from .decomp.pca import PCATrainerResult, PCATrainer, PCATransformer
+from .decomp.pcoa import PCoATrainerResult, PCoATrainer
 from .decomp.pls import PLSTrainerResult, PLSTrainer, PLSPredictor, PLSTransformer
 # ensemble
 from .ensemble.adaboostclass import (AdaBoostClassifierPredictor, AdaBoostClassifierResult,

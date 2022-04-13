@@ -6,12 +6,12 @@
 
 from gws_core import (BoolParam, ConfigParams, Dataset, FloatRField, IntParam,
                       Resource, ResourceRField, ScatterPlot2DView,
-                      ScatterPlot3DView, TabularView, Task, TaskInputs,
+                      ScatterPlot3DView, Table, TabularView, Task, TaskInputs,
                       TaskOutputs, resource_decorator, task_decorator, view)
 from pandas import DataFrame, concat
 from sklearn.cross_decomposition import PLSRegression
 
-from ..base.base_resource import BaseResource
+from ..base.base_resource import BaseResourceSet
 
 # *****************************************************************************
 #
@@ -21,105 +21,87 @@ from ..base.base_resource import BaseResource
 
 
 @resource_decorator("PLSTrainerResult", hide=True)
-class PLSTrainerResult(BaseResource):
+class PLSTrainerResult(BaseResourceSet):
+    """ PLSTrainerResult """
+    TRANSFORMED_TABLE_NAME = "Transformed data table"
+    VARIANCE_TABLE_NAME = "Variance table"
+    PREDICTION_TABLE_NAME = "Prediction table"
+    _r2: int = FloatRField()
 
-    _training_set: Resource = ResourceRField()
-    _R2: int = FloatRField()
+    def __init__(self, training_set=None, result=None):
+        super().__init__(training_set=training_set, result=result)
+        # append tables
+        if training_set is not None:
+            self._create_transformed_table()
+            self._create_prediction_table()
 
-    def _get_transformed_data(self):
+    def _create_transformed_table(self):
         pls: PLSRegression = self.get_result()
         ncomp = pls.x_rotations_.shape[1]
-        x_transformed: DataFrame = pls.transform(self._training_set.get_features().values)
+        data: DataFrame = pls.transform(self.get_training_set().get_features().values)
         columns = [f"PC{i+1}" for i in range(0, ncomp)]
-        x_transformed = DataFrame(
-            data=x_transformed,
-            columns=columns,
-            index=self._training_set.row_names
-        )
-        return x_transformed
+        data = DataFrame(data=data, columns=columns, index=self.get_training_set().row_names)
+        table = Table(data=data)
+        row_tags = self.get_training_set().get_row_tags()
+        table.name = self.TRANSFORMED_TABLE_NAME
+        table.set_row_tags(row_tags)
+        self.add_resource(table)
 
-    def _get_predicted_data(self) -> DataFrame:
+    def _create_prediction_table(self) -> DataFrame:
         pls: PLSRegression = self.get_result()  # lir du type Linear Regression
-        y_predicted: DataFrame = pls.predict(self._training_set.get_features().values)
-        y_predicted = DataFrame(
-            data=y_predicted,
-            columns=self._training_set.target_names,
-            index=self._training_set.row_names
+        data: DataFrame = pls.predict(self.get_training_set().get_features().values)
+        data = DataFrame(
+            data=data,
+            columns=self.get_training_set().target_names,
+            index=self.get_training_set().row_names
         )
-        return y_predicted
+        table = Table(data=data)
+        table.name = self.PREDICTION_TABLE_NAME
+        row_tags = self.get_training_set().get_row_tags()
+        table.set_row_tags(row_tags)
+        self.add_resource(table)
 
-    def _get_R2(self) -> float:
-        if not self._R2:
+    def get_transformed_table(self):
+        """ Get transformed table """
+        if self.resource_exists(self.TRANSFORMED_TABLE_NAME):
+            return self.get_resource(self.TRANSFORMED_TABLE_NAME)
+        else:
+            return None
+
+    def get_prediction_table(self):
+        """ Get prediction table """
+        if self.resource_exists(self.PREDICTION_TABLE_NAME):
+            return self.get_resource(self.PREDICTION_TABLE_NAME)
+        else:
+            return None
+
+    def _get_r2(self) -> float:
+        """ Get R2 """
+        if not self._r2:
             pls = self.get_result()
-            self._R2 = pls.score(
-                X=self._training_set.get_features().values,
-                y=self._training_set.get_targets().values
+            self._r2 = pls.score(
+                X=self.get_training_set().get_features().values,
+                y=self.get_training_set().get_targets().values
             )
-        return self._R2
+        return self._r2
 
-    @view(view_type=TabularView, human_name="Projected data table", short_description="Table of data in the score plot")
-    def view_transformed_data_as_table(self, params: ConfigParams) -> dict:
-        """
-        View 2D score plot
-        """
-
-        x_transformed = self._get_transformed_data()
-        t_view = TabularView()
-        t_view.set_data(data=x_transformed)
-        return t_view
-
-    @view(view_type=ScatterPlot2DView, default_view=True, human_name='2D-score plot', short_description='2D-score plot',
-          specs={
-              'show_labels':
-              BoolParam(
-                  default_value=False, human_name="Show labels",
-                  short_description="Set True to see sample labels if they are provided; False otherwise")})
+    @view(view_type=ScatterPlot2DView, human_name='2D-score plot', short_description='2D-score plot')
     def view_scores_as_2d_plot(self, params: ConfigParams) -> dict:
         """
         View 2D score plot
         """
 
-        data: DataFrame = self._get_transformed_data()
+        data: DataFrame = self.get_transformed_table().get_data()
         _view = ScatterPlot2DView()
-        targets = self._training_set.get_targets()
-        show_labels = params.get('show_labels')
-        targets = self._training_set.get_targets()
-        if targets.shape[1] == 1:
-            if self._training_set.has_string_targets():
-                show_labels = True
-        else:
-            show_labels = False
-
-        if show_labels:
-            labels = sorted(list(set(targets.transpose().values.tolist()[0])))
-            for lbl in labels:
-                idx = (targets == lbl)
-                _view.add_series(
-                    x=data[idx, 'PC1'].to_list(),
-                    y=data[idx, 'PC2'].to_list(),
-                    y_name=lbl
-                )
-        else:
-            _view.add_series(
-                x=data['PC1'].to_list(),
-                y=data['PC2'].to_list()
-            )
+        row_tags = self.get_training_set().get_row_tags()
+        _view.add_series(
+            x=data['PC1'].to_list(),
+            y=data['PC2'].to_list(),
+            tags=row_tags
+        )
         _view.x_label = 'PC1'
         _view.y_label = 'PC2'
         return _view
-
-    @view(view_type=TabularView, human_name="Prediction table", short_description="Prediction table")
-    def view_predictions_as_table(self, params: ConfigParams) -> dict:
-        """
-        View the target data and the predicted data in a table. Works for data with only one target.
-        """
-        y_data = self._training_set.get_targets()
-        y_predicted = self._get_predicted_data()
-        Y = concat([y_data, y_predicted], axis=1)
-        data = Y.set_axis(["YData", "YPredicted"], axis=1)
-        t_view = TabularView()
-        t_view.set_data(data=data)
-        return t_view
 
     @view(view_type=ScatterPlot2DView, human_name='Prediction plot', short_description='Prediction plot')
     def view_predictions_as_2d_plot(self, params: ConfigParams) -> dict:
@@ -127,14 +109,16 @@ class PLSTrainerResult(BaseResource):
         View the target data and the predicted data in a 2d scatter plot. Works for data with only one target.
         """
 
-        y_data = self._training_set.get_targets()
+        y_data = self.get_training_set().get_targets()
         y_predicted = self._get_predicted_data()
+        row_tags = self.get_training_set().get_row_tags()
         _view = ScatterPlot2DView()
         for name in y_data.columns:
             _view.add_series(
                 x=y_data.loc[:, name].values.tolist(),
                 y=y_predicted.loc[:, name].values.tolist(),
-                y_name=name
+                y_name=name,
+                tags=row_tags
             )
         _view.x_label = 'YData'
         _view.y_label = 'YPredicted'

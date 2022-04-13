@@ -25,36 +25,6 @@ class TestTrainer(BaseTestCase):
         trainer_result = outputs['result']
 
         # ---------------------------------------------------------------------
-        # run views
-        tester = ViewTester(
-            view=trainer_result.view_transformed_data_as_table({})
-        )
-        dic = tester.to_dict()
-        self.assertEqual(dic["type"], "table-view")
-
-        # ------------------------------------------
-        tester = ViewTester(
-            view=trainer_result.view_scores_as_2d_plot({})
-        )
-        dic = tester.to_dict()
-        self.assertEqual(dic["type"], "scatter-plot-2d-view")
-        #self.assertTrue(numpy.all(numpy.isclose(dic["data"][0]["data"]["x"], [-1.3970, -1.1967, 0.5603, 2.0334], atol=1e-3)))
-
-        # ------------------------------------------
-        tester = ViewTester(
-            view=trainer_result.view_predictions_as_table({})
-        )
-        dic = tester.to_dict()
-        self.assertEqual(dic["type"], "table-view")
-
-        # ------------------------------------------
-        tester = ViewTester(
-            view=trainer_result.view_predictions_as_2d_plot({})
-        )
-        dic = tester.to_dict()
-        self.assertEqual(dic["type"], "scatter-plot-2d-view")
-
-        # ---------------------------------------------------------------------
         # run predictior
         tester = TaskRunner(
             params={},

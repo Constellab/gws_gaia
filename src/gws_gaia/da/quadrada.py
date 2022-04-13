@@ -10,7 +10,7 @@ from numpy import ravel
 from pandas import DataFrame
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
 
-from ..base.base_resource import BaseResource
+from ..base.base_resource import BaseResourceSet
 
 # *****************************************************************************
 #
@@ -20,7 +20,7 @@ from ..base.base_resource import BaseResource
 
 
 @resource_decorator("QDAResult", human_name="QDA result", hide=True)
-class QDAResult(BaseResource):
+class QDAResult(BaseResourceSet):
     pass
 
 # *****************************************************************************

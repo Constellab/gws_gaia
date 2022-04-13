@@ -13,7 +13,7 @@ from numpy import concatenate, ndarray, transpose, unique, vstack
 from pandas import DataFrame, concat
 from sklearn.cluster import KMeans
 
-from ..base.base_resource import BaseResource
+from ..base.base_resource import BaseResourceSet
 
 # *****************************************************************************
 #
@@ -23,9 +23,8 @@ from ..base.base_resource import BaseResource
 
 
 @resource_decorator("KMeansResult", hide=True)
-class KMeansResult(BaseResource):
-
-    _training_set: Resource = ResourceRField()
+class KMeansResult(BaseResourceSet):
+    """ KMeansResult """
 
     @view(view_type=TabularView, human_name="Label table", short_description="Table of labels")
     def view_labels_as_table(self, params: ConfigParams) -> dict:
@@ -33,12 +32,12 @@ class KMeansResult(BaseResource):
         View Table
         """
         kmeans = self.get_result()
-        columns = self._training_set.feature_names
+        columns = self.get_training_set().feature_names
         columns.extend(['label'])
-        train_set = self._training_set.get_features().values
+        train_set = self.get_training_set().get_features().values
         label = kmeans.labels_[:, None]
         data = concatenate((train_set, label), axis=1)
-        data = DataFrame(data, index=self._training_set.row_names, columns=columns)
+        data = DataFrame(data, index=self.get_training_set().row_names, columns=columns)
         t_view = TabularView()
         t_view.set_data(data=data)
         return t_view
@@ -50,8 +49,8 @@ class KMeansResult(BaseResource):
         """
 
         kmeans = self.get_result()
-        columns = self._training_set.feature_names
-        train_set = self._training_set.get_features().values
+        columns = self.get_training_set().feature_names
+        train_set = self.get_training_set().get_features().values
         label = kmeans.labels_[:, None]
         label_values = unique(label)
         flatten_label = label.flatten()

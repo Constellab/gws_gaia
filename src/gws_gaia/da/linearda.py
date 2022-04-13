@@ -12,7 +12,7 @@ from numpy import ravel, shape, unique
 from pandas import DataFrame
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 
-from ..base.base_resource import BaseResource
+from ..base.base_resource import BaseResourceSet
 
 # *****************************************************************************
 #
@@ -25,69 +25,58 @@ from ..base.base_resource import BaseResource
                     human_name="LDA result",
                     short_description="Linear Discriminant Analysis result",
                     hide=True)
-class LDAResult(BaseResource):
+class LDAResult(BaseResourceSet):
 
-    _training_set: Resource = ResourceRField()
-    _nb_components: int = IntRField()
+    TRANSFORMED_TABLE_NAME = "Transformed data table"
+    VARIANCE_TABLE_NAME = "Variance table"
 
-    def _get_transformed_data(self) -> DataFrame:
+    def __init__(self, training_set=None, result=None):
+        super().__init__(training_set=training_set, result=result)
+        # append tables
+        if training_set is not None:
+            self._create_transformed_table()
+            self._create_variance_table()
+
+    def _create_transformed_table(self) -> DataFrame:
         lda: LinearDiscriminantAnalysis = self.get_result()
-        ncomp = self._nb_components
-        x_transformed: DataFrame = lda.transform(self._training_set.get_features().values)
+        ncomp = lda.explained_variance_ratio_.shape[0]
+        data: DataFrame = lda.transform(self.get_training_set().get_features().values)
         columns = [f"PC{i+1}" for i in range(0, ncomp)]
-        x_transformed = DataFrame(
-            data=x_transformed,
+        data = DataFrame(
+            data=data,
             columns=columns,
-            index=self._training_set.row_names
+            index=self.get_training_set().row_names
         )
-        return x_transformed
+        table = Table(data=data)
+        row_tags = self.get_training_set().get_row_tags()
+        table.name = self.TRANSFORMED_TABLE_NAME
+        table.set_row_tags(row_tags)
+        self.add_resource(table)
 
-    @view(view_type=TabularView, human_name="Projected data table",
-          short_description="Table of data projected in the score plot")
-    def view_transformed_data_as_table(self, params: ConfigParams) -> dict:
-        """
-        View 2D score plot
-        """
-
-        x_transformed = self._get_transformed_data()
-        t_view = TabularView()
-        t_view.set_data(data=x_transformed)
-        return t_view
-
-    @view(view_type=TabularView, human_name="Variance table", short_description="Table of explained variances")
-    def view_variance_as_table(self, params: ConfigParams) -> dict:
-        """
-        View table data
-        """
-
+    def _create_variance_table(self):
         lda = self.get_result()
-        ncomp = self._nb_components
+        ncomp = lda.explained_variance_ratio_.shape[0]
         index = [f"PC{i+1}" for i in range(0, ncomp)]
         columns = ["ExplainedVariance"]
         data = DataFrame(lda.explained_variance_ratio_, index=index, columns=columns)
-        t_view = TabularView()
-        t_view.set_data(data=data)
-        return t_view
+        table = Table(data=data)
+        table.name = self.VARIANCE_TABLE_NAME
+        self.add_resource(table)
 
-    @view(view_type=BarPlotView, human_name="Variance bar plot", short_description="Bar plot of explained variances")
-    def view_variance_as_barplot(self, params: ConfigParams) -> dict:
-        """
-        View bar plot of explained variances
-        """
+    def get_transformed_table(self):
+        """ Get transformed table """
+        if self.resource_exists(self.TRANSFORMED_TABLE_NAME):
+            return self.get_resource(self.TRANSFORMED_TABLE_NAME)
+        else:
+            return None
 
-        lda = self.get_result()
-        ncomp = self._nb_components
-        explained_var: DataFrame = lda.explained_variance_ratio_
-        columns = [f"PC{n+1}" for n in range(0, ncomp)]
-        _view = BarPlotView()
-        _view.add_series(
-            y=explained_var.tolist()
-        )
-        _view.x_tick_labels = columns
-        _view.x_label = 'Principal components'
-        _view.y_label = 'Explained variance'
+    def get_variance_table(self):
+        """ Get variance table """
 
-        return _view
+        if self.resource_exists(self.VARIANCE_TABLE_NAME):
+            return self.get_resource(self.VARIANCE_TABLE_NAME)
+        else:
+            return None
 
     @view(view_type=ScatterPlot2DView, human_name='2D-score plot', short_description='2D-score plot')
     def view_scores_as_2d_plot(self, params: ConfigParams) -> dict:
@@ -97,31 +86,16 @@ class LDAResult(BaseResource):
 
         data = self._get_transformed_data()
         _view = ScatterPlot2DView()
+        row_tags = self.get_training_set().get_row_tags()
         _view.add_series(
             x=data['PC1'].to_list(),
-            y=data['PC2'].to_list()
+            y=data['PC2'].to_list(),
+            tags=row_tags
         )
         _view.x_label = 'PC1'
         _view.y_label = 'PC2'
         return _view
 
-    # @view(view_type=ScatterPlot3DView, human_name='3D-score plot', short_description='3D-score plot')
-    # def view_scores_as_3d_plot(self, params: ConfigParams) -> dict:
-    #     """
-    #     View 3D score plot
-    #     """
-
-    #     data = self._get_transformed_data()
-    #     _view = ScatterPlot2DView()
-    #     _view.add_series(
-    #         x=data['PC1'].to_list(),
-    #         y=data['PC2'].to_list(),
-    #         z=data['PC3'].to_list()
-    #     )
-    #     _view.x_label = 'PC1'
-    #     _view.y_label = 'PC2'
-    #     _view.z_label = 'PC3'
-    #     return _view
 
 # *****************************************************************************
 #
@@ -150,7 +124,6 @@ class LDATrainer(Task):
         lda = LinearDiscriminantAnalysis(solver=params["solver"], n_components=params["nb_components"])
         lda.fit(dataset.get_features().values, ravel(dataset.get_targets().values))
         result = LDAResult(training_set=dataset, result=lda)
-        result._nb_components = params['nb_components']
         return {'result': result}
 
 # *****************************************************************************

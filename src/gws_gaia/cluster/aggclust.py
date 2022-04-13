@@ -14,7 +14,7 @@ from numpy import concatenate, ndarray, transpose, unique, vstack
 from pandas import DataFrame, concat
 from sklearn.cluster import AgglomerativeClustering
 
-from ..base.base_resource import BaseResource
+from ..base.base_resource import BaseResourceSet
 
 # *****************************************************************************
 #
@@ -24,9 +24,8 @@ from ..base.base_resource import BaseResource
 
 
 @resource_decorator("AgglomerativeClusteringResult", hide=True)
-class AgglomerativeClusteringResult(BaseResource):
-
-    _training_set: Resource = ResourceRField()
+class AgglomerativeClusteringResult(BaseResourceSet):
+    """ AgglomerativeClusteringResult """
 
     @view(view_type=TabularView, human_name="Label table", short_description="Table of labels")
     def view_labels_as_table(self, params: ConfigParams) -> dict:

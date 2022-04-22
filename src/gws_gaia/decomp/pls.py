@@ -9,6 +9,7 @@ from gws_core import (BoolParam, ConfigParams, Dataset, FloatRField, IntParam,
                       ScatterPlot3DView, Table, TabularView, Task, TaskInputs,
                       TaskOutputs, resource_decorator, task_decorator, view)
 from pandas import DataFrame, concat
+import numpy as np
 from sklearn.cross_decomposition import PLSRegression
 
 from ..base.base_resource import BaseResourceSet
@@ -49,12 +50,15 @@ class PLSTrainerResult(BaseResourceSet):
 
     def _create_prediction_table(self) -> DataFrame:
         pls: PLSRegression = self.get_result()  # lir du type Linear Regression
-        data: DataFrame = pls.predict(self.get_training_set().get_features().values)
+
+        data: DataFrame = np.concatenate((self.get_training_set().get_targets().values, pls.predict(self.get_training_set().get_features().values)), axis=1)
+        columns = ["measured_" + self.get_training_set().target_names[0], "predicted_" +  self.get_training_set().target_names[0]]
         data = DataFrame(
             data=data,
-            columns=self.get_training_set().target_names,
+            columns=columns,
             index=self.get_training_set().row_names
         )
+
         table = Table(data=data)
         table.name = self.PREDICTION_TABLE_NAME
         row_tags = self.get_training_set().get_row_tags()

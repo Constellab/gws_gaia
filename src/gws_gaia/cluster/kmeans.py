@@ -6,7 +6,7 @@
 import numpy as np
 from gws_core import (ConfigParams, Dataset, FloatParam, FloatRField, IntParam,
                       Resource, ResourceRField, ScatterPlot2DView,
-                      ScatterPlot3DView, StrParam, TabularView, Task,
+                      ScatterPlot3DView, StrParam, Table, TabularView, Task,
                       TaskInputs, TaskOutputs, resource_decorator,
                       task_decorator, view)
 from numpy import concatenate, ndarray, transpose, unique, vstack
@@ -25,6 +25,27 @@ from ..base.base_resource import BaseResourceSet
 @resource_decorator("KMeansResult", hide=True)
 class KMeansResult(BaseResourceSet):
     """ KMeansResult """
+    LABELED_TABLE_NAME = "Labeled data table"
+
+    def __init__(self, training_set=None, result=None):
+        super().__init__(training_set=training_set, result=result)
+        # append tables
+        if training_set is not None:
+            self._create_labeled_table()
+
+    def _create_labeled_table(self):
+        kmeans: KMeans = self.get_result()
+        columns = self.get_training_set().feature_names
+        columns.extend(['label'])
+        train_set = self.get_training_set().get_features().values
+        label = kmeans.labels_[:, None]
+        data = concatenate((train_set, label), axis=1)
+        data = DataFrame(data, index=self.get_training_set().row_names, columns=columns)
+        table = Table(data=data)
+        row_tags = self.get_training_set().get_row_tags()
+        table.name = self.LABELED_TABLE_NAME
+        table.set_row_tags(row_tags)
+        self.add_resource(table)
 
     @view(view_type=TabularView, human_name="Label table", short_description="Table of labels")
     def view_labels_as_table(self, params: ConfigParams) -> dict:

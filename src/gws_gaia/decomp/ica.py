@@ -4,7 +4,7 @@
 # About us: https://gencovery.com
 
 from gws_core import (ConfigParams, Dataset, IntParam, Task, TaskInputs,
-                      TaskOutputs, resource_decorator, task_decorator)
+                      TaskOutputs, resource_decorator, task_decorator, InputSpec, OutputSpec)
 from sklearn.decomposition import FastICA
 
 from ..base.base_resource import BaseResource
@@ -35,8 +35,8 @@ class ICATrainer(Task):
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.ICA.html#sklearn.decomposition.ICA.fit for more details.
     """
-    input_specs = {'dataset': Dataset}
-    output_specs = {'result': ICAResult}
+    input_specs = {'dataset': InputSpec(Dataset, human_name="Dataset", short_description="The input dataset")}
+    output_specs = {'result': OutputSpec(ICAResult, human_name="result", short_description="The output result")}
     config_specs = {
         'nb_components': IntParam(default_value=2, min_value=0)
     }

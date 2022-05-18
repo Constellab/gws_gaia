@@ -7,7 +7,7 @@ from gws_core import (BarPlotView, BoolParam, ConfigParams, Dataset,
                       FloatRField, IntParam, Resource, ResourceRField,
                       ScatterPlot2DView, ScatterPlot3DView, Table, TabularView,
                       Task, TaskInputs, TaskOutputs, resource_decorator,
-                      task_decorator, view)
+                      task_decorator, view,  InputSpec, OutputSpec)
 from pandas import DataFrame
 from sklearn.decomposition import PCA
 
@@ -110,8 +110,8 @@ class PCATrainer(Task):
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.PCA.html for more details
     """
-    input_specs = {'dataset': Dataset}
-    output_specs = {'result': PCATrainerResult}
+    input_specs = {'dataset': InputSpec(Dataset, human_name="Dataset", short_description="The input dataset")}
+    output_specs = {'result': OutputSpec(PCATrainerResult, human_name="result", short_description="The output result")}
     config_specs = {
         'nb_components': IntParam(default_value=2, min_value=2)
     }
@@ -140,10 +140,10 @@ class PCATransformer(Task):
     See https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.PCA.html for more details
 
     """
-    input_specs = {'dataset': Dataset, 'learned_model': PCATrainerResult}
-    output_specs = {'result': Dataset}
-    config_specs = {}
-
+    input_specs = {'dataset': InputSpec(Dataset, human_name="Dataset", short_description="The input dataset"),
+            'learned_model': InputSpec(PCATrainerResult, human_name="Learned model", short_description="The input model")}
+    output_specs = {'result': OutputSpec(Dataset, human_name="result", short_description="The output result")}
+    
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']

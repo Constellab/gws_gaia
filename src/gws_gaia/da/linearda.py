@@ -7,7 +7,7 @@ from gws_core import (BarPlotView, ConfigParams, Dataset, FloatParam,
                       FloatRField, IntParam, IntRField, Resource,
                       ResourceRField, ScatterPlot2DView, ScatterPlot3DView,
                       StrParam, Table, TabularView, Task, TaskInputs,
-                      TaskOutputs, resource_decorator, task_decorator, view)
+                      TaskOutputs, resource_decorator, task_decorator, view, InputSpec, OutputSpec)
 from numpy import ravel, shape, unique
 from pandas import DataFrame
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
@@ -112,8 +112,8 @@ class LDATrainer(Task):
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.discriminant_analysis.LinearDiscriminantAnalysis.html for more details.
     """
-    input_specs = {'dataset': Dataset}
-    output_specs = {'result': LDAResult}
+    input_specs = {'dataset': InputSpec(Dataset, human_name="Dataset", short_description="The input dataset")}
+    output_specs = {'result': OutputSpec(LDAResult, human_name="result", short_description="The output result")}
     config_specs = {
         'solver': StrParam(default_value='svd'),
         'nb_components': IntParam(default_value=None, min_value=0)
@@ -142,8 +142,9 @@ class LDATransformer(Task):
     See https://scikit-learn.org/stable/modules/generated/sklearn.discriminant_analysis.LinearDiscriminantAnalysis.html for more details
 
     """
-    input_specs = {'dataset': Dataset, 'learned_model': LDAResult}
-    output_specs = {'result': Dataset}
+    input_specs = {'dataset': InputSpec(Dataset, human_name="Dataset", short_description="The input dataset"),
+            'learned_model': InputSpec(LDAResult, human_name="Learned model", short_description="The input model")}
+    output_specs = {'result': OutputSpec(Dataset, human_name="result", short_description="The output result")}
     config_specs = {}
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
@@ -174,8 +175,9 @@ class LDAPredictor(Task):
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.discriminant_analysis.LinearDiscriminantAnalysis.html for more details.
     """
-    input_specs = {'dataset': Dataset, 'learned_model': LDAResult}
-    output_specs = {'result': Dataset}
+    input_specs = {'dataset': InputSpec(Dataset, human_name="Dataset", short_description="The input dataset"),
+            'learned_model': InputSpec(LDAResult, human_name="Learned model", short_description="The input model")}
+    output_specs = {'result': OutputSpec(Dataset, human_name="result", short_description="The output result")}
     config_specs = {}
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:

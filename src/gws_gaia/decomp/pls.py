@@ -7,7 +7,8 @@
 from gws_core import (BoolParam, ConfigParams, Dataset, FloatRField, IntParam,
                       Resource, ResourceRField, ScatterPlot2DView,
                       ScatterPlot3DView, Table, TabularView, Task, TaskInputs,
-                      TaskOutputs, resource_decorator, task_decorator, view)
+                      TaskOutputs, resource_decorator, task_decorator, view, TechnicalInfo, 
+                      InputSpec, OutputSpec)
 from pandas import DataFrame, concat
 import numpy as np
 from sklearn.cross_decomposition import PLSRegression
@@ -35,6 +36,7 @@ class PLSTrainerResult(BaseResourceSet):
         if training_set is not None:
             self._create_transformed_table()
             self._create_prediction_table()
+            self._get_r2()
 
     def _create_transformed_table(self):
         pls: PLSRegression = self.get_result()
@@ -87,7 +89,8 @@ class PLSTrainerResult(BaseResourceSet):
                 X=self.get_training_set().get_features().values,
                 y=self.get_training_set().get_targets().values
             )
-        return self._r2
+        technical_info = TechnicalInfo(key='R2', value=self._r2)
+        self.add_technical_info(technical_info)
 
     @view(view_type=ScatterPlot2DView, human_name='2D-score plot', short_description='2D-score plot')
     def view_scores_as_2d_plot(self, params: ConfigParams) -> dict:
@@ -143,8 +146,8 @@ class PLSTrainer(Task):
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.cross_decomposition.PLSRegression.html for more details.
     """
-    input_specs = {'dataset': Dataset}
-    output_specs = {'result': PLSTrainerResult}
+    input_specs = {'dataset': InputSpec(Dataset, human_name="Dataset", short_description="The input dataset")}
+    output_specs = {'result': OutputSpec(PLSTrainerResult, human_name="result", short_description="The output result")}
     config_specs = {
         'nb_components': IntParam(default_value=2, min_value=0)
     }
@@ -176,8 +179,9 @@ class PLSTransformer(Task):
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.cross_decomposition.PLSRegression.html for more details
     """
-    input_specs = {'dataset': Dataset, 'learned_model': PLSTrainerResult}
-    output_specs = {'result': Dataset}
+    input_specs = {'dataset': InputSpec(Dataset, human_name="Dataset", short_description="The input dataset"),
+            'learned_model': InputSpec(PLSTrainerResult, human_name="Learned model", short_description="The input model")}
+    output_specs = {'result': OutputSpec(Dataset, human_name="result", short_description="The output result")}
     config_specs = {}
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
@@ -208,8 +212,9 @@ class PLSPredictor(Task):
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.cross_decomposition.PLSRegression.html for more details.
     """
-    input_specs = {'dataset': Dataset, 'learned_model': PLSTrainerResult}
-    output_specs = {'result': Dataset}
+    input_specs = {'dataset': InputSpec(Dataset, human_name="Dataset", short_description="The input dataset"),
+            'learned_model': InputSpec(PLSTrainerResult, human_name="Learned model", short_description="The input model")}
+    output_specs = {'result': OutputSpec(Dataset, human_name="result", short_description="The output result")}
     config_specs = {}
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:

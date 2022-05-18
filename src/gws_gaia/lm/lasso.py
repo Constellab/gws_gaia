@@ -8,7 +8,8 @@ from gws_core import (BadRequestException, ConfigParams, DataFrameRField,
                       Dataset, FloatParam, FloatRField, IntParam, Resource,
                       ResourceRField, ScatterPlot2DView, ScatterPlot3DView,
                       StrParam, Table, TabularView, Task, TaskInputs,
-                      TaskOutputs, resource_decorator, task_decorator, view)
+                      TaskOutputs, resource_decorator, task_decorator, view,
+                      InputSpec, OutputSpec)
 from numpy import ravel
 from pandas import DataFrame, concat
 from sklearn.linear_model import Lasso
@@ -91,8 +92,8 @@ class LassoTrainer(Task):
 
     See https://scikit-learn.org/0.15/modules/generated/sklearn.linear_model.Lasso.html for more details.
     """
-    input_specs = {'dataset': Dataset}
-    output_specs = {'result': LassoResult}
+    input_specs = {'dataset': InputSpec(Dataset, human_name="Dataset", short_description="The input dataset")}
+    output_specs = {'result': OutputSpec(LassoResult, human_name="result", short_description="The output result")}
     config_specs = {
         'alpha': FloatParam(default_value=1, min_value=0)
     }
@@ -119,8 +120,9 @@ class LassoPredictor(Task):
 
     See https://scikit-learn.org/0.15/modules/generated/sklearn.linear_model.Lasso.html for more details.
     """
-    input_specs = {'dataset': Dataset, 'learned_model': LassoResult}
-    output_specs = {'result': Dataset}
+    input_specs = {'dataset': InputSpec(Dataset, human_name="Dataset", short_description="The input dataset"),
+            'learned_model': InputSpec(LassoResult, human_name="Learned model", short_description="The input model")}
+    output_specs = {'result': OutputSpec(Dataset, human_name="result", short_description="The output result")}
     config_specs = {}
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:

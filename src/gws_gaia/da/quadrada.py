@@ -5,7 +5,7 @@
 
 from gws_core import (ConfigParams, Dataset, FloatParam, IntParam, Resource,
                       StrParam, Task, TaskInputs, TaskOutputs,
-                      resource_decorator, task_decorator)
+                      resource_decorator, task_decorator, InputSpec, OutputSpec)
 from numpy import ravel
 from pandas import DataFrame
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
@@ -38,8 +38,8 @@ class QDATrainer(Task):
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.discriminant_analysis.QuadraticDiscriminantAnalysis.html for more details.
     """
-    input_specs = {'dataset': Dataset}
-    output_specs = {'result': QDAResult}
+    input_specs = {'dataset': InputSpec(Dataset, human_name="Dataset", short_description="The input dataset")}
+    output_specs = {'result': OutputSpec(QDAResult, human_name="result", short_description="The output result")}
     config_specs = {
         'reg_param': FloatParam(default_value=0),
     }
@@ -66,8 +66,9 @@ class QDAPredictor(Task):
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.discriminant_analysis.QuadraticDiscriminantAnalysis.html for more details.
     """
-    input_specs = {'dataset': Dataset, 'learned_model': QDAResult}
-    output_specs = {'result': Dataset}
+    input_specs = {'dataset': InputSpec(Dataset, human_name="Dataset", short_description="The input dataset"),
+            'learned_model': InputSpec(QDAResult, human_name="Learned model", short_description="The input model")}
+    output_specs = {'result': OutputSpec(Dataset, human_name="result", short_description="The output result")}
     config_specs = {}
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:

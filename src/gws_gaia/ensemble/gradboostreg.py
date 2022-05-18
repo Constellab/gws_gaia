@@ -5,7 +5,7 @@
 
 
 from gws_core import (ConfigParams, Dataset, IntParam, Task, TaskInputs,
-                      TaskOutputs, resource_decorator, task_decorator)
+                      TaskOutputs, resource_decorator, task_decorator, InputSpec, OutputSpec)
 from numpy import ravel
 from sklearn.ensemble import GradientBoostingRegressor
 
@@ -37,8 +37,8 @@ class GradientBoostingRegressorTrainer(Task):
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingRegressor.html for more details.
     """
-    input_specs = {'dataset': Dataset}
-    output_specs = {'result': GradientBoostingRegressorResult}
+    input_specs = {'dataset': InputSpec(Dataset, human_name="Dataset", short_description="The input dataset")}
+    output_specs = {'result': OutputSpec(GradientBoostingRegressorResult, human_name="result", short_description="The output result")}
     config_specs = {
         'nb_estimators': IntParam(default_value=100, min_value=0)
     }
@@ -65,8 +65,9 @@ class GradientBoostingRegressorPredictor(Task):
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingRegressor.html for more details.
     """
-    input_specs = {'dataset': Dataset, 'learned_model': GradientBoostingRegressorResult}
-    output_specs = {'result': Dataset}
+    input_specs = {'dataset': InputSpec(Dataset, human_name="Dataset", short_description="The input dataset"),
+            'learned_model': InputSpec(GradientBoostingRegressorResult, human_name="Learned model", short_description="The input model")}
+    output_specs = {'result': OutputSpec(Dataset, human_name="result", short_description="The output result")}
     config_specs = {}
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:

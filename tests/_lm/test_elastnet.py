@@ -18,19 +18,19 @@ class TestTrainer(BaseTestCase):
         )
         outputs = await tester.run()
         trainer_result = outputs['result']
-        #--------------------------------------------------------------------
-        # run views
-        tester = ViewTester(
-            view=trainer_result.view_predictions_as_table({})
-        )
-        dic = tester.to_dict()
-        self.assertEqual(dic["type"], "table-view")
+        # #--------------------------------------------------------------------
+        # # run views
+        # tester = ViewTester(
+        #     view=trainer_result.view_predictions_as_table({})
+        # )
+        # dic = tester.to_dict()
+        # self.assertEqual(dic["type"], "table-view")
 
-        tester = ViewTester(
-            view=trainer_result.view_predictions_as_2d_plot({})
-        )
-        dic = tester.to_dict()
-        self.assertEqual(dic["type"], "scatter-plot-2d-view")
+        # tester = ViewTester(
+        #     view=trainer_result.view_predictions_as_2d_plot({})
+        # )
+        # dic = tester.to_dict()
+        # self.assertEqual(dic["type"], "scatter-plot-2d-view")
         #-----------------------------------------------------------------
         # run predictior
         tester = TaskRunner(

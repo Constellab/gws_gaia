@@ -6,7 +6,7 @@
 
 from gws_core import (ConfigParams, Dataset, FloatParam, IntParam, Resource,
                       StrParam, Task, TaskInputs, TaskOutputs,
-                      resource_decorator, task_decorator)
+                      resource_decorator, task_decorator, InputSpec, OutputSpec)
 from numpy import ravel
 from pandas import DataFrame
 from sklearn.linear_model import SGDClassifier
@@ -37,8 +37,8 @@ class SGDClassifierTrainer(Task):
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.SGDClassifier.html for more details.
     """
-    input_specs = {'dataset' : Dataset}
-    output_specs = {'result' : SGDClassifierResult}
+    input_specs = {'dataset': InputSpec(Dataset, human_name="Dataset", short_description="The input dataset")}
+    output_specs = {'result': OutputSpec(SGDClassifierResult, human_name="result", short_description="The output result")}
     config_specs = {
         'loss':StrParam(default_value='hinge'),
         'alpha': FloatParam(default_value=0.0001, min_value=0),
@@ -66,8 +66,9 @@ class SGDClassifierPredictor(Task):
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.SGDClassifier.html for more details.
     """
-    input_specs = {'dataset' : Dataset, 'learned_model': SGDClassifierResult}
-    output_specs = {'result' : Dataset}
+    input_specs = {'dataset': InputSpec(Dataset, human_name="Dataset", short_description="The input dataset"),
+            'learned_model': InputSpec(SGDClassifierResult, human_name="Learned model", short_description="The input model")}
+    output_specs = {'result': OutputSpec(Dataset, human_name="result", short_description="The output result")}
     config_specs = {   }
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:

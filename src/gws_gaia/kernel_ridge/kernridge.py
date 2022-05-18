@@ -5,7 +5,7 @@
 
 from gws_core import (ConfigParams, Dataset, FloatParam, StrParam, Task,
                       TaskInputs, TaskOutputs, resource_decorator,
-                      task_decorator)
+                      task_decorator, InputSpec, OutputSpec)
 from numpy import ravel
 from sklearn.kernel_ridge import KernelRidge
 
@@ -37,8 +37,8 @@ class KernelRidgeTrainer(Task):
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.kernel_ridge.KernelRidge.html for more details.
     """
-    input_specs = {'dataset': Dataset}
-    output_specs = {'result': KernelRidgeResult}
+    input_specs = {'dataset': InputSpec(Dataset, human_name="Dataset", short_description="The input dataset")}
+    output_specs = {'result': OutputSpec(KernelRidgeResult, human_name="result", short_description="The output result")}
     config_specs = {
         'gamma': FloatParam(default_value=None),
         'kernel': StrParam(default_value='linear')
@@ -66,8 +66,9 @@ class KernelRidgePredictor(Task):
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.kernel_ridge.KernelRidge.html for more details.
     """
-    input_specs = {'dataset': Dataset, 'learned_model': KernelRidgeResult}
-    output_specs = {'result': Dataset}
+    input_specs = {'dataset': InputSpec(Dataset, human_name="Dataset", short_description="The input dataset"),
+            'learned_model': InputSpec(KernelRidgeResult, human_name="Learned model", short_description="The input model")}
+    output_specs = {'result': OutputSpec(Dataset, human_name="result", short_description="The output result")}
     config_specs = {}
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:

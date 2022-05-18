@@ -7,12 +7,13 @@ from gws_core import (BadRequestException, ConfigParams, DataFrameRField,
                       Dataset, FloatParam, FloatRField, IntParam, Resource,
                       ResourceRField, ScatterPlot2DView, ScatterPlot3DView,
                       StrParam, Table, TabularView, Task, TaskInputs,
-                      TaskOutputs, resource_decorator, task_decorator, view)
+                      TaskOutputs, resource_decorator, task_decorator, view, 
+                      InputSpec, OutputSpec)
 from numpy import ravel
 from pandas import DataFrame, concat
 from sklearn.linear_model import ElasticNet
 
-from ..base.base_resource import BaseResource
+from ..base.base_resource import BaseResourceSet
 
 # *****************************************************************************
 #
@@ -22,9 +23,10 @@ from ..base.base_resource import BaseResource
 
 
 @resource_decorator("ElasticNetResult", hide=True)
-class ElasticNetResult(BaseResource):
+class ElasticNetResult(BaseResourceSet):
+    """ ElasticNetResult """
 
-    _training_set: Resource = ResourceRField()
+    PREDICTION_TABLE_NAME = "Prediction table"
     _R2: int = FloatRField()
 
     def _get_predicted_data(self) -> DataFrame:
@@ -90,8 +92,8 @@ class ElasticNetTrainer(Task):
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.ElasticNet.html for more details
     """
-    input_specs = {'dataset': Dataset}
-    output_specs = {'result': ElasticNetResult}
+    input_specs = {'dataset': InputSpec(Dataset, human_name="Dataset", short_description="The input dataset")}
+    output_specs = {'result': OutputSpec(ElasticNetResult, human_name="result", short_description="The output result")}
     config_specs = {
         'alpha': FloatParam(default_value=1, min_value=0)
     }
@@ -118,8 +120,9 @@ class ElasticNetPredictor(Task):
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.ElasticNet.html for more details
     """
-    input_specs = {'dataset': Dataset, 'learned_model': ElasticNetResult}
-    output_specs = {'result': Dataset}
+    input_specs = {'dataset': InputSpec(Dataset, human_name="Dataset", short_description="The input dataset"),
+            'learned_model': InputSpec(ElasticNetResult, human_name="Learned model", short_description="The input model")}
+    output_specs = {'result': OutputSpec(Dataset, human_name="result", short_description="The output result")}
     config_specs = {}
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:

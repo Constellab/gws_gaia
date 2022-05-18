@@ -6,14 +6,14 @@
 import numpy as np
 from gws_core import (ConfigParams, Dataset, FloatParam, IntParam, Resource,
                       StrParam, Task, TaskInputs, TaskOutputs,
-                      resource_decorator, task_decorator)
+                      resource_decorator, task_decorator, InputSpec, OutputSpec)
 from pandas import DataFrame
 
 import tensorflow as tf
 
 # class Rescaler(Task):
-#     input_specs = {'tensor' : Tensor}
-#     output_specs = {'result' : Tensor}
+#     input_specs = {'tensor': InputSpec(Tensor, human_name="Tensor", short_description="The input tensor")}
+#     output_specs = {'result': OutputSpec(Tensor, human_name="Result", short_description="The output result")}
 #     config_specs = {
 #         'pool_size':IntParam(default_value=2, min_value=0}
 #     }

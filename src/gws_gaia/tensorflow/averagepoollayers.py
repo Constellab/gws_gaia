@@ -6,7 +6,7 @@
 
 from gws_core import (ConfigParams, Dataset, FloatParam, IntParam, ListParam,
                       Resource, StrParam, Task, TaskInputs, TaskOutputs,
-                      resource_decorator, task_decorator)
+                      resource_decorator, task_decorator, InputSpec, OutputSpec)
 
 from tensorflow.keras.layers import AveragePooling1D as Kerasaveragepooling1d
 from tensorflow.keras.layers import AveragePooling2D as Kerasaveragepooling2d
@@ -27,8 +27,8 @@ class AveragePooling1D(Task):
     """
     Average pooling operation for 1D data (temporal data)
     """
-    input_specs = {'tensor': Tensor}
-    output_specs = {'result': Tensor}
+    input_specs = {'tensor': InputSpec(Tensor, human_name="Tensor", short_description="The input tensor")}
+    output_specs = {'result': OutputSpec(Tensor, human_name="Result", short_description="The output result")}
     config_specs = {
         'pool_size': IntParam(default_value=2, min_value=0)
     }
@@ -53,9 +53,8 @@ class AveragePooling2D(Task):
     """
     Average pooling operation for 2D data (spatial data)
     """
-
-    input_specs = {'tensor': Tensor}
-    output_specs = {'result': Tensor}
+    input_specs = {'tensor': InputSpec(Tensor, human_name="Tensor", short_description="The input tensor")}
+    output_specs = {'result': OutputSpec(Tensor, human_name="Result", short_description="The output result")}
     config_specs = {
         'pool_size': ListParam(default_value=[2, 2])
     }
@@ -81,9 +80,8 @@ class AveragePooling3D(Task):
     """
     Average pooling operation for 3D data (spatial or spatio-temporal data)
     """
-
-    input_specs = {'tensor': Tensor}
-    output_specs = {'result': Tensor}
+    input_specs = {'tensor': InputSpec(Tensor, human_name="Tensor", short_description="The input tensor")}
+    output_specs = {'result': OutputSpec(Tensor, human_name="Result", short_description="The output result")}
     config_specs = {
         'pool_size': ListParam(default_value=[2, 2, 2])
     }

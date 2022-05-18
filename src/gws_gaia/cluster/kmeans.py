@@ -8,7 +8,7 @@ from gws_core import (ConfigParams, Dataset, FloatParam, FloatRField, IntParam,
                       Resource, ResourceRField, ScatterPlot2DView,
                       ScatterPlot3DView, StrParam, Table, TabularView, Task,
                       TaskInputs, TaskOutputs, resource_decorator,
-                      task_decorator, view)
+                      task_decorator, view, InputSpec, OutputSpec)
 from numpy import concatenate, ndarray, transpose, unique, vstack
 from pandas import DataFrame, concat
 from sklearn.cluster import KMeans
@@ -36,13 +36,25 @@ class KMeansResult(BaseResourceSet):
     def _create_labeled_table(self):
         kmeans: KMeans = self.get_result()
         columns = self.get_training_set().feature_names
-        columns.extend(['label'])
+#        columns.extend(['label'])
         train_set = self.get_training_set().get_features().values
         label = kmeans.labels_[:, None]
-        data = concatenate((train_set, label), axis=1)
+        label = label.tolist()
+        flat_label = list(concatenate(label).flat)
+        label_name = ['label'] * len(label)
+        #-----------------
+        # Interleaving flat_label and label_name
+        res = label_name + flat_label
+        res[::2] = label_name
+        res[1::2] = flat_label
+        label = [res[i:i+2] for i in range(0, len(res), 2)]
+        #-----------------
+        for i in range(len(label)):
+           label[i] = {label[i][0]: label[i][1]}          
+        data = train_set
         data = DataFrame(data, index=self.get_training_set().row_names, columns=columns)
         table = Table(data=data)
-        row_tags = self.get_training_set().get_row_tags()
+        row_tags = label
         table.name = self.LABELED_TABLE_NAME
         table.set_row_tags(row_tags)
         self.add_resource(table)
@@ -102,8 +114,8 @@ class KMeansTrainer(Task):
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html for more details.
     """
-    input_specs = {'dataset': Dataset}
-    output_specs = {'result': KMeansResult}
+    input_specs = {'dataset': InputSpec(Dataset, human_name="Dataset", short_description="The input dataset")}
+    output_specs = {'result': OutputSpec(KMeansResult, human_name="result", short_description="The output result")}
     config_specs = {
         'nb_clusters': IntParam(default_value=2, min_value=0)
     }
@@ -130,8 +142,9 @@ class KMeansPredictor(Task):
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html for more details.
     """
-    input_specs = {'dataset': Dataset, 'learned_model': KMeansResult}
-    output_specs = {'result': Dataset}
+    input_specs = {'dataset': InputSpec(Dataset, human_name="Dataset", short_description="The input dataset"),
+            'learned_model': InputSpec(KMeansResult, human_name="Learned model", short_description="The input model")}
+    output_specs = {'result': OutputSpec(Dataset, human_name="result", short_description="The output result")}
     config_specs = {}
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:

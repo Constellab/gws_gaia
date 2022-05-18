@@ -9,7 +9,7 @@ from gws_core import (ConfigParams, Dataset, FloatParam, FloatRField, IntParam,
                       Resource, ResourceRField, ScatterPlot2DView,
                       ScatterPlot3DView, StrParam, TabularView, Task,
                       TaskInputs, TaskOutputs, resource_decorator,
-                      task_decorator, view)
+                      task_decorator, view, InputSpec, OutputSpec)
 from numpy import concatenate, ndarray, transpose, unique, vstack
 from pandas import DataFrame, concat
 from sklearn.cluster import AgglomerativeClustering
@@ -85,8 +85,8 @@ class AgglomerativeClusteringTrainer(Task):
 @
     See https://scikit-learn.org/stable/modules/generated/sklearn.cluster.AgglomerativeClustering.html for more details
     """
-    input_specs = {'dataset': Dataset}
-    output_specs = {'result': AgglomerativeClusteringResult}
+    input_specs = {'dataset': InputSpec(Dataset, human_name="Dataset", short_description="The input dataset")}
+    output_specs = {'result': OutputSpec(AgglomerativeClusteringResult, human_name="result", short_description="The output result")}
     config_specs = {
         "nb_clusters": IntParam(default_value=2, min_value=0),
         "linkage": StrParam(default_value="ward", allowed_values=["ward", "complete", "average", "single"]),

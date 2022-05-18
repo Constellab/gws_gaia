@@ -6,7 +6,7 @@
 
 from gws_core import (BoolParam, ConfigParams, Dataset, FloatParam, IntParam,
                       Resource, StrParam, Task, TaskInputs, TaskOutputs,
-                      resource_decorator, task_decorator)
+                      resource_decorator, task_decorator, InputSpec, OutputSpec)
 from numpy import ravel
 from pandas import DataFrame
 from sklearn.svm import SVC
@@ -39,8 +39,8 @@ class SVCTrainer(Task):
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html for more details.
     """
-    input_specs = {'dataset': Dataset}
-    output_specs = {'result': SVCResult}
+    input_specs = {'dataset': InputSpec(Dataset, human_name="Dataset", short_description="The input dataset")}
+    output_specs = {'result': OutputSpec(SVCResult, human_name="result", short_description="The output result")}
     config_specs = {
         'probability': BoolParam(default_value=False),
         'kernel': StrParam(default_value='rbf')
@@ -68,8 +68,9 @@ class SVCPredictor(Task):
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html for more details.
     """
-    input_specs = {'dataset': Dataset, 'learned_model': SVCResult}
-    output_specs = {'result': Dataset}
+    input_specs = {'dataset': InputSpec(Dataset, human_name="Dataset", short_description="The input dataset"),
+            'learned_model': InputSpec(SVCResult, human_name="Learned model", short_description="The input model")}
+    output_specs = {'result': OutputSpec(Dataset, human_name="result", short_description="The output result")}
     config_specs = {}
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:

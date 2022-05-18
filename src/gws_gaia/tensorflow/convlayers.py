@@ -5,7 +5,7 @@
 
 from gws_core import (ConfigParams, Dataset, FloatParam, IntParam, ListParam,
                       Resource, StrParam, Task, TaskInputs, TaskOutputs,
-                      resource_decorator, task_decorator)
+                      resource_decorator, task_decorator, InputSpec, OutputSpec)
 
 from tensorflow.keras.layers import Conv1D as Kerasconv1d
 from tensorflow.keras.layers import Conv2D as Kerasconv2d
@@ -29,8 +29,8 @@ class Conv1D(Task):
 
     See https://keras.io/api/layers/convolution_layers/convolution1d/ for more details
     """
-    input_specs = {'tensor': Tensor}
-    output_specs = {'result': Tensor}
+    input_specs = {'tensor': InputSpec(Tensor, human_name="Tensor", short_description="The input tensor")}
+    output_specs = {'result': OutputSpec(Tensor, human_name="Result", short_description="The output result")}
     config_specs = {
         'nb_filters': IntParam(default_value=32, min_value=0),
         'kernel_size': IntParam(default_value=3, min_value=0),
@@ -62,8 +62,8 @@ class Conv2D(Task):
 
     See https://keras.io/api/layers/convolution_layers/convolution2d/ for more details
     """
-    input_specs = {'tensor': Tensor}
-    output_specs = {'result': Tensor}
+    input_specs = {'tensor': InputSpec(Tensor, human_name="Tensor", short_description="The input tensor")}
+    output_specs = {'result': OutputSpec(Tensor, human_name="Result", short_description="The output result")}
     config_specs = {
         'nb_filters': IntParam(default_value=32, min_value=0),
         'kernel_size': ListParam(default_value=[2, 2]),
@@ -97,8 +97,8 @@ class Conv3D(Task):
 
     See https://keras.io/api/layers/convolution_layers/convolution3d/ for more details
     """
-    input_specs = {'tensor': Tensor}
-    output_specs = {'result': Tensor}
+    input_specs = {'tensor': InputSpec(Tensor, human_name="Tensor", short_description="The input tensor")}
+    output_specs = {'result': OutputSpec(Tensor, human_name="Result", short_description="The output result")}
     config_specs = {
         'nb_filters': IntParam(default_value=32, min_value=0),
         'kernel_size': ListParam(default_value=[2, 2, 2]),

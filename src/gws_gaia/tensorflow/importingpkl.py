@@ -9,7 +9,7 @@ import sys
 
 from gws_core import (ConfigParams, FloatParam, IntParam, Resource, StrParam,
                       Task, TaskInputs, TaskOutputs, resource_decorator,
-                      task_decorator)
+                      task_decorator, InputSpec, OutputSpec)
 
 import tensorflow as tf
 from tensorflow.python.framework.ops import Tensor as Kerastensor
@@ -26,7 +26,7 @@ from .data import DeepResult
 @task_decorator("PickleImporter", human_name="Pickle importer")
 class PickleImporter(Task):
     input_specs = {}
-    output_specs = {'result': DeepResult}
+    output_specs = {'result': OutputSpec(DeepResult, human_name="Result", short_description="The output result")}
     config_specs = {
         'file_path': StrParam(default_value=""),
     }
@@ -50,8 +50,8 @@ class PickleImporter(Task):
 
 @task_decorator("Preprocessor")
 class Preprocessor(Task):
-    input_specs = {'data': DeepResult}
-    output_specs = {'result': DeepResult}
+    input_specs = {'data': OutputSpec(DeepResult, human_name="Result", short_description="The input data")}
+    output_specs = {'result': OutputSpec(DeepResult, human_name="Result", short_description="The output result")}
     config_specs = {
         'number_classes': IntParam(default_value=10, min_value=0)
     }
@@ -78,8 +78,8 @@ class Preprocessor(Task):
 
 @task_decorator("AdhocExtractor")
 class AdhocExtractor(Task):
-    input_specs = {'data': DeepResult}
-    output_specs = {'result': DeepResult}
+    input_specs = {'data': OutputSpec(DeepResult, human_name="Result", short_description="The input data")}
+    output_specs = {'result': OutputSpec(DeepResult, human_name="Result", short_description="The output result")}
     config_specs = {}
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:

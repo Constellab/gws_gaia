@@ -5,7 +5,7 @@
 
 from gws_core import (BoolParam, ConfigParams, Dataset, FloatParam, IntParam,
                       Resource, StrParam, Task, TaskInputs, TaskOutputs,
-                      resource_decorator, task_decorator)
+                      resource_decorator, task_decorator, InputSpec, OutputSpec)
 
 from tensorflow.keras.layers import Activation as KerasActivation
 from tensorflow.keras.layers import Dense as KerasDense
@@ -31,8 +31,8 @@ class Dense(Task):
 
     See https://keras.io/api/layers/core_layers/dense/ for more details
     """
-    input_specs = {'tensor': Tensor}
-    output_specs = {'result': Tensor}
+    input_specs = {'tensor': InputSpec(Tensor, human_name="Tensor", short_description="The input tensor")}
+    output_specs = {'result': OutputSpec(Tensor, human_name="Result", short_description="The output result")}
     config_specs = {
         'units': IntParam(default_value=32, min_value=0),
         'activation': StrParam(default_value='relu'),
@@ -61,8 +61,8 @@ class Activation(Task):
 
     See https://keras.io/api/layers/core_layers/activation/ for more details
     """
-    input_specs = {'tensor': Tensor}
-    output_specs = {'result': Tensor}
+    input_specs = {'tensor': InputSpec(Tensor, human_name="Tensor", short_description="The input tensor")}
+    output_specs = {'result': OutputSpec(Tensor, human_name="Result", short_description="The output result")}
     config_specs = {
         'activation_type': StrParam(default_value='relu')
     }
@@ -89,8 +89,8 @@ class Embedding(Task):
 
     See https://keras.io/api/layers/core_layers/embedding/ for more details
     """
-    input_specs = {'tensor': Tensor}
-    output_specs = {'result': Tensor}
+    input_specs = {'tensor': InputSpec(Tensor, human_name="Tensor", short_description="The input tensor")}
+    output_specs = {'result': OutputSpec(Tensor, human_name="Result", short_description="The output result")}
     config_specs = {
         'input_dimension': IntParam(default_value=1000, min_value=0),
         'output_dimension': IntParam(default_value=64, min_value=0),

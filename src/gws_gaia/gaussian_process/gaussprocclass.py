@@ -4,7 +4,7 @@
 # About us: https://gencovery.com
 
 from gws_core import (ConfigParams, Dataset, IntParam, Task, TaskInputs,
-                      TaskOutputs, resource_decorator, task_decorator)
+                      TaskOutputs, resource_decorator, task_decorator, InputSpec, OutputSpec)
 from numpy import ravel
 from sklearn.gaussian_process import GaussianProcessClassifier
 
@@ -36,8 +36,8 @@ class GaussianProcessClassifierTrainer(Task):
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.gaussian_process.GaussianProcessClassifier.html#sklearn.gaussian_process.GaussianProcessClassifier.fit for more details
     """
-    input_specs = {'dataset': Dataset}
-    output_specs = {'result': GaussianProcessClassifierResult}
+    input_specs = {'dataset': InputSpec(Dataset, human_name="Dataset", short_description="The input dataset")}
+    output_specs = {'result': OutputSpec(GaussianProcessClassifierResult, human_name="result", short_description="The output result")}
     config_specs = {
         'random_state': IntParam(default_value=None, min_value=0)
     }
@@ -64,8 +64,9 @@ class GaussianProcessClassifierPredictor(Task):
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.gaussian_process.GaussianProcessClassifier.html#sklearn.gaussian_process.GaussianProcessClassifier.fit for more details
     """
-    input_specs = {'dataset': Dataset, 'learned_model': GaussianProcessClassifierResult}
-    output_specs = {'result': Dataset}
+    input_specs = {'dataset': InputSpec(Dataset, human_name="Dataset", short_description="The input dataset"),
+            'learned_model': InputSpec(GaussianProcessClassifierResult, human_name="Learned model", short_description="The input model")}
+    output_specs = {'result': OutputSpec(Dataset, human_name="result", short_description="The output result")}
     config_specs = {}
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:

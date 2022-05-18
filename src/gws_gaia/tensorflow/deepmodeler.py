@@ -5,7 +5,7 @@
 
 from gws_core import (ConfigParams, Dataset, FloatParam, IntParam, Resource,
                       StrParam, Task, TaskInputs, TaskOutputs,
-                      resource_decorator, task_decorator)
+                      resource_decorator, task_decorator, InputSpec, OutputSpec)
 
 from tensorflow.keras import Model as KerasModel
 
@@ -24,8 +24,9 @@ class DeepModelBuilder(Task):
     """
     Build the model from layers specifications
     """
-    input_specs = {'inputs': Tensor, 'outputs': Tensor}
-    output_specs = {'result': DeepModel}
+    input_specs = {'inputs': InputSpec(Tensor, human_name="Tensor", short_description="The input tensors"),
+        'outputs': InputSpec(Tensor, human_name="Tensor", short_description="The input tensors")}
+    output_specs = {'result': OutputSpec(DeepModel, human_name="Result", short_description="The output result")}
     config_specs = {}
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
@@ -52,8 +53,8 @@ class DeepModelCompiler(Task):
 
     See https://keras.io/api/models/model_training_apis/ for more details
     """
-    input_specs = {'builded_model': DeepModel}
-    output_specs = {'result': DeepModel}
+    input_specs = {'builded_model': InputSpec(DeepModel, human_name="Model", short_description="The input model")}
+    output_specs = {'result': OutputSpec(DeepModel, human_name="Result", short_description="The output model")}
     config_specs = {
         'optimizer': StrParam(default_value='rmsprop'),
         'loss': StrParam(default_value=''),
@@ -81,8 +82,9 @@ class DeepModelerTrainer(Task):
 
     See https://keras.io/api/models/model_training_apis/ for more details
     """
-    input_specs = {'dataset': DeepResult, 'compiled_model': DeepModel}
-    output_specs = {'result': DeepModel}
+    input_specs = {'dataset': InputSpec(DeepResult, human_name="Dataset", short_description="The input dataset"),
+        'compiled_model': InputSpec(DeepModel, human_name="Model", short_description="The input model")}
+    output_specs = {'result': OutputSpec(DeepModel, human_name="Result", short_description="The output result")}
     config_specs = {
         'batch_size': IntParam(default_value=32, min_value=0),
         'epochs': IntParam(default_value=1, min_value=0),
@@ -116,8 +118,9 @@ class DeepModelerPredictor(Task):
 
     See https://keras.io/api/models/model_training_apis/ for more details
     """
-    input_specs = {'dataset': DeepResult, 'trained_model': DeepModel}
-    output_specs = {'result': DeepResult}
+    input_specs = {'dataset': InputSpec(DeepResult, human_name="Dataset", short_description="The input dataset"),
+        'trained_model': InputSpec(DeepModel, human_name="Model", short_description="The input model")}
+    output_specs = {'result': OutputSpec(DeepResult, human_name="Result", short_description="The output result")}
     config_specs = {
         'verbosity_mode': IntParam(default_value=0),
     }

@@ -5,7 +5,7 @@
 
 from gws_core import (ConfigParams, Dataset, FloatParam, IntParam, Resource,
                       StrParam, Task, TaskInputs, TaskOutputs,
-                      resource_decorator, task_decorator)
+                      resource_decorator, task_decorator, InputSpec, OutputSpec)
 from numpy import ravel
 from pandas import DataFrame
 from sklearn.linear_model import LogisticRegression
@@ -38,8 +38,8 @@ class LogisticRegressionTrainer(Task):
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html for more details.
     """
-    input_specs = {'dataset': Dataset}
-    output_specs = {'result': LogisticRegressionResult}
+    input_specs = {'dataset': InputSpec(Dataset, human_name="Dataset", short_description="The input dataset")}
+    output_specs = {'result': OutputSpec(LogisticRegressionResult, human_name="result", short_description="The output result")}
     config_specs = {
         'inv_reg_strength': FloatParam(default_value=1, min_value=0)
     }
@@ -66,8 +66,9 @@ class LogisticRegressionPredictor(Task):
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html for more details.
     """
-    input_specs = {'dataset': Dataset, 'learned_model': LogisticRegressionResult}
-    output_specs = {'result': Dataset}
+    input_specs = {'dataset': InputSpec(Dataset, human_name="Dataset", short_description="The input dataset"),
+            'learned_model': InputSpec(LogisticRegressionResult, human_name="Learned model", short_description="The input model")}
+    output_specs = {'result': OutputSpec(Dataset, human_name="result", short_description="The output result")}
     config_specs = {}
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:

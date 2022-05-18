@@ -5,7 +5,7 @@
 
 from gws_core import (ConfigParams, Dataset, FloatParam, IntParam, Resource,
                       StrParam, Task, TaskInputs, TaskOutputs,
-                      resource_decorator, task_decorator)
+                      resource_decorator, task_decorator, InputSpec, OutputSpec)
 from sklearn.manifold import LocallyLinearEmbedding
 
 from ..base.base_resource import BaseResource
@@ -36,8 +36,8 @@ class LocallyLinearEmbeddingTrainer(Task):
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.manifold.LocallyLinearEmbedding.html for more details.
     """
-    input_specs = {'dataset': Dataset}
-    output_specs = {'result': LocallyLinearEmbeddingResult}
+    input_specs = {'dataset': InputSpec(Dataset, human_name="Dataset", short_description="The input dataset")}
+    output_specs = {'result': OutputSpec(LocallyLinearEmbeddingResult, human_name="result", short_description="The output result")}
     config_specs = {
         'nb_components': IntParam(default_value=2, min_value=0)
     }

@@ -7,7 +7,8 @@ from gws_core import (BadRequestException, ConfigParams, DataFrameRField,
                       Dataset, FloatParam, FloatRField, IntParam, Resource,
                       ResourceRField, ScatterPlot2DView, ScatterPlot3DView,
                       StrParam, Table, TabularView, Task, TaskInputs,
-                      TaskOutputs, resource_decorator, task_decorator, view)
+                      TaskOutputs, resource_decorator, task_decorator, view,
+                      InputSpec, OutputSpec)
 from numpy import ravel
 from pandas import DataFrame, concat
 from sklearn.linear_model import LinearRegression
@@ -90,8 +91,8 @@ class LinearRegressionTrainer(Task):
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html for more details.
     """
-    input_specs = {'dataset': Dataset}
-    output_specs = {'result': LinearRegressionResult}
+    input_specs = {'dataset': InputSpec(Dataset, human_name="Dataset", short_description="The input dataset")}
+    output_specs = {'result': OutputSpec(LinearRegressionResult, human_name="result", short_description="The output result")}
     config_specs = {}
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
@@ -116,8 +117,9 @@ class LinearRegressionPredictor(Task):
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html for more details.
     """
-    input_specs = {'dataset': Dataset, 'learned_model': LinearRegressionResult}
-    output_specs = {'result': Dataset}
+    input_specs = {'dataset': InputSpec(Dataset, human_name="Dataset", short_description="The input dataset"),
+            'learned_model': InputSpec(LinearRegressionResult, human_name="Learned model", short_description="The input model")}
+    output_specs = {'result': OutputSpec(Dataset, human_name="result", short_description="The output result")}
     config_specs = {}
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:

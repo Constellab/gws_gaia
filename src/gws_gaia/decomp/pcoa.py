@@ -6,7 +6,7 @@
 from gws_core import (BadRequestException, ConfigParams, Dataset, IntParam,
                       Resource, ScatterPlot2DView, StrParam, Table, Task,
                       TaskInputs, TaskOutputs, resource_decorator,
-                      task_decorator, view)
+                      task_decorator, view, InputSpec, OutputSpec)
 from pandas import DataFrame
 from skbio.stats.distance import DistanceMatrix
 from skbio.stats.ordination import OrdinationResults
@@ -108,8 +108,8 @@ class PCoATrainer(Task):
 
     See http://scikit-bio.org/docs/0.5.7/generated/skbio.stats.ordination.pcoa.html for more details
     """
-    input_specs = {'distance_table': (Dataset, Table)}
-    output_specs = {'result': PCoATrainerResult}
+    input_specs = {'distance_table': InputSpec((Dataset, Table), human_name="Dataset", short_description="The input distance table")}
+    output_specs = {'result': OutputSpec(PCoATrainerResult, human_name="result", short_description="The output result")}
     config_specs = {
         'nb_components': IntParam(default_value=2, min_value=2),
         'method': StrParam(default_value='eigh', allowed_values=['eigh', 'fsvd'])

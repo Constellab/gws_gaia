@@ -6,7 +6,7 @@
 import numpy as np
 from gws_core import (BoolParam, ConfigParams, Dataset, FloatParam, IntParam,
                       Resource, StrParam, Task, TaskInputs, TaskOutputs,
-                      resource_decorator, task_decorator)
+                      resource_decorator, task_decorator, InputSpec, OutputSpec)
 from pandas import DataFrame
 
 import tensorflow as tf
@@ -31,8 +31,8 @@ class LSTM(Task):
 
     See https://keras.io/api/layers/recurrent_layers/lstm/ for more details
     """
-    input_specs = {'tensor': Tensor}
-    output_specs = {'result': Tensor}
+    input_specs = {'tensor': InputSpec(Tensor, human_name="Tensor", short_description="The input tensor")}
+    output_specs = {'result': OutputSpec(Tensor, human_name="Result", short_description="The output result")}
     config_specs = {
         'units': IntParam(default_value=10),
         'activation_type': StrParam(default_value='tanh'),
@@ -66,8 +66,8 @@ class GRU(Task):
 
     See https://keras.io/api/layers/recurrent_layers/gru/ for more details
     """
-    input_specs = {'tensor': Tensor}
-    output_specs = {'result': Tensor}
+    input_specs = {'tensor': InputSpec(Tensor, human_name="Tensor", short_description="The input tensor")}
+    output_specs = {'result': OutputSpec(Tensor, human_name="Result", short_description="The output result")}
     config_specs = {
         'units': IntParam(default_value=10),
         'activation_type': StrParam(default_value='tanh'),
@@ -101,8 +101,8 @@ class SimpleRNN(Task):
 
     See https://keras.io/api/layers/recurrent_layers/simple_rnn/ for more details
     """
-    input_specs = {'tensor': Tensor}
-    output_specs = {'result': Tensor}
+    input_specs = {'tensor': InputSpec(Tensor, human_name="Tensor", short_description="The input tensor")}
+    output_specs = {'result': OutputSpec(Tensor, human_name="Result", short_description="The output result")}
     config_specs = {
         'units': IntParam(default_value=10),
         'activation_type': StrParam(default_value='tanh'),

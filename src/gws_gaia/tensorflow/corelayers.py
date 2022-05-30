@@ -122,8 +122,8 @@ class Masking(Task):
 
     See https://keras.io/api/layers/core_layers/masking/ for more details
     """
-    input_specs = {'tensor': Tensor}
-    output_specs = {'result': Tensor}
+    input_specs = {'tensor': InputSpec(Tensor, human_name="Tensor", short_description="The input tensor")}
+    output_specs = {'result': OutputSpec(Tensor, human_name="Result", short_description="The output result")}
     config_specs = {
         'mask_value': FloatParam(default_value=0.0)
     }
@@ -150,8 +150,8 @@ class Dropout(Task):
 
     See https://keras.io/api/layers/regularization_layers/dropout/ for more details
     """
-    input_specs = {'tensor': Tensor}
-    output_specs = {'result': Tensor}
+    input_specs = {'tensor': InputSpec(Tensor, human_name="Tensor", short_description="The input tensor")}
+    output_specs = {'result': OutputSpec(Tensor, human_name="Result", short_description="The output result")}
     config_specs = {
         'rate': FloatParam(default_value=0.5, min_value=0)
     }
@@ -178,8 +178,8 @@ class Flatten(Task):
 
     See https://keras.io/api/layers/reshaping_layers/flatten/ for more details
     """
-    input_specs = {'tensor': Tensor}
-    output_specs = {'result': Tensor}
+    input_specs = {'tensor': InputSpec(Tensor, human_name="Tensor", short_description="The input tensor")}
+    output_specs = {'result': OutputSpec(Tensor, human_name="Result", short_description="The output result")}
     config_specs = {}
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:

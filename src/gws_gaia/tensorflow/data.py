@@ -9,7 +9,7 @@ from typing import Any
 
 from gws_core import (BadRequestException, ConfigParams, FloatParam, IntParam,
                       ListParam, Resource, RField, StrParam, Task, TaskInputs,
-                      TaskOutputs, resource_decorator, task_decorator)
+                      TaskOutputs, resource_decorator, task_decorator, InputSpec)
 
 import tensorflow as tf
 from tensorflow.keras.models import load_model, save_model
@@ -62,12 +62,11 @@ class DeepModel(Resource):
 #
 # *****************************************************************************
 
-
 @task_decorator("InputConverter", human_name="Input converter",
                 short_description="Input converter")
 class InputConverter(Task):
     input_specs = {}
-    output_specs = {'result': Tensor}
+    output_specs = {'result': InputSpec(Tensor, human_name="Tensor", short_description="The output tensor")}
     config_specs = {
         'input_shape': ListParam()
     }

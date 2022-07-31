@@ -4,11 +4,11 @@
 # About us: https://gencovery.com
 
 import numpy as np
-from gws_core import (ConfigParams, Dataset, FloatParam, FloatRField, IntParam,
-                      Resource, ResourceRField, ScatterPlot2DView,
-                      ScatterPlot3DView, StrParam, Table, TabularView, Task,
-                      TaskInputs, TaskOutputs, resource_decorator,
-                      task_decorator, view, InputSpec, OutputSpec)
+from gws_core import (ConfigParams, Dataset, FloatParam, FloatRField,
+                      InputSpec, IntParam, OutputSpec, Resource,
+                      ResourceRField, ScatterPlot2DView, ScatterPlot3DView,
+                      StrParam, Table, TabularView, Task, TaskInputs,
+                      TaskOutputs, resource_decorator, task_decorator, view)
 from numpy import concatenate, ndarray, transpose, unique, vstack
 from pandas import DataFrame, concat
 from sklearn.cluster import KMeans
@@ -42,21 +42,23 @@ class KMeansResult(BaseResourceSet):
         label = label.tolist()
         flat_label = list(concatenate(label).flat)
         label_name = ['label'] * len(label)
-        #-----------------
+        # -----------------
         # Interleaving flat_label and label_name
         res = label_name + flat_label
         res[::2] = label_name
         res[1::2] = flat_label
         label = [res[i:i+2] for i in range(0, len(res), 2)]
-        #-----------------
+        # -----------------
         for i in range(len(label)):
-           label[i] = {label[i][0]: label[i][1]}          
+            label[i] = {label[i][0]: label[i][1]}
+        # for i, lbl in enumerate(label):
+        #    label[i] = {lbl[0]: lbl[1]}
         data = train_set
         data = DataFrame(data, index=self.get_training_set().row_names, columns=columns)
         table = Table(data=data)
         row_tags = label
         table.name = self.LABELED_TABLE_NAME
-        table.set_row_tags(row_tags)
+        table.set_all_rows_tags(row_tags)
         self.add_resource(table)
 
     @view(view_type=TabularView, human_name="Label table", short_description="Table of labels")
@@ -142,8 +144,9 @@ class KMeansPredictor(Task):
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html for more details.
     """
-    input_specs = {'dataset': InputSpec(Dataset, human_name="Dataset", short_description="The input dataset"),
-            'learned_model': InputSpec(KMeansResult, human_name="Learned model", short_description="The input model")}
+    input_specs = {
+        'dataset': InputSpec(Dataset, human_name="Dataset", short_description="The input dataset"),
+        'learned_model': InputSpec(KMeansResult, human_name="Learned model", short_description="The input model")}
     output_specs = {'result': OutputSpec(Dataset, human_name="result", short_description="The output result")}
     config_specs = {}
 

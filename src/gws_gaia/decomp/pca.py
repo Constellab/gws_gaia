@@ -44,7 +44,7 @@ class PCATrainerResult(BaseResourceSet):
         table = Table(data=data)
         row_tags = self.get_training_set().get_row_tags()
         table.name = self.TRANSFORMED_TABLE_NAME
-        table.set_row_tags(row_tags)
+        table.set_all_rows_tags(row_tags)
         self.add_resource(table)
 
     def _create_variance_table(self):
@@ -143,7 +143,7 @@ class PCATransformer(Task):
     input_specs = {'dataset': InputSpec(Dataset, human_name="Dataset", short_description="The input dataset"),
             'learned_model': InputSpec(PCATrainerResult, human_name="Learned model", short_description="The input model")}
     output_specs = {'result': OutputSpec(Dataset, human_name="result", short_description="The output result")}
-    
+
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         dataset = inputs['dataset']
         learned_model = inputs['learned_model']

@@ -27,7 +27,6 @@ class GWSGaiaTestHelper():
             #"targets": targets,
             "metadata_columns": [{
                 "column": k,
-                "type": Table.CATEGORICAL_TAG_TYPE,
                 "keep_in_data": True,
                 "is_target": True
             } for k in targets]

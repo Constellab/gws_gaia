@@ -17,7 +17,7 @@ from gws_gaia import (LDAPredictor, LDATrainer, LDATransformer, PCATrainer,
                      short_description="Tutorial: short LDA and PCA protocol", hide=True)
 class LDATutorialProto(Protocol):
 
-    def configure_protocol(self, config_params: ConfigParams) -> None:
+    def configure_protocol(self) -> None:
         settings = Settings.retrieve()
         test_dir = settings.get_variable("gws_gaia:testdata_dir")
 
@@ -32,7 +32,6 @@ class LDATutorialProto(Protocol):
         importer.set_param("header", 0)
         importer.set_param("metadata_columns", [{
             "column": "variety",
-            "type": Table.CATEGORICAL_TAG_TYPE,
             "keep_in_data": True,
             "is_target": True
         }])

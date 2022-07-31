@@ -50,7 +50,7 @@ class LDAResult(BaseResourceSet):
         table = Table(data=data)
         row_tags = self.get_training_set().get_row_tags()
         table.name = self.TRANSFORMED_TABLE_NAME
-        table.set_row_tags(row_tags)
+        table.set_all_rows_tags(row_tags)
         self.add_resource(table)
 
     def _create_variance_table(self):

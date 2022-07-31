@@ -7,7 +7,7 @@
 from gws_core import (BoolParam, ConfigParams, Dataset, FloatRField, IntParam,
                       Resource, ResourceRField, ScatterPlot2DView,
                       ScatterPlot3DView, Table, TabularView, Task, TaskInputs,
-                      TaskOutputs, resource_decorator, task_decorator, view, TechnicalInfo, 
+                      TaskOutputs, resource_decorator, task_decorator, view, TechnicalInfo,
                       InputSpec, OutputSpec)
 from pandas import DataFrame, concat
 import numpy as np
@@ -47,7 +47,7 @@ class PLSTrainerResult(BaseResourceSet):
         table = Table(data=data)
         row_tags = self.get_training_set().get_row_tags()
         table.name = self.TRANSFORMED_TABLE_NAME
-        table.set_row_tags(row_tags)
+        table.set_all_rows_tags(row_tags)
         self.add_resource(table)
 
     def _create_prediction_table(self) -> DataFrame:
@@ -64,7 +64,7 @@ class PLSTrainerResult(BaseResourceSet):
         table = Table(data=data)
         table.name = self.PREDICTION_TABLE_NAME
         row_tags = self.get_training_set().get_row_tags()
-        table.set_row_tags(row_tags)
+        table.set_all_rows_tags(row_tags)
         self.add_resource(table)
 
     def get_transformed_table(self):

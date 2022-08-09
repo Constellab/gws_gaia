@@ -3,10 +3,10 @@
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
-from gws_core import (BadRequestException, ConfigParams, Dataset, IntParam,
-                      Resource, ScatterPlot2DView, StrParam, Table, Task,
-                      TaskInputs, TaskOutputs, resource_decorator,
-                      task_decorator, view, InputSpec, OutputSpec)
+from gws_core import (BadRequestException, ConfigParams, Dataset, InputSpec,
+                      IntParam, OutputSpec, Resource, ScatterPlot2DView,
+                      StrParam, Table, Task, TaskInputs, TaskOutputs,
+                      TechnicalInfo, resource_decorator, task_decorator, view)
 from pandas import DataFrame
 from skbio.stats.distance import DistanceMatrix
 from skbio.stats.ordination import OrdinationResults
@@ -62,6 +62,8 @@ class PCoATrainerResult(BaseResourceSet):
         table = Table(data=data)
         table.name = self.VARIANCE_TABLE_NAME
         self.add_resource(table)
+        self.add_technical_info(TechnicalInfo(key='PC1', value=f'{data.iat[0,0]:.3f}'))
+        self.add_technical_info(TechnicalInfo(key='PC2', value=f'{data.iat[1,0]:.3f}'))
 
     def get_transformed_table(self):
         if self.resource_exists(self.TRANSFORMED_TABLE_NAME):
@@ -89,8 +91,10 @@ class PCoATrainerResult(BaseResourceSet):
             y=data['PC2'].to_list(),
             tags=row_tags
         )
-        _view.x_label = 'PC1'
-        _view.y_label = 'PC2'
+
+        var = self.get_variance_table().get_data()
+        _view.x_label = f'PC1 ({100*var.iat[0,0]:.2f}%)'
+        _view.y_label = f'PC2 ({100*var.iat[1,0]:.2f}%)'
         return _view
 
 # *****************************************************************************
@@ -108,7 +112,8 @@ class PCoATrainer(Task):
 
     See http://scikit-bio.org/docs/0.5.7/generated/skbio.stats.ordination.pcoa.html for more details
     """
-    input_specs = {'distance_table': InputSpec((Dataset, Table), human_name="Dataset", short_description="The input distance table")}
+    input_specs = {'distance_table': InputSpec(
+        (Dataset, Table), human_name="Dataset", short_description="The input distance table")}
     output_specs = {'result': OutputSpec(PCoATrainerResult, human_name="result", short_description="The output result")}
     config_specs = {
         'nb_components': IntParam(default_value=2, min_value=2),

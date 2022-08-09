@@ -10,6 +10,7 @@ class TestTrainer(BaseTestCase):
         self.print("Independant Component Analysis (ICA)")
         dataset = DataProvider.get_digits_dataset()
 
+        # --------------------------------------------------------------------
         # run trainer
         tester = TaskRunner(
             params={'nb_components': 7},

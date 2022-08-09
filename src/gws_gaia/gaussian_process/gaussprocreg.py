@@ -8,7 +8,7 @@ from gws_core import (ConfigParams, Dataset, FloatParam, Task, TaskInputs,
 from numpy import ravel
 from sklearn.gaussian_process import GaussianProcessRegressor
 
-from ..base.base_resource import BaseResource
+from ..base.base_resource import BaseResourceSet
 
 # *****************************************************************************
 #
@@ -18,7 +18,7 @@ from ..base.base_resource import BaseResource
 
 
 @resource_decorator("GaussianProcessRegressorResult", hide=True)
-class GaussianProcessRegressorResult(BaseResource):
+class GaussianProcessRegressorResult(BaseResourceSet):
     pass
 
 # *****************************************************************************

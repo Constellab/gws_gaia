@@ -10,7 +10,7 @@ from numpy import ravel
 from pandas import DataFrame
 from sklearn.tree import DecisionTreeClassifier
 
-from ..base.base_resource import BaseResource
+from ..base.base_resource import BaseResourceSet
 
 # *****************************************************************************
 #
@@ -20,7 +20,7 @@ from ..base.base_resource import BaseResource
 
 
 @resource_decorator("DecisionTreeClassifierResult", hide=True)
-class DecisionTreeClassifierResult(BaseResource):
+class DecisionTreeClassifierResult(BaseResourceSet):
     pass
 
 # *****************************************************************************

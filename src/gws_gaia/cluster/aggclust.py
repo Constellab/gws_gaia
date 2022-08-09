@@ -5,11 +5,11 @@
 
 from typing import List
 
-from gws_core import (ConfigParams, Dataset, FloatParam, FloatRField, IntParam,
-                      Resource, ResourceRField, ScatterPlot2DView,
-                      ScatterPlot3DView, StrParam, TabularView, Task,
-                      TaskInputs, TaskOutputs, resource_decorator,
-                      task_decorator, view, InputSpec, OutputSpec)
+from gws_core import (ConfigParams, Dataset, FloatParam, FloatRField,
+                      InputSpec, IntParam, OutputSpec, Resource,
+                      ResourceRField, ScatterPlot2DView, ScatterPlot3DView,
+                      StrParam, Table, TableView, Task, TaskInputs,
+                      TaskOutputs, resource_decorator, task_decorator, view)
 from numpy import concatenate, ndarray, transpose, unique, vstack
 from pandas import DataFrame, concat
 from sklearn.cluster import AgglomerativeClustering
@@ -27,7 +27,7 @@ from ..base.base_resource import BaseResourceSet
 class AgglomerativeClusteringResult(BaseResourceSet):
     """ AgglomerativeClusteringResult """
 
-    @view(view_type=TabularView, human_name="Label table", short_description="Table of labels")
+    @view(view_type=TableView, human_name="Label table", short_description="Table of labels")
     def view_labels_as_table(self, params: ConfigParams) -> dict:
         """
         View Table
@@ -39,8 +39,8 @@ class AgglomerativeClusteringResult(BaseResourceSet):
         label = aggclust.labels_[:, None]
         data = concatenate((train_set, label), axis=1)
         data = DataFrame(data, index=self._training_set.row_names, columns=columns)
-        t_view = TabularView()
-        t_view.set_data(data=data)
+        t_view = TableView()
+        t_view.set_data(data=Table(data))
         return t_view
 
     @view(view_type=ScatterPlot2DView, human_name='2D-score plot', short_description='2D-score plot')
@@ -86,7 +86,8 @@ class AgglomerativeClusteringTrainer(Task):
     See https://scikit-learn.org/stable/modules/generated/sklearn.cluster.AgglomerativeClustering.html for more details
     """
     input_specs = {'dataset': InputSpec(Dataset, human_name="Dataset", short_description="The input dataset")}
-    output_specs = {'result': OutputSpec(AgglomerativeClusteringResult, human_name="result", short_description="The output result")}
+    output_specs = {'result': OutputSpec(AgglomerativeClusteringResult,
+                                         human_name="result", short_description="The output result")}
     config_specs = {
         "nb_clusters": IntParam(default_value=2, min_value=0),
         "linkage": StrParam(default_value="ward", allowed_values=["ward", "complete", "average", "single"]),

@@ -8,7 +8,7 @@ from gws_core import (ConfigParams, Dataset, FloatParam, IntParam, Resource,
                       resource_decorator, task_decorator, InputSpec, OutputSpec)
 from sklearn.manifold import LocallyLinearEmbedding
 
-from ..base.base_resource import BaseResource
+from ..base.base_resource import BaseResourceSet
 
 # *****************************************************************************
 #
@@ -18,7 +18,7 @@ from ..base.base_resource import BaseResource
 
 
 @resource_decorator("LocallyLinearEmbeddingResult", hide=True)
-class LocallyLinearEmbeddingResult(BaseResource):
+class LocallyLinearEmbeddingResult(BaseResourceSet):
     pass
 
 # *****************************************************************************

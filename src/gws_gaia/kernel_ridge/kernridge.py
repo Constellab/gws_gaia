@@ -9,7 +9,7 @@ from gws_core import (ConfigParams, Dataset, FloatParam, StrParam, Task,
 from numpy import ravel
 from sklearn.kernel_ridge import KernelRidge
 
-from ..base.base_resource import BaseResource
+from ..base.base_resource import BaseResourceSet
 
 # *****************************************************************************
 #
@@ -19,7 +19,7 @@ from ..base.base_resource import BaseResource
 
 
 @resource_decorator("KernelRidgeResult", hide=True)
-class KernelRidgeResult(BaseResource):
+class KernelRidgeResult(BaseResourceSet):
     pass
 
 # *****************************************************************************

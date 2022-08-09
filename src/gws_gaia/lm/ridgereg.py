@@ -10,7 +10,7 @@ from numpy import ravel
 from pandas import DataFrame
 from sklearn.linear_model import Ridge
 
-from ..base.base_resource import BaseResource
+from ..base.base_resource import BaseResourceSet
 
 # *****************************************************************************
 #
@@ -20,7 +20,7 @@ from ..base.base_resource import BaseResource
 
 
 @resource_decorator("RidgeRegressionResult", hide=True)
-class RidgeRegressionResult(BaseResource):
+class RidgeRegressionResult(BaseResourceSet):
     pass
 
 # *****************************************************************************

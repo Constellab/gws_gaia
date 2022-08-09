@@ -10,7 +10,7 @@ from numpy import ravel
 from pandas import DataFrame
 from sklearn.linear_model import SGDRegressor
 
-from ..base.base_resource import BaseResource
+from ..base.base_resource import BaseResourceSet
 
 # *****************************************************************************
 #
@@ -20,7 +20,7 @@ from ..base.base_resource import BaseResource
 
 
 @resource_decorator("SGDRegressorResult", hide=True)
-class SGDRegressorResult(BaseResource):
+class SGDRegressorResult(BaseResourceSet):
     pass
 
 # *****************************************************************************

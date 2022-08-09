@@ -7,7 +7,7 @@ from gws_core import (ConfigParams, Dataset, IntParam, Task, TaskInputs,
                       TaskOutputs, resource_decorator, task_decorator, InputSpec, OutputSpec)
 from sklearn.decomposition import FastICA
 
-from ..base.base_resource import BaseResource
+from ..base.base_resource import BaseResourceSet
 
 # *****************************************************************************
 #
@@ -17,7 +17,7 @@ from ..base.base_resource import BaseResource
 
 
 @resource_decorator("ICAResult", hide=True)
-class ICAResult(BaseResource):
+class ICAResult(BaseResourceSet):
     pass
 
 # *****************************************************************************

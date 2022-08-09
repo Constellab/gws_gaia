@@ -10,7 +10,7 @@ from numpy import ravel
 from pandas import DataFrame
 from sklearn.naive_bayes import BernoulliNB
 
-from ..base.base_resource import BaseResource
+from ..base.base_resource import BaseResourceSet
 
 # *****************************************************************************
 #
@@ -20,7 +20,7 @@ from ..base.base_resource import BaseResource
 
 
 @resource_decorator("BernoulliNaiveBayesClassifierResult", hide=True)
-class BernoulliNaiveBayesClassifierResult(BaseResource):
+class BernoulliNaiveBayesClassifierResult(BaseResourceSet):
     pass
 
 # *****************************************************************************

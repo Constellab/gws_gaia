@@ -4,13 +4,13 @@
 # About us: https://gencovery.com
 
 
-from gws_core import (BoolParam, ConfigParams, Dataset, FloatRField, IntParam,
-                      Resource, ResourceRField, ScatterPlot2DView,
-                      ScatterPlot3DView, Table, TabularView, Task, TaskInputs,
-                      TaskOutputs, resource_decorator, task_decorator, view, TechnicalInfo,
-                      InputSpec, OutputSpec)
-from pandas import DataFrame, concat
 import numpy as np
+from gws_core import (BoolParam, ConfigParams, Dataset, FloatRField, InputSpec,
+                      IntParam, OutputSpec, Resource, ResourceRField,
+                      ScatterPlot2DView, ScatterPlot3DView, Table, TabularView,
+                      Task, TaskInputs, TaskOutputs, TechnicalInfo,
+                      resource_decorator, task_decorator, view)
+from pandas import DataFrame, concat
 from sklearn.cross_decomposition import PLSRegression
 
 from ..base.base_resource import BaseResourceSet
@@ -36,7 +36,7 @@ class PLSTrainerResult(BaseResourceSet):
         if training_set is not None:
             self._create_transformed_table()
             self._create_prediction_table()
-            self._get_r2()
+            self._create_r2()
 
     def _create_transformed_table(self):
         pls: PLSRegression = self.get_result()
@@ -53,8 +53,10 @@ class PLSTrainerResult(BaseResourceSet):
     def _create_prediction_table(self) -> DataFrame:
         pls: PLSRegression = self.get_result()  # lir du type Linear Regression
 
-        data: DataFrame = np.concatenate((self.get_training_set().get_targets().values, pls.predict(self.get_training_set().get_features().values)), axis=1)
-        columns = ["measured_" + self.get_training_set().target_names[0], "predicted_" +  self.get_training_set().target_names[0]]
+        data: DataFrame = np.concatenate((self.get_training_set().get_targets().values,
+                                         pls.predict(self.get_training_set().get_features().values)), axis=1)
+        columns = ["measured_" + self.get_training_set().target_names[0],
+                   "predicted_" + self.get_training_set().target_names[0]]
         data = DataFrame(
             data=data,
             columns=columns,
@@ -81,7 +83,7 @@ class PLSTrainerResult(BaseResourceSet):
         else:
             return None
 
-    def _get_r2(self) -> float:
+    def _create_r2(self) -> float:
         """ Get R2 """
         if not self._r2:
             pls = self.get_result()
@@ -108,6 +110,10 @@ class PLSTrainerResult(BaseResourceSet):
         )
         _view.x_label = 'PC1'
         _view.y_label = 'PC2'
+
+        #_view.add_technical_info(TechnicalInfo(key='PC1', value=f'{var.iat[0,0]:.3f}'))
+        #_view.add_technical_info(TechnicalInfo(key='PC2', value=f'{var.iat[1,0]:.3f}'))
+        #_view.add_technical_info(TechnicalInfo(key='LogLikelihood', value=f'{self._log_likelihood():.3f}'))
         return _view
 
     @view(view_type=ScatterPlot2DView, human_name='Prediction plot', short_description='Prediction plot')
@@ -180,7 +186,7 @@ class PLSTransformer(Task):
     See https://scikit-learn.org/stable/modules/generated/sklearn.cross_decomposition.PLSRegression.html for more details
     """
     input_specs = {'dataset': InputSpec(Dataset, human_name="Dataset", short_description="The input dataset"),
-            'learned_model': InputSpec(PLSTrainerResult, human_name="Learned model", short_description="The input model")}
+                   'learned_model': InputSpec(PLSTrainerResult, human_name="Learned model", short_description="The input model")}
     output_specs = {'result': OutputSpec(Dataset, human_name="result", short_description="The output result")}
     config_specs = {}
 
@@ -213,7 +219,7 @@ class PLSPredictor(Task):
     See https://scikit-learn.org/stable/modules/generated/sklearn.cross_decomposition.PLSRegression.html for more details.
     """
     input_specs = {'dataset': InputSpec(Dataset, human_name="Dataset", short_description="The input dataset"),
-            'learned_model': InputSpec(PLSTrainerResult, human_name="Learned model", short_description="The input model")}
+                   'learned_model': InputSpec(PLSTrainerResult, human_name="Learned model", short_description="The input model")}
     output_specs = {'result': OutputSpec(Dataset, human_name="result", short_description="The output result")}
     config_specs = {}
 

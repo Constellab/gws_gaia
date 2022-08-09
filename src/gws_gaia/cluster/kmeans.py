@@ -7,7 +7,7 @@ import numpy as np
 from gws_core import (ConfigParams, Dataset, FloatParam, FloatRField,
                       InputSpec, IntParam, OutputSpec, Resource,
                       ResourceRField, ScatterPlot2DView, ScatterPlot3DView,
-                      StrParam, Table, TabularView, Task, TaskInputs,
+                      StrParam, Table, TableView, Task, TaskInputs,
                       TaskOutputs, resource_decorator, task_decorator, view)
 from numpy import concatenate, ndarray, transpose, unique, vstack
 from pandas import DataFrame, concat
@@ -61,7 +61,7 @@ class KMeansResult(BaseResourceSet):
         table.set_all_rows_tags(row_tags)
         self.add_resource(table)
 
-    @view(view_type=TabularView, human_name="Label table", short_description="Table of labels")
+    @view(view_type=TableView, human_name="Label table", short_description="Table of labels")
     def view_labels_as_table(self, params: ConfigParams) -> dict:
         """
         View Table
@@ -73,8 +73,8 @@ class KMeansResult(BaseResourceSet):
         label = kmeans.labels_[:, None]
         data = concatenate((train_set, label), axis=1)
         data = DataFrame(data, index=self.get_training_set().row_names, columns=columns)
-        t_view = TabularView()
-        t_view.set_data(data=data)
+        t_view = TableView()
+        t_view.set_data(data=Table(data))
         return t_view
 
     @view(view_type=ScatterPlot2DView, human_name='2D-score plot', short_description='2D-score plot')

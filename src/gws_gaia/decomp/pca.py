@@ -4,10 +4,10 @@
 # About us: https://gencovery.com
 
 from gws_core import (BarPlotView, BoolParam, ConfigParams, Dataset,
-                      FloatRField, IntParam, Resource, ResourceRField,
-                      ScatterPlot2DView, ScatterPlot3DView, Table, TabularView,
-                      Task, TaskInputs, TaskOutputs, resource_decorator,
-                      task_decorator, view,  InputSpec, OutputSpec)
+                      FloatRField, InputSpec, IntParam, OutputSpec, Resource,
+                      ResourceRField, ScatterPlot2DView, ScatterPlot3DView,
+                      Table, Task, TaskInputs, TaskOutputs, TechnicalInfo,
+                      resource_decorator, task_decorator, view)
 from pandas import DataFrame
 from sklearn.decomposition import PCA
 
@@ -34,6 +34,7 @@ class PCATrainerResult(BaseResourceSet):
         if training_set is not None:
             self._create_transformed_table()
             self._create_variance_table()
+            # self._create_log_likelihood()
 
     def _create_transformed_table(self):
         pca: PCA = self.get_result()  # typage de pca du type PCA
@@ -55,6 +56,8 @@ class PCATrainerResult(BaseResourceSet):
         table = Table(data=data)
         table.name = self.VARIANCE_TABLE_NAME
         self.add_resource(table)
+        self.add_technical_info(TechnicalInfo(key='PC1', value=f'{data.iat[0,0]:.3f}'))
+        self.add_technical_info(TechnicalInfo(key='PC2', value=f'{data.iat[1,0]:.3f}'))
 
     def get_transformed_table(self):
         """ Get transformed table """
@@ -71,10 +74,12 @@ class PCATrainerResult(BaseResourceSet):
         else:
             return None
 
-    def _get_log_likelihood(self) -> float:
+    def _create_log_likelihood(self) -> float:
         if not self._log_likelihood:
             pca = self.get_result()
             self._log_likelihood = pca.score(self.get_training_set().get_features().values)
+
+        self.add_technical_info(TechnicalInfo(key='LogLikelihood', value=f'{self._log_likelihood:.3f}'))
         return self._log_likelihood
 
     @view(view_type=ScatterPlot2DView, human_name='2D-score plot', short_description='2D score plot')
@@ -91,8 +96,9 @@ class PCATrainerResult(BaseResourceSet):
             y=data['PC2'].to_list(),
             tags=row_tags
         )
-        _view.x_label = 'PC1'
-        _view.y_label = 'PC2'
+        var = self.get_variance_table().get_data()
+        _view.x_label = f'PC1 ({100*var.iat[0,0]:.2f}%)'
+        _view.y_label = f'PC2 ({100*var.iat[1,0]:.2f}%)'
         return _view
 
 # *****************************************************************************
@@ -141,7 +147,7 @@ class PCATransformer(Task):
 
     """
     input_specs = {'dataset': InputSpec(Dataset, human_name="Dataset", short_description="The input dataset"),
-            'learned_model': InputSpec(PCATrainerResult, human_name="Learned model", short_description="The input model")}
+                   'learned_model': InputSpec(PCATrainerResult, human_name="Learned model", short_description="The input model")}
     output_specs = {'result': OutputSpec(Dataset, human_name="result", short_description="The output result")}
 
     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:

@@ -8,7 +8,7 @@ from gws_core import (ConfigParams, Dataset, IntParam, Task, TaskInputs,
 from numpy import ravel
 from sklearn.ensemble import RandomForestRegressor
 
-from ..base.base_resource import BaseResource
+from ..base.base_resource import BaseResourceSet
 
 # *****************************************************************************
 #
@@ -18,7 +18,7 @@ from ..base.base_resource import BaseResource
 
 
 @resource_decorator("RandomForestRegressorResult", hide=True)
-class RandomForestRegressorResult(BaseResource):
+class RandomForestRegressorResult(BaseResourceSet):
     pass
 
 # *****************************************************************************

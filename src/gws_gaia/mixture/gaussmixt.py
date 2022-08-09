@@ -10,7 +10,7 @@ from numpy import ravel
 from pandas import DataFrame
 from sklearn.mixture import GaussianMixture
 
-from ..base.base_resource import BaseResource
+from ..base.base_resource import BaseResourceSet
 
 # *****************************************************************************
 #
@@ -20,7 +20,7 @@ from ..base.base_resource import BaseResource
 
 
 @resource_decorator("GaussianMixtureResult", hide=True)
-class GaussianMixtureResult(BaseResource):
+class GaussianMixtureResult(BaseResourceSet):
     pass
 
 # *****************************************************************************

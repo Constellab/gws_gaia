@@ -22,7 +22,6 @@ class TestTrainer(BaseTestCase):
         trainer_result = outputs['result']
 
         table = trainer_result.get_variance_table()
-        print(table.get_data().iat[0, 0])
         self.assertTrue(numpy.all(numpy.isclose(
             table.get_data().to_numpy(), [[0.9246187232017271], [0.053066483117067804]], atol=1e-3)))
 

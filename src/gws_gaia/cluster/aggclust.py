@@ -39,8 +39,7 @@ class AgglomerativeClusteringResult(BaseResourceSet):
         label = aggclust.labels_[:, None]
         data = concatenate((train_set, label), axis=1)
         data = DataFrame(data, index=self._training_set.row_names, columns=columns)
-        t_view = TableView()
-        t_view.set_data(data=Table(data))
+        t_view = TableView(Table(data))
         return t_view
 
     @view(view_type=ScatterPlot2DView, human_name='2D-score plot', short_description='2D-score plot')

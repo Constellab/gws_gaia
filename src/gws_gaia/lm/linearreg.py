@@ -25,7 +25,7 @@ from ..base.base_resource import BaseResourceSet
 @resource_decorator("LinearRegressionResult", hide=True)
 class LinearRegressionResult(BaseResourceSet):
     """LinearRegressionResult"""
-    
+
     PREDICTION_TABLE_NAME = "Prediction table"
     _r2: int = FloatRField()
 
@@ -61,8 +61,7 @@ class LinearRegressionResult(BaseResourceSet):
         Y_predicted = self._get_predicted_data()
         Y = concat([Y_data, Y_predicted], axis=1)
         data = Y.set_axis(["YData", "YPredicted"], axis=1)
-        t_view = TableView()
-        t_view.set_data(data=Table(data))
+        t_view = TableView(Table(data))
         return t_view
 
     @view(view_type=ScatterPlot2DView, human_name='2D-score plot')

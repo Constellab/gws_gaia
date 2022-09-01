@@ -61,8 +61,7 @@ class ElasticNetResult(BaseResourceSet):
         y_predicted = self._get_predicted_data()
         Y = concat([y_data, y_predicted], axis=1)
         data = Y.set_axis(["YData", "YPredicted"], axis=1)
-        t_view = TableView()
-        t_view.set_data(data=Table(data))
+        t_view = TableView(Table(data))
         return t_view
 
     @view(view_type=ScatterPlot2DView, human_name='ScorePlot2D', short_description='2D data plot')

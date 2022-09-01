@@ -73,8 +73,7 @@ class KMeansResult(BaseResourceSet):
         label = kmeans.labels_[:, None]
         data = concatenate((train_set, label), axis=1)
         data = DataFrame(data, index=self.get_training_set().row_names, columns=columns)
-        t_view = TableView()
-        t_view.set_data(data=Table(data))
+        t_view = TableView(Table(data))
         return t_view
 
     @view(view_type=ScatterPlot2DView, human_name='2D-score plot', short_description='2D-score plot')

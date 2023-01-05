@@ -3,7 +3,7 @@ import pandas as pd
 from gws_core import (BaseTestCase, ConfigParams, Dataset, DatasetImporter,
                       File, GTest, Settings, TaskRunner, ViewTester)
 from gws_core.extra import DataProvider
-from gws_gaia import (LMEDesignHelper, LMETrainer,LMEPredictor)
+from gws_gaia import (LMEDesignHelper, LMETrainer)
 
 
 class TestTrainer(BaseTestCase):
@@ -59,12 +59,16 @@ class TestTrainer(BaseTestCase):
         )
         outputs = await tester.run()
         trainer_result = outputs['result']
+        print(trainer_result)
 
-        tester2 = TaskRunner(
-            inputs={'learned_model': trainer_result},
-            task_type=LMEPredictor
+        # tester = TaskRunner(
+        #     inputs={
+        #         'learned_model': trainer_result,
+        #         'dataset': dataset
+        #     },
+        #     task_type=LMEPredictor
 
-        )
+        # )
+        # outputs = await tester.run()
+        # predictor_result = outputs['result']
 
-        outputs = await tester2.run()
-        transformer_result = outputs['result']

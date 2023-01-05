@@ -24,12 +24,13 @@ from .helper.lme_design_helper import LMEDesignHelper
 #
 # *****************************************************************************
 
-### 1 view summary : gp_model.summary (type text)
-### 1 Ressource predict : gp_model.predict()
-### 1 Ressource Random_effect = gp_model.predict_training_data_random_effects()
-#### # Unique random effects for every group can be obtained as follows
-#### first_occurences = [np.where(group==i)[0][0] for i in np.unique(group)]
-##### training_data_random_effects = all_training_data_random_effects.iloc[first_occurences]
+# 1 view summary : gp_model.summary (type text) v
+# 1 Ressource predict : gp_model.predict() v
+# 1 Ressource Random_effect = gp_model.predict_training_data_random_effects()
+# Unique random effects for every group can be obtained as follows
+# first_occurences = [np.where(group==i)[0][0] for i in np.unique(group)]
+# training_data_random_effects = all_training_data_random_effects.iloc[first_occurences]
+
 
 @resource_decorator("LMEResult", hide=True)
 class LMETrainerResult(BaseResourceSet):
@@ -37,7 +38,6 @@ class LMETrainerResult(BaseResourceSet):
 
     def __init__(self, training_set=None, result=None):
         super().__init__(training_set=training_set, result=result)
-        # append tables
 
     @view(view_type=TextView, human_name='Summary', short_description='Summary text')
     def view_as_summary(self, params: ConfigParams) -> dict:
@@ -49,22 +49,17 @@ class LMETrainerResult(BaseResourceSet):
         view_ = TextView(data=str(gp_model.summary()))
         return view_
 
-    @view(view_type=TableView, human_name="Prediction table")
-    def view_predictions_as_table(self, params: ConfigParams) -> dict:
-        """
-        View the target data and the predicted data in a table. Works for data with only one target
-        """
-        Y_data = self._training_set.get_targets()
-        Y_predicted = self._get_predicted_data()
-        Y = concat([Dataset[target], Y_predicted], axis=1)
-        data = Y.set_axis(["YData", "YPredicted"], axis=1)
-        t_view = TableView(Table(data))
-        return t_view
-
-
-@resource_decorator("LMEDesign", hide=True)
-class LMEDesign(BaseResourceSet):
-    """ LMEDesign """
+    # @view(view_type=TableView, human_name="Prediction table")
+    # def view_predictions_as_table(self, params: ConfigParams) -> dict:
+    #     """
+    #     View the target data and the predicted data in a table. Works for data with only one target
+    #     """
+    #     Y_data = self._training_set.get_targets()
+    #     Y_predicted = self._get_predicted_data()
+    #     y = pd.concat([Y_data, Y_predicted], axis=1)
+    #     data = y.set_axis(["YData", "YPredicted"], axis=1)
+    #     t_view = TableView(Table(data))
+    #     return t_view
 
 # *****************************************************************************
 #
@@ -79,7 +74,7 @@ class LMETrainer(Task):
     """
     Trainer of a linear mixted effects model.
 
-    See https://eshinjolly.com/pymer4/index.html for more details
+    See https://gpboost.readthedocs.io/en/latest for more details
     """
     input_specs = {
         'dataset': InputSpec(Dataset, human_name="Dataset", short_description="Experimental dataset")
@@ -110,7 +105,6 @@ class LMETrainer(Task):
         n = t_mat.shape[0]
         X = np.ones(n)
 
-
         # create GP model
         gp_model = gpb.GPModel(group_data=Z, likelihood=params['likelihood'])
         gp_model.fit(
@@ -123,24 +117,32 @@ class LMETrainer(Task):
 
         return {'result': result}
 
-@task_decorator("LMEPredictor", human_name="Linear regression predictor",
-                short_description="Predict dataset targets using a trained lme model")
-class LMEPredictor(Task):
-    input_specs = {'dataset': InputSpec(Dataset, human_name="Dataset", short_description="The input dataset"),
-                   'learned_model': InputSpec(LMETrainerResult, human_name="Learned model", short_description="The input model")}
-    output_specs = {'result': OutputSpec(Dataset, human_name="result", short_description="The output result")}
-    config_specs = {}
+# *****************************************************************************
+#
+# LinearMixedEffectsPredictor
+#
+# *****************************************************************************
 
-    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
-        dataset = inputs['dataset']
-        learned_model = inputs['learned_model']
-        lmr = learned_model.get_result()
-        y = lmr.predict(dataset.get_features().values)
-        print(y)
-        result_dataset = Dataset(
-            data=pd.DataFrame(y),
-            row_names=dataset.row_names,
-            column_names=dataset.target_names,
-            target_names=dataset.target_names
-        )
-        return {'result': result_dataset}
+
+# @task_decorator("LMEPredictor", human_name="Linear regression predictor",
+#                 short_description="Predict dataset targets using a trained lme model")
+
+# class LMEPredictor(Task):
+#     input_specs = {'dataset': InputSpec(Dataset, human_name="Dataset", short_description="The input dataset"),
+#                    'learned_model': InputSpec(LMETrainerResult, human_name="Learned model", short_description="The input model")}
+#     output_specs = {'result': OutputSpec(Dataset, human_name="result", short_description="The output result")}
+#     config_specs = {}
+
+#     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+#         dataset = inputs['dataset']
+#         learned_model = inputs['learned_model']
+#         lmr = learned_model.get_result()
+#         y = lmr.predict(dataset.get_features().values)
+#         print(y)
+#         result_dataset = Dataset(
+#             data=pd.DataFrame(y),
+#             row_names=dataset.row_names,
+#             column_names=dataset.target_names,
+#             target_names=dataset.target_names
+#         )
+#         return {'result': result_dataset}

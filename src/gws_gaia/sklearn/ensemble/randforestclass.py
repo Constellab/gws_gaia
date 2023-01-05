@@ -10,8 +10,8 @@ from gws_core import (InputSpec, IntParam, OutputSpec, Table,
 from sklearn.ensemble import RandomForestClassifier
 
 from ...base.helper.training_design_helper import TrainingDesignHelper
-from ..base.base_sup import (BaseSupervisedPredictor, BaseSupervisedResult,
-                             BaseSupervisedTrainer)
+from ..base.base_sup import (BaseSupervisedClassResult,
+                             BaseSupervisedPredictor, BaseSupervisedTrainer)
 
 # *****************************************************************************
 #
@@ -21,7 +21,7 @@ from ..base.base_sup import (BaseSupervisedPredictor, BaseSupervisedResult,
 
 
 @resource_decorator("RandomForestClassifierResult", hide=True)
-class RandomForestClassifierResult(BaseSupervisedResult):
+class RandomForestClassifierResult(BaseSupervisedClassResult):
     pass
 
 # *****************************************************************************
@@ -52,7 +52,7 @@ class RandomForestClassifierTrainer(BaseSupervisedTrainer):
         return RandomForestClassifier(n_estimators=params["nb_estimators"])
 
     @classmethod
-    def create_result_class(cls) -> Type[BaseSupervisedResult]:
+    def create_result_class(cls) -> Type[RandomForestClassifierResult]:
         return RandomForestClassifierResult
 
 

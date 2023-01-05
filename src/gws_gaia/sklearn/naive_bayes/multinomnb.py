@@ -5,16 +5,13 @@
 
 from typing import Any, Type
 
-from gws_core import (ConfigParams, FloatParam, InputSpec, IntParam,
-                      OutputSpec, Resource, StrParam, Table, Task, TaskInputs,
-                      TaskOutputs, resource_decorator, task_decorator)
-from numpy import ravel
-from pandas import DataFrame
+from gws_core import (FloatParam, InputSpec, OutputSpec, Table,
+                      resource_decorator, task_decorator)
 from sklearn.naive_bayes import MultinomialNB
 
 from ...base.helper.training_design_helper import TrainingDesignHelper
-from ..base.base_sup import (BaseSupervisedPredictor, BaseSupervisedResult,
-                             BaseSupervisedTrainer)
+from ..base.base_sup import (BaseSupervisedClassResult,
+                             BaseSupervisedPredictor, BaseSupervisedTrainer)
 
 # *****************************************************************************
 #
@@ -24,7 +21,7 @@ from ..base.base_sup import (BaseSupervisedPredictor, BaseSupervisedResult,
 
 
 @resource_decorator("MultinomialNaiveBayesClassifierResult", hide=True)
-class MultinomialNaiveBayesClassifierResult(BaseSupervisedResult):
+class MultinomialNaiveBayesClassifierResult(BaseSupervisedClassResult):
     pass
 
 # *****************************************************************************
@@ -55,7 +52,7 @@ class MultinomialNaiveBayesClassifierTrainer(BaseSupervisedTrainer):
         return MultinomialNB(alpha=params["alpha"])
 
     @classmethod
-    def create_result_class(cls) -> Type[BaseSupervisedResult]:
+    def create_result_class(cls) -> Type[MultinomialNaiveBayesClassifierResult]:
         return MultinomialNaiveBayesClassifierResult
 
 # *****************************************************************************

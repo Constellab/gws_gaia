@@ -5,12 +5,12 @@
 
 from typing import Any, Type
 
-from gws_core import (FloatParam, InputSpec, IntParam, OutputSpec, Table,
+from gws_core import (FloatParam, InputSpec, OutputSpec, Table,
                       resource_decorator, task_decorator)
 from sklearn.gaussian_process import GaussianProcessRegressor
 
 from ...base.helper.training_design_helper import TrainingDesignHelper
-from ..base.base_sup import (BaseSupervisedPredictor, BaseSupervisedResult,
+from ..base.base_sup import (BaseSupervisedPredictor, BaseSupervisedRegResult,
                              BaseSupervisedTrainer)
 
 # *****************************************************************************
@@ -21,8 +21,8 @@ from ..base.base_sup import (BaseSupervisedPredictor, BaseSupervisedResult,
 
 
 @resource_decorator("GaussianProcessRegressorResult", hide=True)
-class GaussianProcessRegressorResult(BaseSupervisedResult):
-    pass
+class GaussianProcessRegressorResult(BaseSupervisedRegResult):
+    """ GaussianProcessRegressorResult """
 
 # *****************************************************************************
 #
@@ -52,7 +52,7 @@ class GaussianProcessRegressorTrainer(BaseSupervisedTrainer):
         return GaussianProcessRegressor(alpha=params["alpha"])
 
     @classmethod
-    def create_result_class(cls) -> Type[BaseSupervisedResult]:
+    def create_result_class(cls) -> Type[GaussianProcessRegressorResult]:
         return GaussianProcessRegressorResult
 
 # *****************************************************************************

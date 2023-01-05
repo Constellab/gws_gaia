@@ -12,7 +12,7 @@
             {
                 "source": "https://pypi.python.org/simple",
                 "packages":[
-                    {"name": "scikit-bio", "version": "0.5.7"}
+                    {"name": "scikit-bio", "version": "0.5.8"}
                 ]
             },
             {

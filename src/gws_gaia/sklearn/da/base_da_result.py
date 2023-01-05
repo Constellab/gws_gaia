@@ -8,7 +8,7 @@ from gws_core import (ConfigParams, ScatterPlot2DView, Table,
 from pandas import DataFrame
 
 from ...base.helper.training_design_helper import TrainingDesignHelper
-from ..base.base_sup import BaseSupervisedResult
+from ..base.base_sup import BaseSupervisedClassResult
 
 # *****************************************************************************
 #
@@ -18,7 +18,7 @@ from ..base.base_sup import BaseSupervisedResult
 
 
 @ resource_decorator("BaseDAResult", hide=True)
-class BaseDAResult(BaseSupervisedResult):
+class BaseDAResult(BaseSupervisedClassResult):
 
     TRANSFORMED_TABLE_NAME = "Transformed table"
     VARIANCE_TABLE_NAME = "Variance table"

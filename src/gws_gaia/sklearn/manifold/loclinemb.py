@@ -5,9 +5,8 @@
 
 from typing import Any, Type
 
-from gws_core import (ConfigParams, FloatParam, InputSpec, IntParam,
-                      OutputSpec, Resource, StrParam, Table, Task, TaskInputs,
-                      TaskOutputs, resource_decorator, task_decorator)
+from gws_core import (InputSpec, IntParam, OutputSpec, Table,
+                      resource_decorator, task_decorator)
 from sklearn.manifold import LocallyLinearEmbedding
 
 from ..base.base_unsup import BaseUnsupervisedResult, BaseUnsupervisedTrainer
@@ -47,8 +46,8 @@ class LocallyLinearEmbeddingTrainer(BaseUnsupervisedTrainer):
 
     @classmethod
     def create_sklearn_trainer_class(cls, params) -> Any:
-        return  LocallyLinearEmbedding(n_components=params["nb_components"])
+        return LocallyLinearEmbedding(n_components=params["nb_components"])
 
     @classmethod
-    def create_result_class(cls) -> Type[BaseUnsupervisedTrainer]:
+    def create_result_class(cls) -> Type[LocallyLinearEmbeddingResult]:
         return LocallyLinearEmbeddingResult

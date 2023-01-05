@@ -5,18 +5,12 @@
 
 from typing import Any, Type
 
-import numpy as np
-from gws_core import (BadRequestException, ConfigParams, DataFrameRField,
-                      FloatParam, FloatRField, InputSpec, IntParam, OutputSpec,
-                      Resource, ResourceRField, ScatterPlot2DView,
-                      ScatterPlot3DView, StrParam, Table, TableView, Task,
-                      TaskInputs, TaskOutputs, TechnicalInfo,
-                      resource_decorator, task_decorator, view)
-from pandas import DataFrame, concat
+from gws_core import (FloatParam, InputSpec, OutputSpec, Table,
+                      resource_decorator, task_decorator)
 from sklearn.linear_model import Lasso
 
 from ...base.helper.training_design_helper import TrainingDesignHelper
-from ..base.base_sup import (BaseSupervisedPredictor, BaseSupervisedResult,
+from ..base.base_sup import (BaseSupervisedPredictor, BaseSupervisedRegResult,
                              BaseSupervisedTrainer)
 
 # *****************************************************************************
@@ -27,29 +21,8 @@ from ..base.base_sup import (BaseSupervisedPredictor, BaseSupervisedResult,
 
 
 @resource_decorator("LassoResult", hide=True)
-class LassoResult(BaseSupervisedResult):
+class LassoResult(BaseSupervisedRegResult):
     """ LassoResult"""
-
-    PREDICTION_TABLE_NAME = "Prediction table"
-    _r2: int = FloatRField()
-
-    def __init__(self, training_set=None, training_design=None, result=None):
-        super().__init__(training_set=training_set, training_design=training_design, result=result)
-        if training_set is not None:
-            self._create_r2()
-
-    def _create_r2(self) -> float:
-        if not self._r2:
-            las = self.get_result()
-            training_set = self.get_training_set()
-            training_design = self.get_training_design()
-            x_true, y_true = TrainingDesignHelper.create_training_matrices(training_set, training_design)
-            self._r2 = las.score(
-                X=x_true.values,
-                y=y_true.values
-            )
-        technical_info = TechnicalInfo(key='R2', value=self._r2)
-        self.add_technical_info(technical_info)
 
 # *****************************************************************************
 #
@@ -78,7 +51,7 @@ class LassoTrainer(BaseSupervisedTrainer):
         return Lasso(alpha=params["alpha"])
 
     @classmethod
-    def create_result_class(cls) -> Type[BaseSupervisedResult]:
+    def create_result_class(cls) -> Type[LassoResult]:
         return LassoResult
 
 # *****************************************************************************

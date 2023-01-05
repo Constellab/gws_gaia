@@ -5,14 +5,12 @@
 
 from typing import Any, Type
 
-import numpy as np
-from gws_core import (FloatParam, FloatRField, InputSpec, IntParam, OutputSpec,
-                      Table, TechnicalInfo, resource_decorator, task_decorator)
-from pandas import DataFrame
+from gws_core import (FloatParam, InputSpec, OutputSpec, Table,
+                      resource_decorator, task_decorator)
 from sklearn.linear_model import ElasticNet
 
 from ...base.helper.training_design_helper import TrainingDesignHelper
-from ..base.base_sup import (BaseSupervisedPredictor, BaseSupervisedResult,
+from ..base.base_sup import (BaseSupervisedPredictor, BaseSupervisedRegResult,
                              BaseSupervisedTrainer)
 
 # *****************************************************************************
@@ -23,29 +21,8 @@ from ..base.base_sup import (BaseSupervisedPredictor, BaseSupervisedResult,
 
 
 @resource_decorator("ElasticNetResult", hide=True)
-class ElasticNetResult(BaseSupervisedResult):
+class ElasticNetResult(BaseSupervisedRegResult):
     """ ElasticNetResult """
-
-    PREDICTION_TABLE_NAME = "Prediction table"
-    _r2: int = FloatRField()
-
-    def __init__(self, training_set=None, training_design=None, result=None):
-        super().__init__(training_set=training_set, training_design=training_design, result=result)
-        if training_set is not None:
-            self._create_r2()
-
-    def _create_r2(self) -> float:
-        if not self._r2:
-            eln = self.get_result()
-            training_set = self.get_training_set()
-            training_design = self.get_training_design()
-            x_true, y_true = TrainingDesignHelper.create_training_matrices(training_set, training_design)
-            self._r2 = eln.score(
-                X=x_true,
-                y=y_true
-            )
-        technical_info = TechnicalInfo(key='R2', value=self._r2)
-        self.add_technical_info(technical_info)
 
 # *****************************************************************************
 #
@@ -74,7 +51,7 @@ class ElasticNetTrainer(BaseSupervisedTrainer):
         return ElasticNet(alpha=params["alpha"])
 
     @classmethod
-    def create_result_class(cls) -> Type[BaseSupervisedResult]:
+    def create_result_class(cls) -> Type[ElasticNetResult]:
         return ElasticNetResult
 
 # *****************************************************************************

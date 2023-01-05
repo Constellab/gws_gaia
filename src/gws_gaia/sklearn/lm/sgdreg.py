@@ -5,14 +5,12 @@
 
 from typing import Any, Type
 
-from gws_core import (ConfigParams, FloatParam, InputSpec, IntParam,
-                      OutputSpec, Resource, StrParam, Table, Task, TaskInputs,
-                      TaskOutputs, resource_decorator, task_decorator)
-from pandas import DataFrame
+from gws_core import (FloatParam, InputSpec, IntParam, OutputSpec, StrParam,
+                      Table, resource_decorator, task_decorator)
 from sklearn.linear_model import SGDRegressor
 
 from ...base.helper.training_design_helper import TrainingDesignHelper
-from ..base.base_sup import (BaseSupervisedPredictor, BaseSupervisedResult,
+from ..base.base_sup import (BaseSupervisedPredictor, BaseSupervisedRegResult,
                              BaseSupervisedTrainer)
 
 # *****************************************************************************
@@ -23,8 +21,8 @@ from ..base.base_sup import (BaseSupervisedPredictor, BaseSupervisedResult,
 
 
 @resource_decorator("SGDRegressorResult", hide=True)
-class SGDRegressorResult(BaseSupervisedResult):
-    pass
+class SGDRegressorResult(BaseSupervisedRegResult):
+    """ SGDRegressorResult """
 
 # *****************************************************************************
 #
@@ -46,17 +44,19 @@ class SGDRegressorTrainer(BaseSupervisedTrainer):
                                          short_description="The output result")}
     config_specs = {
         'training_design': TrainingDesignHelper.create_training_design_param_set(),
-        'loss': StrParam(default_value='squared_loss'),
+        'loss':
+        StrParam(
+            default_value='squared_error',
+            allowed_values=['squared_error', 'epsilon_insensitive', 'huber', 'squared_epsilon_insensitive']),
         'alpha': FloatParam(default_value=0.0001, min_value=0),
-        'max_iter': IntParam(default_value=1000, min_value=0)
-    }
+        'max_iter': IntParam(default_value=1000, min_value=0)}
 
     @classmethod
     def create_sklearn_trainer_class(cls, params) -> Any:
         return SGDRegressor(max_iter=params["max_iter"], alpha=params["alpha"], loss=params["loss"])
 
     @classmethod
-    def create_result_class(cls) -> Type[BaseSupervisedResult]:
+    def create_result_class(cls) -> Type[SGDRegressorResult]:
         return SGDRegressorResult
 
 # *****************************************************************************

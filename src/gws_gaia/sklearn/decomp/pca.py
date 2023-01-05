@@ -3,11 +3,10 @@
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
-from typing import Any, List, Type
+from typing import Any, Type
 
 from gws_core import (ConfigParams, FloatRField, InputSpec, IntParam,
-                      OutputSpec, Resource, ResourceRField, ScatterPlot2DView,
-                      ScatterPlot3DView, Table, TechnicalInfo,
+                      OutputSpec, ScatterPlot2DView, Table, TechnicalInfo,
                       resource_decorator, task_decorator, view)
 from pandas import DataFrame
 from sklearn.decomposition import PCA
@@ -28,14 +27,14 @@ class PCATrainerResult(BaseUnsupervisedResult):
 
     TRANSFORMED_TABLE_NAME = "Transformed table"
     VARIANCE_TABLE_NAME = "Variance table"
-    _r2: int = FloatRField()
+    _log_likelihood: int = FloatRField()
 
     def __init__(self, training_set=None, training_design=None, result=None):
         super().__init__(training_set=training_set, training_design=training_design, result=result)
         if training_set is not None:
             self._create_transformed_table()
             self._create_variance_table()
-            self._create_r2()
+            self._create_log_likelihood()
 
     def _create_transformed_table(self):
         pca: PCA = self.get_result()  # typage de pca du type PCA
@@ -60,18 +59,17 @@ class PCATrainerResult(BaseUnsupervisedResult):
         self.add_technical_info(TechnicalInfo(key='PC1', value=f'{data.iat[0,0]:.3f}'))
         self.add_technical_info(TechnicalInfo(key='PC2', value=f'{data.iat[1,0]:.3f}'))
 
-    def _create_r2(self) -> float:
-        """ Get R2 """
-        if not self._r2:
-            pls = self.get_result()
+    def _create_log_likelihood(self) -> float:
+        if not self._log_likelihood:
+            mdl = self.get_result()
             training_set = self.get_training_set()
             training_design = self.get_training_design()
             x_true, y_true = TrainingDesignHelper.create_training_matrices(training_set, training_design)
-            self._r2 = pls.score(
+            self._log_likelihood = mdl.score(
                 X=x_true,
                 y=y_true
             )
-        technical_info = TechnicalInfo(key='R2', value=self._r2)
+        technical_info = TechnicalInfo(key='Log likelihood', value=self._log_likelihood)
         self.add_technical_info(technical_info)
 
     def get_transformed_table(self):

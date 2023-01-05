@@ -6,14 +6,14 @@
 from typing import Any, Type
 
 from gws_core import (ConfigParams, InputSpec, IntParam, OutputSpec,
-                      ScatterPlot2DView, StrParam, Table, Task, TaskInputs,
-                      TaskOutputs, resource_decorator, task_decorator, view)
+                      ScatterPlot2DView, StrParam, Table, resource_decorator,
+                      task_decorator, view)
 from pandas import DataFrame
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 
 from ...base.helper.training_design_helper import TrainingDesignHelper
-from ..base.base_sup import (BaseSupervisedPredictor, BaseSupervisedResult,
-                             BaseSupervisedTrainer)
+from ..base.base_sup import (BaseSupervisedClassResult,
+                             BaseSupervisedPredictor, BaseSupervisedTrainer)
 
 # *****************************************************************************
 #
@@ -26,7 +26,7 @@ from ..base.base_sup import (BaseSupervisedPredictor, BaseSupervisedResult,
                      human_name="LDA trainer result",
                      short_description="Linear Discriminant Analysis result",
                      hide=True)
-class LDATrainerResult(BaseSupervisedResult):
+class LDATrainerResult(BaseSupervisedClassResult):
     """ LDATrainerResult """
 
     TRANSFORMED_TABLE_NAME = "Transformed table"
@@ -131,7 +131,7 @@ class LDATrainer(BaseSupervisedTrainer):
         return LinearDiscriminantAnalysis(solver=params["solver"], n_components=params["nb_components"])
 
     @classmethod
-    def create_result_class(cls) -> Type[BaseSupervisedResult]:
+    def create_result_class(cls) -> Type[LDATrainerResult]:
         return LDATrainerResult
 
 # *****************************************************************************

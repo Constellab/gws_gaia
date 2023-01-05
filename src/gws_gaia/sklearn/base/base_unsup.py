@@ -3,10 +3,10 @@
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
-from typing import Any, Type, Dict
+from typing import Any, Dict, Type
 
-from gws_core import (ConfigParams, IntParam, Task, TaskInputs, TaskOutputs,
-                      resource_decorator, task_decorator, Table)
+from gws_core import (ConfigParams, IntParam, Table, Task, TaskInputs,
+                      TaskOutputs, resource_decorator, task_decorator)
 
 from ...base.base_resource import BaseResourceSet
 
@@ -20,7 +20,7 @@ from ...base.base_resource import BaseResourceSet
 @resource_decorator("BaseUnsupervisedResult", hide=True)
 class BaseUnsupervisedResult(BaseResourceSet):
     """BaseUnsupervisedResult"""
-        
+
 # *****************************************************************************
 #
 # AdaBoostClassifierTrainer
@@ -37,7 +37,7 @@ class BaseUnsupervisedTrainer(Task):
         return None
 
     @classmethod
-    def create_result_class(cls) -> Type[BaseUnsupervisedResult]:
+    def create_result_class(cls) -> Type[None]:
         return None
 
     @classmethod

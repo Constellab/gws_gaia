@@ -10,7 +10,7 @@ from gws_core import (InputSpec, IntParam, OutputSpec, Table,
 from sklearn.ensemble import ExtraTreesRegressor
 
 from ...base.helper.training_design_helper import TrainingDesignHelper
-from ..base.base_sup import (BaseSupervisedPredictor, BaseSupervisedResult,
+from ..base.base_sup import (BaseSupervisedPredictor, BaseSupervisedRegResult,
                              BaseSupervisedTrainer)
 
 # *****************************************************************************
@@ -21,7 +21,7 @@ from ..base.base_sup import (BaseSupervisedPredictor, BaseSupervisedResult,
 
 
 @resource_decorator("ExtraTreesRegressorResult", hide=True)
-class ExtraTreesRegressorResult(BaseSupervisedResult):
+class ExtraTreesRegressorResult(BaseSupervisedRegResult):
     pass
 
 # *****************************************************************************
@@ -52,7 +52,7 @@ class ExtraTreesRegressorTrainer(BaseSupervisedTrainer):
         return ExtraTreesRegressor(n_estimators=params["nb_estimators"])
 
     @classmethod
-    def create_result_class(cls) -> Type[BaseSupervisedResult]:
+    def create_result_class(cls) -> Type[ExtraTreesRegressorResult]:
         return ExtraTreesRegressorResult
 
 # *****************************************************************************

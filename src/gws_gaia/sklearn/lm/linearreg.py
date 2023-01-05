@@ -5,18 +5,12 @@
 
 from typing import Any, Type
 
-import numpy as np
-from gws_core import (BadRequestException, ConfigParams, DataFrameRField,
-                      FloatParam, FloatRField, InputSpec, IntParam, OutputSpec,
-                      Resource, ResourceRField, ScatterPlot2DView,
-                      ScatterPlot3DView, StrParam, Table, TableView, Task,
-                      TaskInputs, TaskOutputs, TechnicalInfo,
-                      resource_decorator, task_decorator, view)
-from pandas import DataFrame, concat
+from gws_core import (InputSpec, OutputSpec, Table, resource_decorator,
+                      task_decorator)
 from sklearn.linear_model import LinearRegression
 
 from ...base.helper.training_design_helper import TrainingDesignHelper
-from ..base.base_sup import (BaseSupervisedPredictor, BaseSupervisedResult,
+from ..base.base_sup import (BaseSupervisedPredictor, BaseSupervisedRegResult,
                              BaseSupervisedTrainer)
 
 # *****************************************************************************
@@ -27,29 +21,8 @@ from ..base.base_sup import (BaseSupervisedPredictor, BaseSupervisedResult,
 
 
 @resource_decorator("LinearRegressionResult", hide=True)
-class LinearRegressionResult(BaseSupervisedResult):
+class LinearRegressionResult(BaseSupervisedRegResult):
     """LinearRegressionResult"""
-
-    PREDICTION_TABLE_NAME = "Prediction table"
-    _r2: int = FloatRField()
-
-    def __init__(self, training_set=None, training_design=None, result=None):
-        super().__init__(training_set=training_set, training_design=training_design, result=result)
-        if training_set is not None:
-            self._create_r2()
-
-    def _create_r2(self) -> float:
-        if not self._r2:
-            lir = self.get_result()
-            training_set = self.get_training_set()
-            training_design = self.get_training_design()
-            x_true, y_true = TrainingDesignHelper.create_training_matrices(training_set, training_design)
-            self._r2 = lir.score(
-                X=x_true.values,
-                y=y_true.values
-            )
-        technical_info = TechnicalInfo(key='R2', value=self._r2)
-        self.add_technical_info(technical_info)
 
 # *****************************************************************************
 #
@@ -78,7 +51,7 @@ class LinearRegressionTrainer(BaseSupervisedTrainer):
         return LinearRegression()
 
     @classmethod
-    def create_result_class(cls) -> Type[BaseSupervisedResult]:
+    def create_result_class(cls) -> Type[LinearRegressionResult]:
         return LinearRegressionResult
 
 # *****************************************************************************
@@ -100,4 +73,3 @@ class LinearRegressionPredictor(BaseSupervisedPredictor):
         LinearRegressionResult, human_name="Learned model", short_description="The input model")}
     output_specs = {'result': OutputSpec(Table, human_name="result", short_description="The output result")}
     config_specs = {}
-

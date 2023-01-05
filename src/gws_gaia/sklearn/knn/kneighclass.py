@@ -5,14 +5,13 @@
 
 from typing import Any, Type
 
-from gws_core import (ConfigParams, InputSpec, IntParam, OutputSpec, Table,
-                      Task, TaskInputs, TaskOutputs, resource_decorator,
-                      task_decorator)
+from gws_core import (InputSpec, IntParam, OutputSpec, Table,
+                      resource_decorator, task_decorator)
 from sklearn.neighbors import KNeighborsClassifier
 
 from ...base.helper.training_design_helper import TrainingDesignHelper
-from ..base.base_sup import (BaseSupervisedPredictor, BaseSupervisedResult,
-                             BaseSupervisedTrainer)
+from ..base.base_sup import (BaseSupervisedClassResult,
+                             BaseSupervisedPredictor, BaseSupervisedTrainer)
 
 # *****************************************************************************
 #
@@ -22,7 +21,7 @@ from ..base.base_sup import (BaseSupervisedPredictor, BaseSupervisedResult,
 
 
 @resource_decorator("KNNClassifierResult", hide=True)
-class KNNClassifierResult(BaseSupervisedResult):
+class KNNClassifierResult(BaseSupervisedClassResult):
     pass
 
 # *****************************************************************************
@@ -53,7 +52,7 @@ class KNNClassifierTrainer(BaseSupervisedTrainer):
         return KNeighborsClassifier(n_neighbors=params["nb_neighbors"])
 
     @classmethod
-    def create_result_class(cls) -> Type[BaseSupervisedResult]:
+    def create_result_class(cls) -> Type[KNNClassifierResult]:
         return KNNClassifierResult
 
 # *****************************************************************************

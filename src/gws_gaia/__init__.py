@@ -7,7 +7,7 @@ from .sklearn.cluster.aggclust import (AgglomerativeClusteringResult,
 from .sklearn.cluster.kmeans import (KMeansPredictor, KMeansResult,
                                      KMeansTrainer)
 # discrinimant analysis
-from .sklearn.da.linearda import LDAPredictor, LDATrainerResult, LDATrainer
+from .sklearn.da.linearda import LDAPredictor, LDATrainer, LDATrainerResult
 from .sklearn.da.plsda import PLSDAPredictor, PLSDATrainer, PLSDATrainerResult
 # decomposition
 from .sklearn.decomp.ica import ICAResult, ICATrainer
@@ -102,6 +102,7 @@ from .sklearn.tree.decistreeclass import (DecisionTreeClassifierPredictor,
 from .sklearn.tree.decistreereg import (DecisionTreeRegressorPredictor,
                                         DecisionTreeRegressorResult,
                                         DecisionTreeRegressorTrainer)
+
 # # tf
 # from .tensorflow.averagepoollayers import \
 #     AveragePooling1D as TFAveragePooling1D

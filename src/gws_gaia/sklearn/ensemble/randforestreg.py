@@ -10,7 +10,7 @@ from gws_core import (InputSpec, IntParam, OutputSpec, Table,
 from sklearn.ensemble import RandomForestRegressor
 
 from ...base.helper.training_design_helper import TrainingDesignHelper
-from ..base.base_sup import (BaseSupervisedPredictor, BaseSupervisedResult,
+from ..base.base_sup import (BaseSupervisedPredictor, BaseSupervisedRegResult,
                              BaseSupervisedTrainer)
 
 # *****************************************************************************
@@ -21,8 +21,8 @@ from ..base.base_sup import (BaseSupervisedPredictor, BaseSupervisedResult,
 
 
 @resource_decorator("RandomForestRegressorResult", hide=True)
-class RandomForestRegressorResult(BaseSupervisedResult):
-    pass
+class RandomForestRegressorResult(BaseSupervisedRegResult):
+    """ RandomForestRegressorResult """
 
 # *****************************************************************************
 #
@@ -52,7 +52,7 @@ class RandomForestRegressorTrainer(BaseSupervisedTrainer):
         return RandomForestRegressor(n_estimators=params["nb_estimators"])
 
     @classmethod
-    def create_result_class(cls) -> Type[BaseSupervisedResult]:
+    def create_result_class(cls) -> Type[RandomForestRegressorResult]:
         return RandomForestRegressorResult
 
 # *****************************************************************************

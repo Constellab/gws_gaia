@@ -5,16 +5,13 @@
 
 from typing import Any, Type
 
-from gws_core import (ConfigParams, FloatParam, InputSpec, IntParam,
-                      OutputSpec, Resource, StrParam, Table, Task, TaskInputs,
-                      TaskOutputs, resource_decorator, task_decorator)
-from numpy import ravel
-from pandas import DataFrame
+from gws_core import (InputSpec, OutputSpec, Table, resource_decorator,
+                      task_decorator)
 from sklearn.naive_bayes import GaussianNB
 
 from ...base.helper.training_design_helper import TrainingDesignHelper
-from ..base.base_sup import (BaseSupervisedPredictor, BaseSupervisedResult,
-                             BaseSupervisedTrainer)
+from ..base.base_sup import (BaseSupervisedClassResult,
+                             BaseSupervisedPredictor, BaseSupervisedTrainer)
 
 # *****************************************************************************
 #
@@ -24,7 +21,7 @@ from ..base.base_sup import (BaseSupervisedPredictor, BaseSupervisedResult,
 
 
 @resource_decorator("GaussianNaiveBayesResult", hide=True)
-class GaussianNaiveBayesResult(BaseSupervisedResult):
+class GaussianNaiveBayesResult(BaseSupervisedClassResult):
     pass
 
 # *****************************************************************************
@@ -54,7 +51,7 @@ class GaussianNaiveBayesTrainer(BaseSupervisedTrainer):
         return GaussianNB()
 
     @classmethod
-    def create_result_class(cls) -> Type[BaseSupervisedResult]:
+    def create_result_class(cls) -> Type[GaussianNaiveBayesResult]:
         return GaussianNaiveBayesResult
 
 # *****************************************************************************

@@ -10,8 +10,8 @@ from gws_core import (InputSpec, IntParam, OutputSpec, Table,
 from sklearn.gaussian_process import GaussianProcessClassifier
 
 from ...base.helper.training_design_helper import TrainingDesignHelper
-from ..base.base_sup import (BaseSupervisedPredictor, BaseSupervisedResult,
-                             BaseSupervisedTrainer)
+from ..base.base_sup import (BaseSupervisedClassResult,
+                             BaseSupervisedPredictor, BaseSupervisedTrainer)
 
 # *****************************************************************************
 #
@@ -21,8 +21,8 @@ from ..base.base_sup import (BaseSupervisedPredictor, BaseSupervisedResult,
 
 
 @resource_decorator("GaussianProcessClassifierResult", hide=True)
-class GaussianProcessClassifierResult(BaseSupervisedResult):
-    pass
+class GaussianProcessClassifierResult(BaseSupervisedClassResult):
+    """ GaussianProcessClassifierResult """
 
 # *****************************************************************************
 #
@@ -52,7 +52,7 @@ class GaussianProcessClassifierTrainer(BaseSupervisedTrainer):
         return GaussianProcessClassifier(random_state=params["random_state"])
 
     @classmethod
-    def create_result_class(cls) -> Type[BaseSupervisedResult]:
+    def create_result_class(cls) -> Type[GaussianProcessClassifierResult]:
         return GaussianProcessClassifierResult
 
 # *****************************************************************************

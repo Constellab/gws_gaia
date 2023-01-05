@@ -10,7 +10,7 @@ from gws_core import (InputSpec, IntParam, OutputSpec, Table,
 from sklearn.ensemble import GradientBoostingRegressor
 
 from ...base.helper.training_design_helper import TrainingDesignHelper
-from ..base.base_sup import (BaseSupervisedPredictor, BaseSupervisedResult,
+from ..base.base_sup import (BaseSupervisedPredictor, BaseSupervisedRegResult,
                              BaseSupervisedTrainer)
 
 # *****************************************************************************
@@ -21,7 +21,7 @@ from ..base.base_sup import (BaseSupervisedPredictor, BaseSupervisedResult,
 
 
 @resource_decorator("GradientBoostingRegressorResult", hide=True)
-class GradientBoostingRegressorResult(BaseSupervisedResult):
+class GradientBoostingRegressorResult(BaseSupervisedRegResult):
     pass
 
 # *****************************************************************************
@@ -52,7 +52,7 @@ class GradientBoostingRegressorTrainer(BaseSupervisedTrainer):
         return GradientBoostingRegressor(n_estimators=params["nb_estimators"])
 
     @classmethod
-    def create_result_class(cls) -> Type[BaseSupervisedResult]:
+    def create_result_class(cls) -> Type[GradientBoostingRegressorResult]:
         return GradientBoostingRegressorResult
 
 

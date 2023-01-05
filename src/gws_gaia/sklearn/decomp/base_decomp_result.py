@@ -28,7 +28,6 @@ class BaseDecompResult(BaseSupervisedResult):
         if training_set is not None:
             self._create_transformed_table()
             self._create_variance_table()
-            self._create_r2()
 
     def _create_transformed_table(self) -> DataFrame:
         mdl = self.get_result()
@@ -60,20 +59,6 @@ class BaseDecompResult(BaseSupervisedResult):
         table = Table(data=data)
         table.name = self.VARIANCE_TABLE_NAME
         self.add_resource(table)
-
-    def _create_r2(self) -> float:
-        """ Get R2 """
-        if not self._r2:
-            pls = self.get_result()
-            training_set = self.get_training_set()
-            training_design = self.get_training_design()
-            x_true, y_true = TrainingDesignHelper.create_training_matrices(training_set, training_design)
-            self._r2 = pls.score(
-                X=x_true,
-                y=y_true
-            )
-        technical_info = TechnicalInfo(key='R2', value=self._r2)
-        self.add_technical_info(technical_info)
 
     def get_transformed_table(self):
         """ Get transformed table """

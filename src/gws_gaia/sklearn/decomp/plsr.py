@@ -12,24 +12,22 @@ from pandas import DataFrame
 from sklearn.cross_decomposition import PLSRegression
 
 from ...base.helper.training_design_helper import TrainingDesignHelper
-from ..base.base_sup import (BaseSupervisedClassResult,
-                             BaseSupervisedPredictor, BaseSupervisedTrainer)
-from ..decomp.helper.pls_helper import PLSHelper
+from ..base.base_sup import (BaseSupervisedPredictor, BaseSupervisedRegResult,
+                             BaseSupervisedTrainer)
+from .helper.pls_helper import PLSHelper
 
 # *****************************************************************************
 #
-# PLSDATrainerResult
+# PLSTrainerResult
 #
 # *****************************************************************************
 
 
-@resource_decorator("PLSDATrainerResult", hide=True)
-class PLSDATrainerResult(BaseSupervisedClassResult):
-    """ PLSDATrainerResult """
-    TRANSFORMED_TABLE_NAME = "Transformed table"
+@resource_decorator("PLSTrainerResult", hide=True)
+class PLSTrainerResult(BaseSupervisedRegResult):
+    """ PLSTrainerResult """
+    TRANSFORMED_TABLE_NAME = "Transformed data table"
     VARIANCE_TABLE_NAME = "Variance table"
-    PREDICTION_TABLE_NAME = "Prediction table"
-    _dummy_target = True
 
     def __init__(self, training_set=None, training_design=None, result=None):
         super().__init__(training_set=training_set, training_design=training_design, result=result)
@@ -58,7 +56,7 @@ class PLSDATrainerResult(BaseSupervisedClassResult):
         pls: PLSRegression = self.get_result()
         training_set = self.get_training_set()
         training_design = self.get_training_design()
-        table = PLSHelper.create_variance_table(pls, training_set, training_design, dummy=self._dummy_target)
+        table = PLSHelper.create_variance_table(pls, training_set, training_design)
 
         table.name = self.VARIANCE_TABLE_NAME
         self.add_resource(table)
@@ -102,25 +100,22 @@ class PLSDATrainerResult(BaseSupervisedClassResult):
 
 # *****************************************************************************
 #
-# PLSDATrainer
+# PLSTrainer
 #
 # *****************************************************************************
 
 
-@ task_decorator("PLSDATrainer", human_name="PLSDA trainer",
-                 short_description="Train a Partial Least Squares Discrimante Analysis (PLSDA) regression model")
-class PLSDATrainer(BaseSupervisedTrainer):
+@ task_decorator("PLSTrainer", human_name="PLS regression trainer",
+                 short_description="Train a Partial Least Squares (PLS) regression model")
+class PLSTrainer(BaseSupervisedTrainer):
     """
-    Trainer of a Partial Least Squares Discrimante Analysis (PLSDA) regression model. Fit a PLSDA regression model to a training table.
+    Trainer of a Partial Least Squares (PLS) regression model. Fit a PLS regression model to a training table.
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.cross_decomposition.PLSRegression.html for more details.
     """
 
-    _dummy_target = True
-
     input_specs = {'table': InputSpec(Table, human_name="Table", short_description="The input table")}
-    output_specs = {'result': OutputSpec(PLSDATrainerResult, human_name="result",
-                                         short_description="The output result")}
+    output_specs = {'result': OutputSpec(PLSTrainerResult, human_name="result", short_description="The output result")}
     config_specs = {
         'training_design': TrainingDesignHelper.create_training_design_param_set(),
         'nb_components': IntParam(default_value=2, min_value=0),
@@ -131,29 +126,26 @@ class PLSDATrainer(BaseSupervisedTrainer):
         return PLSRegression(n_components=params["nb_components"])
 
     @classmethod
-    def create_result_class(cls) -> Type[PLSDATrainerResult]:
-        return PLSDATrainerResult
+    def create_result_class(cls) -> Type[PLSTrainerResult]:
+        return PLSTrainerResult
 
 # *****************************************************************************
 #
-# PLSDAPredictor
+# PLSPredictor
 #
 # *****************************************************************************
 
 
-@ task_decorator("PLSDAPredictor", human_name="PLSDA predictor",
-                 short_description="Predict table targets using a trained PLSDA regression model")
-class PLSDAPredictor(BaseSupervisedPredictor):
+@ task_decorator("PLSPredictor", human_name="PLS regression predictor",
+                 short_description="Predict table targets using a trained PLS regression model")
+class PLSPredictor(BaseSupervisedPredictor):
     """
-    Predictor of a Partial Least Squares Discrimante Analysis (PLSDA) regression model. Predict targets of a table with a trained PLSDA regression model.
+    Predictor of a Partial Least Squares (PLS) regression model. Predict targets of a table with a trained PLS regression model.
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.cross_decomposition.PLSRegression.html for more details.
     """
 
-    _dummy_target = True
-
-    input_specs = {
-        'table': InputSpec(Table, human_name="Table", short_description="The input table"),
-        'learned_model': InputSpec(PLSDATrainerResult, human_name="Learned model", short_description="The input model")}
+    input_specs = {'table': InputSpec(Table, human_name="Table", short_description="The input table"),
+                   'learned_model': InputSpec(PLSTrainerResult, human_name="Learned model", short_description="The input model")}
     output_specs = {'result': OutputSpec(Table, human_name="result", short_description="The output result")}
     config_specs = {}

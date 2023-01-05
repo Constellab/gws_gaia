@@ -3,11 +3,10 @@
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
-from typing import Any, List, Type
+from typing import Any, Type
 
-from gws_core import (ConfigParams, InputSpec, IntParam, OutputSpec, Table,
-                      Task, TaskInputs, TaskOutputs, resource_decorator,
-                      task_decorator)
+from gws_core import (InputSpec, IntParam, OutputSpec, Table,
+                      resource_decorator, task_decorator)
 from sklearn.decomposition import FastICA
 
 from ..base.base_unsup import BaseUnsupervisedResult, BaseUnsupervisedTrainer

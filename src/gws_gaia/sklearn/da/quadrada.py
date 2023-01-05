@@ -5,18 +5,13 @@
 
 from typing import Any, Type
 
-from gws_core import (ConfigParams, FloatParam, InputSpec, IntParam,
-                      OutputSpec, Resource, ScatterPlot2DView, StrParam, Table,
-                      Task, TaskInputs, TaskOutputs, resource_decorator,
-                      task_decorator, view)
-from numpy import ravel
-from pandas import DataFrame
+from gws_core import (FloatParam, InputSpec, OutputSpec, Table,
+                      resource_decorator, task_decorator)
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
 
 from ...base.helper.training_design_helper import TrainingDesignHelper
-from ..base.base_sup import (BaseSupervisedPredictor, BaseSupervisedResult,
-                             BaseSupervisedTrainer)
-from .base_da_result import BaseDAResult
+from ..base.base_sup import (BaseSupervisedClassResult,
+                             BaseSupervisedPredictor, BaseSupervisedTrainer)
 
 # *****************************************************************************
 #
@@ -26,7 +21,7 @@ from .base_da_result import BaseDAResult
 
 
 @resource_decorator("QDAResult", human_name="QDA result", hide=True)
-class QDAResult(BaseSupervisedResult):
+class QDAResult(BaseSupervisedClassResult):
     pass
 
 # *****************************************************************************
@@ -56,7 +51,7 @@ class QDATrainer(BaseSupervisedTrainer):
         return QuadraticDiscriminantAnalysis(reg_param=params["reg_param"])
 
     @classmethod
-    def create_result_class(cls) -> Type[BaseSupervisedResult]:
+    def create_result_class(cls) -> Type[QDAResult]:
         return QDAResult
 
 

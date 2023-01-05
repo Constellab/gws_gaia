@@ -5,14 +5,11 @@
 
 from typing import Any, Type
 
-from gws_core import (ConfigParams, Table, FloatParam, InputSpec, IntParam,
-                      OutputSpec, Resource, StrParam, Task, TaskInputs,
-                      TaskOutputs, resource_decorator, task_decorator)
-from numpy import ravel
-from pandas import DataFrame
+from gws_core import (InputSpec, IntParam, OutputSpec, StrParam, Table,
+                      resource_decorator, task_decorator)
 from sklearn.mixture import GaussianMixture
 
-from ..base.base_unsup import BaseUnsupervisedResult, BaseUnsupervisedTrainer, BaseUnsupervisedPredictor
+from ..base.base_unsup import BaseUnsupervisedResult, BaseUnsupervisedTrainer
 
 # *****************************************************************************
 #
@@ -50,8 +47,8 @@ class GaussianMixtureTrainer(BaseUnsupervisedTrainer):
 
     @classmethod
     def create_sklearn_trainer_class(cls, params) -> Any:
-        return  GaussianMixture(n_components=params["nb_components"], covariance_type=params["covariance_type"])
+        return GaussianMixture(n_components=params["nb_components"], covariance_type=params["covariance_type"])
 
     @classmethod
-    def create_result_class(cls) -> Type[BaseUnsupervisedTrainer]:
+    def create_result_class(cls) -> Type[GaussianMixtureResult]:
         return GaussianMixtureResult

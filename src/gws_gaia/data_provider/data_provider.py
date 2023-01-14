@@ -2,15 +2,14 @@
 
 import os
 
-from gws_core import (Table, TableImporter, File, Settings, Table,
-                      TableImporter)
+from gws_core import File, Settings, Table, TableImporter
 
 
 class DataProvider():
 
     @classmethod
     def _get_test_data_dir(cls) -> str:
-        return Settings.retrieve().get_variable("gws_gaia:testdata_dir")
+        return Settings.get_instance().get_variable("gws_gaia:testdata_dir")
 
     @classmethod
     def get_test_data_path(cls, path: str) -> str:

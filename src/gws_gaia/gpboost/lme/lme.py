@@ -5,10 +5,13 @@
 
 import gpboost as gpb
 import numpy as np
-from gws_core import (BoolParam, ConfigParams, InputSpec, ListParam,
-                      OutputSpec, ParamSet, StrParam, Table, Task, TaskInputs,
-                      TaskOutputs, TextView, resource_decorator,
-                      task_decorator, view)
+import pandas as pd
+import sklearn
+from gws_core import (BoolParam, ConfigParams, FloatRField, InputSpec,
+                      ListParam, OutputSpec, ParamSet, StrParam, Table, Task,
+                      TaskInputs, TaskOutputs, TechnicalInfo, TextView,
+                      resource_decorator, task_decorator, view)
+from pandas import DataFrame
 
 from ...base.base_resource import BaseResourceSet
 from .helper.lme_design_helper import LMEDesignHelper
@@ -31,10 +34,74 @@ from .helper.lme_design_helper import LMEDesignHelper
 class LMETrainerResult(BaseResourceSet):
     """ LMEResult """
 
+    PREDICTION_TABLE_NAME = "Prediction table"
+    RADOMN_EFFECT_TABLE_NAME = "Random effect table"
+    PREDICTION_SCORE_NAME = "Prediction score"
+
+    _prediction_score: int = FloatRField()
+
     def __init__(self, training_set=None, training_design=None, result=None):
         super().__init__(training_set=training_set, training_design=training_design, result=result)
+        if training_set is not None:
+            self._create_prediction_table()
+            self._create_training_data_random_effects()
+            self._create_prediction_score()
 
-    @view(view_type=TextView, human_name='Summary', short_description='Summary text')
+    def _create_prediction_table(self) -> DataFrame:
+        gp_model = self.get_result()
+
+        training_set = self.get_training_set()
+        training_design = self.get_training_design()
+        t_mat = LMEDesignHelper.create_training_matrix(training_set=training_set, training_design=training_design)
+        n = t_mat.shape[0]
+        X_test = np.ones(n)
+        Z=LMEDesignHelper.create_design_matrix(training_matrix=t_mat, training_design=training_design)
+        df_pred = gp_model.predict(X_pred=X_test,group_data_pred=Z)
+        target_pred=df_pred['mu']
+        df = pd.concat([t_mat, target_pred], axis=1)
+        table = Table(df)
+        table.name = self.PREDICTION_TABLE_NAME
+        self.add_resource(table)
+
+    def _create_training_data_random_effects(self) -> DataFrame:
+        gp_model = self.get_result()
+        training_set = self.get_training_set()
+        df = gp_model.predict_training_data_random_effects()
+        training_design = self.get_training_design()
+        t_mat = LMEDesignHelper.create_training_matrix(training_set=training_set, training_design=training_design)
+        t_mat.index = df.index
+        df = gp_model.predict_training_data_random_effects()
+        df = pd.concat([t_mat, df], axis=1)
+        table = Table(df)
+        table.name = self.RADOMN_EFFECT_TABLE_NAME
+        self.add_resource(table)
+
+    def _create_prediction_score(self) -> float:
+        if not self._prediction_score:
+            gp_model = self.get_result()
+            training_set = self.get_training_set()
+            training_design = self.get_training_design()
+            t_mat = LMEDesignHelper.create_training_matrix(training_set=training_set, training_design=training_design)
+            y_true = t_mat["target"]
+            y_pred =
+
+            self._prediction_score = sklearn.metrics.r2_score(y_true, y_pred)
+
+        technical_info = TechnicalInfo(key=self.PREDICTION_SCORE_NAME, value=self._prediction_score)
+        self.add_technical_info(technical_info)
+
+    def get_prediction_table(self):
+        """ Get prediction table """
+        if self.resource_exists(self.PREDICTION_TABLE_NAME):
+            return self.get_resource(self.PREDICTION_TABLE_NAME)
+        else:
+            return None
+
+
+    def get_prediction_score(self):
+        return self._prediction_score
+
+    @ view(view_type=TextView, human_name='Summary', short_description='Summary text')
     def view_as_summary(self, params: ConfigParams) -> dict:
         """
         View as summary
@@ -44,17 +111,7 @@ class LMETrainerResult(BaseResourceSet):
         view_ = TextView(data=str(gp_model.summary()))
         return view_
 
-    # @view(view_type=TableView, human_name="Prediction table")
-    # def view_predictions_as_table(self, params: ConfigParams) -> dict:
-    #     """
-    #     View the target data and the predicted data in a table. Works for data with only one target
-    #     """
-    #     Y_data = self._training_set.get_targets()
-    #     Y_predicted = self._get_predicted_data()
-    #     y = pd.concat([Y_data, Y_predicted], axis=1)
-    #     data = y.set_axis(["YData", "YPredicted"], axis=1)
-    #     t_view = TableView(Table(data))
-    #     return t_view
+
 
 # *****************************************************************************
 #
@@ -63,8 +120,8 @@ class LMETrainerResult(BaseResourceSet):
 # *****************************************************************************
 
 
-@task_decorator("LMETrainer", human_name="LMETrainer",
-                short_description="Train a linear mixted effects model")
+@ task_decorator("LMETrainer", human_name="LMETrainer",
+                 short_description="Train a linear mixted effects model")
 class LMETrainer(Task):
     """
     Trainer of a linear mixted effects model.
@@ -108,36 +165,7 @@ class LMETrainer(Task):
             params={"std_dev": True}
         )
 
-        result = LMETrainerResult(training_set=Table, training_design=training_design, result=gp_model)
+        result = LMETrainerResult(training_set=training_set, training_design=training_design, result=gp_model)
 
         return {'result': result}
 
-# *****************************************************************************
-#
-# LinearMixedEffectsPredictor
-#
-# *****************************************************************************
-
-
-# @task_decorator("LMEPredictor", human_name="Linear regression predictor",
-#                 short_description="Predict table targets using a trained lme model")
-
-# class LMEPredictor(Task):
-#     input_specs = {'table': InputSpec(Dataset, human_name="Dataset", short_description="The input table"),
-#                    'learned_model': InputSpec(LMETrainerResult, human_name="Learned model", short_description="The input model")}
-#     output_specs = {'result': OutputSpec(Dataset, human_name="result", short_description="The output result")}
-#     config_specs = {}
-
-#     async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
-#         table = inputs['table']
-#         learned_model = inputs['learned_model']
-#         lmr = learned_model.get_result()
-#         y = lmr.predict(table.get_features().values)
-#         print(y)
-#         result_table = Dataset(
-#             data=pd.DataFrame(y),
-#             row_names=table.row_names,
-#             column_names=table.target_names,
-#             target_names=table.target_names
-#         )
-#         return {'result': result_table}

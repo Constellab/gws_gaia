@@ -3,13 +3,15 @@
 # The use and distribution of this software is prohibited without the prior consent of Gencovery SAS.
 # About us: https://gencovery.com
 
+from typing import Any
+
 import gpboost as gpb
 import numpy as np
 import pandas as pd
 import sklearn
 from gws_core import (BoolParam, ConfigParams, FloatRField, InputSpec,
-                      ListParam, OutputSpec, ParamSet, StrParam, Table, Task,
-                      TaskInputs, TaskOutputs, TechnicalInfo, TextView,
+                      ListParam, OutputSpec, ParamSet, RField, StrParam, Table,
+                      Task, TaskInputs, TaskOutputs, TechnicalInfo, TextView,
                       resource_decorator, task_decorator, view)
 from pandas import DataFrame
 
@@ -30,6 +32,16 @@ from .helper.lme_design_helper import LMEDesignHelper
 # training_data_random_effects = all_training_data_random_effects.iloc[first_occurences]
 
 
+class GPModelHelper:
+    @staticmethod
+    def serializer(model) -> dict:
+        return model.model_to_dict()
+
+    @staticmethod
+    def deserializer(data) -> gpb.GPModel:
+        return gpb.GPModel(model_dict=data)
+
+
 @resource_decorator("LMEResult", hide=True)
 class LMETrainerResult(BaseResourceSet):
     """ LMEResult """
@@ -38,6 +50,11 @@ class LMETrainerResult(BaseResourceSet):
     RADOMN_EFFECT_TABLE_NAME = "Random effect table"
     PREDICTION_SCORE_NAME = "Prediction score"
 
+    _result: Any = RField(
+        default_value=None,
+        serializer=GPModelHelper.serializer,
+        deserializer=GPModelHelper.deserializer,
+    )
     _prediction_score: int = FloatRField()
 
     def __init__(self, training_set=None, training_design=None, result=None):

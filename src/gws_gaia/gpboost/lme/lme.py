@@ -55,9 +55,9 @@ class LMETrainerResult(BaseResourceSet):
         t_mat = LMEDesignHelper.create_training_matrix(training_set=training_set, training_design=training_design)
         n = t_mat.shape[0]
         X_test = np.ones(n)
-        Z=LMEDesignHelper.create_design_matrix(training_matrix=t_mat, training_design=training_design)
-        df_pred = gp_model.predict(X_pred=X_test,group_data_pred=Z)
-        target_pred=df_pred['mu']
+        Z = LMEDesignHelper.create_design_matrix(training_matrix=t_mat, training_design=training_design)
+        df_pred = gp_model.predict(X_pred=X_test, group_data_pred=Z)
+        target_pred = pd.DataFrame(df_pred['mu'], columns=['Prediction'])
         df = pd.concat([t_mat, target_pred], axis=1)
         table = Table(df)
         table.name = self.PREDICTION_TABLE_NAME
@@ -78,12 +78,11 @@ class LMETrainerResult(BaseResourceSet):
 
     def _create_prediction_score(self) -> float:
         if not self._prediction_score:
-            gp_model = self.get_result()
             training_set = self.get_training_set()
             training_design = self.get_training_design()
             t_mat = LMEDesignHelper.create_training_matrix(training_set=training_set, training_design=training_design)
             y_true = t_mat["target"]
-            y_pred =
+            y_pred = t_mat["target"]
 
             self._prediction_score = sklearn.metrics.r2_score(y_true, y_pred)
 
@@ -96,7 +95,6 @@ class LMETrainerResult(BaseResourceSet):
             return self.get_resource(self.PREDICTION_TABLE_NAME)
         else:
             return None
-
 
     def get_prediction_score(self):
         return self._prediction_score
@@ -111,6 +109,15 @@ class LMETrainerResult(BaseResourceSet):
         view_ = TextView(data=str(gp_model.summary()))
         return view_
 
+    # @ view(view_type=TableView, human_name='prediction', short_description='prediction')
+    # def view_as_table(self, params: ConfigParams) -> table:
+    #     """
+    #     View as table
+    #     """
+
+    #     table_pred = self.get_result()
+    #     view_ = TableView(data=)
+    #     return view_
 
 
 # *****************************************************************************
@@ -156,7 +163,10 @@ class LMETrainer(Task):
         # create intercept
         n = t_mat.shape[0]
         X = np.ones(n)
-
+        # X_prime=t_mat['time']
+        # X_prime=X_prime.to_numpy()
+        # X =np.vstack((np.ones(n),X_prime))
+        # X=X_prime
         # create GP model
         gp_model = gpb.GPModel(group_data=Z, likelihood=params['likelihood'])
         gp_model.fit(
@@ -168,4 +178,3 @@ class LMETrainer(Task):
         result = LMETrainerResult(training_set=training_set, training_design=training_design, result=gp_model)
 
         return {'result': result}
-

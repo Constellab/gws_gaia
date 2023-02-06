@@ -60,14 +60,3 @@ class TestTrainer(BaseTestCase):
         outputs = await tester.run()
         trainer_result = outputs['result']
         print(trainer_result)
-
-        # tester = TaskRunner(
-        #     inputs={
-        #         'learned_model': trainer_result,
-        #         'table': table
-        #     },
-        #     task_type=LMEPredictor
-
-        # )
-        # outputs = await tester.run()
-        # predictor_result = outputs['result']

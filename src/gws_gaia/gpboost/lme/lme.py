@@ -11,8 +11,9 @@ import pandas as pd
 import sklearn
 from gws_core import (BoolParam, ConfigParams, FloatRField, InputSpec,
                       ListParam, OutputSpec, ParamSet, RField, StrParam, Table,
-                      Task, TaskInputs, TaskOutputs, TechnicalInfo, TextView,
-                      resource_decorator, task_decorator, view)
+                      TableConcatHelper, Task, TaskInputs, TaskOutputs,
+                      TechnicalInfo, TextView, resource_decorator,
+                      task_decorator, view)
 from pandas import DataFrame
 
 from ...base.base_resource import BaseResourceSet
@@ -88,8 +89,10 @@ class LMETrainerResult(BaseResourceSet):
         t_mat = LMEDesignHelper.create_training_matrix(training_set=training_set, training_design=training_design)
         t_mat.index = df.index
         df = gp_model.predict_training_data_random_effects()
-        df = pd.concat([t_mat, df], axis=1)
-        table = Table(df)
+        # df = df.rename(columns={'Metabolites': 'newName1'})
+        # df = pd.concat([t_mat, df], axis=1)
+        table = TableConcatHelper.concat_table_columns(Table(t_mat), Table(df))
+        # table = Table(df)
         table.name = self.RADOMN_EFFECT_TABLE_NAME
         self.add_resource(table)
 
@@ -123,19 +126,11 @@ class LMETrainerResult(BaseResourceSet):
         """
 
         gp_model = self.get_result()
-        view_ = TextView(data=str(gp_model.summary()))
+        coef_estimated = gp_model.get_coef()
+        cov_estimated = gp_model.get_cov_pars()
+        str = f"Estimated fixed parameters :\n{coef_estimated}\nEstimated covariance parameters :\n{cov_estimated}"
+        view_ = TextView(data=str)
         return view_
-
-    # @ view(view_type=TableView, human_name='prediction', short_description='prediction')
-    # def view_as_table(self, params: ConfigParams) -> table:
-    #     """
-    #     View as table
-    #     """
-
-    #     table_pred = self.get_result()
-    #     view_ = TableView(data=)
-    #     return view_
-
 
 # *****************************************************************************
 #
@@ -180,11 +175,7 @@ class LMETrainer(Task):
         # create intercept
         n = t_mat.shape[0]
         X = np.ones(n)
-        # X_prime=t_mat['time']
-        # X_prime=X_prime.to_numpy()
-        # X =np.vstack((np.ones(n),X_prime))
-        # X=X_prime
-        # create GP model
+        print(X)
         gp_model = gpb.GPModel(group_data=Z, likelihood=params['likelihood'])
         gp_model.fit(
             y=t_mat["target"],
@@ -194,4 +185,5 @@ class LMETrainer(Task):
 
         result = LMETrainerResult(training_set=training_set, training_design=training_design, result=gp_model)
 
+        print(gp_model.summary())
         return {'result': result}

@@ -128,8 +128,8 @@ class LMETrainerResult(BaseResourceSet):
         gp_model = self.get_result()
         coef_estimated = gp_model.get_coef()
         cov_estimated = gp_model.get_cov_pars()
-        str = f"Estimated fixed parameters :\n{coef_estimated}\nEstimated covariance parameters :\n{cov_estimated}"
-        view_ = TextView(data=str)
+        data = f"Estimated fixed parameters :\n{coef_estimated}\nEstimated covariance parameters :\n{cov_estimated}"
+        view_ = TextView(data=data)
         return view_
 
 # *****************************************************************************

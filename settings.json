@@ -3,7 +3,7 @@
     "author"        : "Gencovery",
     "author_email"  : "admin@gencovery.com",
     "description"   : "Gencovery Artificial Intelligence and Analytics (GAIA)",
-    "version"       : "0.3.5",
+    "version"       : "0.3.6",
     "variables"     :{
         "gws_gaia:testdata_dir" : "${CURRENT_DIR}/tests/testdata"
     },

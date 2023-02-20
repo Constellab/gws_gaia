@@ -88,6 +88,7 @@ class PLSTrainerResult(BaseSupervisedRegResult):
         data: DataFrame = self.get_transformed_table().get_data()
         _view = ScatterPlot2DView()
         row_tags = self.get_training_set().get_row_tags()
+
         _view.add_series(
             x=data['PC1'].to_list(),
             y=data['PC2'].to_list(),

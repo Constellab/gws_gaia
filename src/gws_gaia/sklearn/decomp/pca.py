@@ -96,6 +96,10 @@ class PCATrainerResult(BaseUnsupervisedResult):
         data: DataFrame = self.get_transformed_table().get_data()
         _view = ScatterPlot2DView()
         row_tags = self.get_training_set().get_row_tags()
+        row_names = self.get_training_set().row_names
+        for i, tag in enumerate(row_tags):
+            tag["name"] = row_names[i]
+
         _view.add_series(
             x=data['PC1'].to_list(),
             y=data['PC2'].to_list(),

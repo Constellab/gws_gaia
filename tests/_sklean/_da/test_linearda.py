@@ -21,7 +21,7 @@ class TestTrainer(BaseTestCase):
             inputs={'table': table},
             task_type=LDATrainer
         )
-        outputs = await tester.run()
+        outputs = tester.run()
         trainer_result = outputs['result']
 
         # --------------------------------------------------------------
@@ -34,7 +34,7 @@ class TestTrainer(BaseTestCase):
             },
             task_type=LDAPredictor
         )
-        outputs = await tester.run()
+        outputs = tester.run()
         predictor_result = outputs['result']
 
         print(trainer_result)

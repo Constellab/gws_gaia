@@ -45,7 +45,7 @@ class TestTrainer(BaseTestCase):
             },
             task_type=PLSPredictor
         )
-        outputs = await tester.run()
+        outputs = tester.run()
         predictor_result = outputs['result']
 
         print(trainer_result)

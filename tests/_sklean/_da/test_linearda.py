@@ -6,7 +6,7 @@ from gws_gaia import LDAPredictor, LDATrainer
 
 class TestTrainer(BaseTestCase):
 
-    async def test_process(self):
+    def test_process(self):
         self.print("Linear discriminant analysis classifier")
         table = DataProvider.get_iris_table(keep_variety=False)
 

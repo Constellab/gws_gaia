@@ -1,17 +1,14 @@
 
-import os
 
 import numpy
-from gws_core import (BaseTestCase, ConfigParams, File, GTest, Settings, Table,
-                      TableImporter, TaskRunner, ViewTester)
+from gws_core import BaseTestCase, TaskRunner
 from gws_core.extra import DataProvider as CoreDataProvider
 from gws_gaia import PLSDAPredictor, PLSDATrainer
-from gws_gaia.extra import DataProvider
 
 
 class TestTrainer(BaseTestCase):
 
-    async def test_plsda_with_string_targets(self):
+    def test_plsda_with_string_targets(self):
         self.print("Partial Least Squares (PLS) regression")
         table = CoreDataProvider.get_iris_table()
 
@@ -26,7 +23,7 @@ class TestTrainer(BaseTestCase):
             inputs={'table': table},
             task_type=PLSDATrainer
         )
-        outputs = await tester.run()
+        outputs = tester.run()
         trainer_result = outputs['result']
         var_table = trainer_result.get_variance_table()
         print(var_table)
@@ -49,7 +46,7 @@ class TestTrainer(BaseTestCase):
             },
             task_type=PLSDAPredictor
         )
-        outputs = await tester.run()
+        outputs = tester.run()
         predictor_result = outputs['result']
 
         print(trainer_result)

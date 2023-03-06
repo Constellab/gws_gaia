@@ -1,12 +1,11 @@
-from gws_core import (BaseTestCase, ConfigParams, File, GTest, Settings, Table,
-                      TaskRunner, ViewTester)
+from gws_core import BaseTestCase, TaskRunner
 from gws_core.extra import DataProvider
 from gws_gaia import KMeansPredictor, KMeansTrainer
 
 
 class TestTrainer(BaseTestCase):
 
-    async def test_process(self):
+    def test_process(self):
         self.print("K-means clustering")
         table = DataProvider.get_iris_table(keep_variety=False)
 
@@ -17,7 +16,7 @@ class TestTrainer(BaseTestCase):
             inputs={'table': table},
             task_type=KMeansTrainer
         )
-        outputs = await tester.run()
+        outputs = tester.run()
         trainer_result = outputs['result']
 
         # # ---------------------------------------------------------------------
@@ -44,7 +43,7 @@ class TestTrainer(BaseTestCase):
             },
             task_type=KMeansPredictor
         )
-        outputs = await tester.run()
+        outputs = tester.run()
         predictor_result = outputs['result']
         # ---------------------------------------------------------------------
 

@@ -12,7 +12,7 @@ from pandas import DataFrame
 from sklearn.cluster import KMeans
 
 from ..base.base_unsup import (BaseUnsupervisedPredictor,
-                               BaseUnsupervisedResult, BaseUnsupervisedTrainer)
+                               BaseUnsupervisedTrainer)
 from .base_clust_result import BaseClusteringResult
 
 # *****************************************************************************
@@ -75,7 +75,7 @@ class KMeansPredictor(BaseUnsupervisedPredictor):
     output_specs = {'result': OutputSpec(Table, human_name="result", short_description="The output result")}
     config_specs = {}
 
-    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+    def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         table = inputs['table']
         learned_model = inputs['learned_model']
         kmeans = learned_model.get_result()

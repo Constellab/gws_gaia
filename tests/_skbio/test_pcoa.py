@@ -1,13 +1,12 @@
 import numpy
-from gws_core import (BaseTestCase, ConfigParams, Table, TableImporter,
-                      File, GTest, Settings, TaskRunner, ViewTester)
+from gws_core import BaseTestCase, TaskRunner
 from gws_gaia import PCoATrainer
 from gws_gaia.data_provider.data_provider import DataProvider
 
 
 class TestTrainer(BaseTestCase):
 
-    async def test_pcoa(self):
+    def test_pcoa(self):
         self.print("Principal Coordinate Analysis (PCoA)")
         distance_table = DataProvider.get_distance_table()
 
@@ -18,7 +17,7 @@ class TestTrainer(BaseTestCase):
             inputs={'distance_table': distance_table},
             task_type=PCoATrainer
         )
-        outputs = await tester.run()
+        outputs = tester.run()
         trainer_result = outputs['result']
 
         table = trainer_result.get_variance_table()

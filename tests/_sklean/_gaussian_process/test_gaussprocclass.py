@@ -1,5 +1,4 @@
-from gws_core import (BaseTestCase, ConfigParams, File, GTest, Settings, Table,
-                      TaskRunner)
+from gws_core import BaseTestCase, TaskRunner
 from gws_core.extra import DataProvider
 from gws_gaia import (GaussianProcessClassifierPredictor,
                       GaussianProcessClassifierTrainer)
@@ -7,7 +6,7 @@ from gws_gaia import (GaussianProcessClassifierPredictor,
 
 class TestTrainer(BaseTestCase):
 
-    async def test_process(self):
+    def test_process(self):
         self.print("Gaussian Process Classifier")
         table = DataProvider.get_iris_table(keep_variety=False)
 
@@ -20,7 +19,7 @@ class TestTrainer(BaseTestCase):
             inputs={'table': table},
             task_type=GaussianProcessClassifierTrainer
         )
-        outputs = await tester.run()
+        outputs = tester.run()
         trainer_result = outputs['result']
 
         # run predictior
@@ -32,7 +31,7 @@ class TestTrainer(BaseTestCase):
             },
             task_type=GaussianProcessClassifierPredictor
         )
-        outputs = await tester.run()
+        outputs = tester.run()
         predictor_result = outputs['result']
 
         print(trainer_result)

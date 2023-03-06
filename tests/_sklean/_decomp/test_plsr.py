@@ -1,17 +1,14 @@
 
-import os
 
 import numpy
-from gws_core import (BaseTestCase, ConfigParams, File, GTest, Settings, Table,
-                      TableImporter, TaskRunner, ViewTester)
-from gws_core.extra import DataProvider as CoreDataProvider
+from gws_core import BaseTestCase, TaskRunner
 from gws_gaia import PLSPredictor, PLSTrainer
 from gws_gaia.extra import DataProvider
 
 
 class TestTrainer(BaseTestCase):
 
-    async def test_plsr_with_numeric_targets(self):
+    def test_plsr_with_numeric_targets(self):
         self.print("Partial Least Squares (PLS) regression")
         table = DataProvider.get_diabetes_table()
 
@@ -27,7 +24,7 @@ class TestTrainer(BaseTestCase):
             inputs={'table': table},
             task_type=PLSTrainer
         )
-        outputs = await tester.run()
+        outputs = tester.run()
         trainer_result = outputs['result']
         var_table = trainer_result.get_variance_table()
         print(var_table)

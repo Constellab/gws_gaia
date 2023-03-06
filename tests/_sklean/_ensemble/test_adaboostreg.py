@@ -1,12 +1,11 @@
-from gws_core import (BaseTestCase, ConfigParams, File, Settings, Table,
-                      TableImporter, TaskRunner)
+from gws_core import BaseTestCase, TaskRunner
 from gws_gaia import AdaBoostRegressorPredictor, AdaBoostRegressorTrainer
 from tests.gws_gaia_test_helper import GWSGaiaTestHelper
 
 
 class TestTrainer(BaseTestCase):
 
-    async def test_process(self):
+    def test_process(self):
         self.print("AdaBoost regressor")
         table = GWSGaiaTestHelper.get_table(index=2, header=0, targets=['target'])
 
@@ -21,7 +20,7 @@ class TestTrainer(BaseTestCase):
             inputs={'table': table},
             task_type=AdaBoostRegressorTrainer
         )
-        outputs = await tester.run()
+        outputs = tester.run()
         trainer_result = outputs['result']
 
         # run predictior
@@ -34,7 +33,7 @@ class TestTrainer(BaseTestCase):
             },
             task_type=AdaBoostRegressorPredictor
         )
-        outputs = await tester.run()
+        outputs = tester.run()
         predictor_result = outputs['result']
 
         print(trainer_result)

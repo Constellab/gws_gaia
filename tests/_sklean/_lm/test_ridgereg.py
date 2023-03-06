@@ -1,12 +1,11 @@
-from gws_core import (BaseTestCase, ConfigParams, Table, File, GTest,
-                      Settings, TaskRunner)
+from gws_core import BaseTestCase, TaskRunner
 from gws_gaia import RidgeRegressionPredictor, RidgeRegressionTrainer
 from gws_gaia.extra import DataProvider
 
 
 class TestTrainer(BaseTestCase):
 
-    async def test_process(self):
+    def test_process(self):
         self.print("Ridge regression model")
         table = DataProvider.get_diabetes_table()
 
@@ -19,7 +18,7 @@ class TestTrainer(BaseTestCase):
             inputs={'table': table},
             task_type=RidgeRegressionTrainer
         )
-        outputs = await tester.run()
+        outputs = tester.run()
         trainer_result = outputs['result']
 
         # run predictior
@@ -32,7 +31,7 @@ class TestTrainer(BaseTestCase):
             },
             task_type=RidgeRegressionPredictor
         )
-        outputs = await tester.run()
+        outputs = tester.run()
         predictor_result = outputs['result']
 
         print(trainer_result)

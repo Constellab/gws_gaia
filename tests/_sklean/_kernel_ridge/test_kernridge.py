@@ -1,12 +1,11 @@
-from gws_core import (BaseTestCase, ConfigParams, File, GTest, Settings, Table,
-                      TaskRunner)
+from gws_core import BaseTestCase, TaskRunner
 from gws_gaia import KernelRidgePredictor, KernelRidgeTrainer
 from tests.gws_gaia_test_helper import GWSGaiaTestHelper
 
 
 class TestTrainer(BaseTestCase):
 
-    async def test_process(self):
+    def test_process(self):
         self.print("Kernel ridge regression model")
         table = GWSGaiaTestHelper.get_table(index=2, header=0, targets=['target'])
 
@@ -20,7 +19,7 @@ class TestTrainer(BaseTestCase):
             inputs={'table': table},
             task_type=KernelRidgeTrainer
         )
-        outputs = await tester.run()
+        outputs = tester.run()
         trainer_result = outputs['result']
 
         # run predictior
@@ -33,7 +32,7 @@ class TestTrainer(BaseTestCase):
             },
             task_type=KernelRidgePredictor
         )
-        outputs = await tester.run()
+        outputs = tester.run()
         predictor_result = outputs['result']
 
         print(trainer_result)

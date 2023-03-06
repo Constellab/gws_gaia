@@ -160,7 +160,7 @@ class LMETrainer(Task):
         }, human_name="Model design", short_description="The design of the model", max_number_of_occurrences=1),
     }
 
-    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+    def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         training_design = params["design"]
         training_set = inputs["table"]
 

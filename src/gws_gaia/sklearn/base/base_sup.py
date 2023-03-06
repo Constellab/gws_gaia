@@ -136,7 +136,7 @@ class BaseSupervisedTrainer(Task):
     def fit_cv_search(self, table: Table, params: Dict) -> BaseSupervisedResult:
         pass
 
-    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+    def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         table = inputs["table"]
         training_design = params["training_design"]
         sklearn_trainer = self.fit(table, params)
@@ -157,7 +157,7 @@ class BaseSupervisedPredictor(Task):
 
     _dummy_target = False
 
-    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+    def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         table = inputs['table']
         learned_model = inputs['learned_model']
         pred_table = learned_model.predict(table)

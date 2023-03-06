@@ -1,13 +1,12 @@
 import numpy
-from gws_core import (BaseTestCase, ConfigParams, File, GTest, Settings, Table,
-                      TableImporter, TaskRunner, ViewTester)
+from gws_core import BaseTestCase, TaskRunner
 from gws_core.extra import DataProvider
 from gws_gaia import PCATrainer
 
 
 class TestTrainer(BaseTestCase):
 
-    async def test_pca(self):
+    def test_pca(self):
         self.print("Principal Component Analysis (PCA)")
         table = DataProvider.get_iris_table(keep_variety=False)
 
@@ -18,7 +17,7 @@ class TestTrainer(BaseTestCase):
             inputs={'table': table},
             task_type=PCATrainer
         )
-        outputs = await tester.run()
+        outputs = tester.run()
         trainer_result = outputs['result']
 
         var_table = trainer_result.get_variance_table()

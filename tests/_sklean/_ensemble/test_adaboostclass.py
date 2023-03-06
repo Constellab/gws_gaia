@@ -1,13 +1,11 @@
-from gws_core import (BaseTestCase, ConfigParams, Table, TableImporter,
-                      File, IExperiment, IProtocol, ProcessSpec, Protocol,
-                      Settings, TaskInputs, TaskRunner, protocol_decorator)
+from gws_core import BaseTestCase, TaskRunner
 from gws_core.extra import DataProvider
 from gws_gaia import AdaBoostClassifierPredictor, AdaBoostClassifierTrainer
 
 
 class TestTrainer(BaseTestCase):
 
-    async def test_adaboost_process(self):
+    def test_adaboost_process(self):
         self.print("AdaBoost classifier")
         table = DataProvider.get_iris_table(keep_variety=False)
 
@@ -20,7 +18,7 @@ class TestTrainer(BaseTestCase):
             inputs={'table': table},
             task_type=AdaBoostClassifierTrainer
         )
-        outputs = await tester.run()
+        outputs = tester.run()
         trainer_result = outputs['result']
 
         # run predictior
@@ -32,7 +30,7 @@ class TestTrainer(BaseTestCase):
             },
             task_type=AdaBoostClassifierPredictor
         )
-        outputs = await tester.run()
+        outputs = tester.run()
         predictor_result = outputs['result']
 
         print(trainer_result)

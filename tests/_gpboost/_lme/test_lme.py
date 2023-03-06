@@ -1,14 +1,11 @@
-import numpy as np
-import pandas as pd
-from gws_core import (BaseTestCase, ConfigParams, File, GTest, Settings, Table,
-                      TaskRunner, ViewTester)
-from gws_core.extra import DataProvider
+
+from gws_core import BaseTestCase, Table, TaskRunner
 from gws_gaia import LMEDesignHelper, LMETrainer
 
 
 class TestTrainer(BaseTestCase):
 
-    async def test_lme(self):
+    def test_lme(self):
         self.print("LMETrainer")
         table = Table([
             [1, 2, 3],
@@ -57,6 +54,6 @@ class TestTrainer(BaseTestCase):
             inputs={'table': table},
             task_type=LMETrainer
         )
-        outputs = await tester.run()
+        outputs = tester.run()
         trainer_result = outputs['result']
         print(trainer_result)

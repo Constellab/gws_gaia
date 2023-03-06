@@ -1,12 +1,11 @@
-from gws_core import (BaseTestCase, ConfigParams, File, GTest, Settings, Table,
-                      TaskRunner)
+from gws_core import BaseTestCase, TaskRunner
 from gws_gaia import GaussianMixtureTrainer
 from tests.gws_gaia_test_helper import GWSGaiaTestHelper
 
 
 class TestTrainer(BaseTestCase):
 
-    async def test_process(self):
+    def test_process(self):
         self.print("Gaussian Mixture")
         table = GWSGaiaTestHelper.get_table(index=6, header=0, targets=[])
 
@@ -19,7 +18,7 @@ class TestTrainer(BaseTestCase):
             inputs={'table': table},
             task_type=GaussianMixtureTrainer
         )
-        outputs = await tester.run()
+        outputs = tester.run()
         trainer_result = outputs['result']
 
         print(trainer_result)

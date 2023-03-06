@@ -46,7 +46,7 @@ class BaseUnsupervisedTrainer(Task):
         sklearn_trainer.fit(table.get_data())
         return sklearn_trainer
 
-    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+    def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         table = inputs["table"]
         sklearn_trainer = self.fit(table, params)
         result_class = self.create_result_class()

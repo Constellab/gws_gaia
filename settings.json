@@ -3,7 +3,7 @@
     "author"        : "Gencovery",
     "author_email"  : "admin@gencovery.com",
     "description"   : "Gencovery Artificial Intelligence and Analytics (GAIA)",
-    "version"       : "0.3.6",
+    "version"       : "0.5.0-beta.1",
     "variables"     :{
         "gws_gaia:testdata_dir" : "${CURRENT_DIR}/tests/testdata"
     },
@@ -25,7 +25,7 @@
             {
                 "source": "https://$GWS_GIT_LOGIN:$GWS_GIT_PWD@gitlab.com/gencovery/core",
                 "packages":[
-                    {"name": "gws_core", "version": "0.4.4", "is_brick": true}
+                    {"name": "gws_core", "version": "0.5.0-beta.1", "is_brick": true}
                 ]
             }
         ],

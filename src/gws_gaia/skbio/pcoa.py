@@ -4,8 +4,8 @@
 # About us: https://gencovery.com
 
 from gws_core import (BadRequestException, ConfigParams, InputSpec, IntParam,
-                      OutputSpec, Resource, ScatterPlot2DView, StrParam, Table,
-                      Task, TaskInputs, TaskOutputs, TechnicalInfo,
+                      OutputSpec, ScatterPlot2DView, StrParam, Table, Task,
+                      TaskInputs, TaskOutputs, TechnicalInfo,
                       resource_decorator, task_decorator, view)
 from pandas import DataFrame
 from skbio.stats.distance import DistanceMatrix
@@ -123,7 +123,7 @@ class PCoATrainer(Task):
         'method': StrParam(default_value='eigh', allowed_values=['eigh', 'fsvd'])
     }
 
-    async def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
+    def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         distance_table = inputs['distance_table']
         distance_matrix = distance_table.get_data()
 

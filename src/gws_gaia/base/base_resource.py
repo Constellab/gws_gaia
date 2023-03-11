@@ -5,41 +5,8 @@
 
 from typing import Any, Dict
 
-from gws_core import (Dataset, Resource, ResourceRField, ResourceSet, RField,
-                      Table, resource_decorator)
-
-
-@resource_decorator("BaseResource", hide=True)
-class BaseResource(Resource):
-    """ The BaseResource """
-
-    _result: Any = RField(default_value=None)
-    _training_set: Resource = ResourceRField()
-    _trainig_set_interface = None
-
-    def __init__(self, training_set=None, result=None):
-        super().__init__()
-        if training_set is not None:
-            self._training_set = training_set
-        if result is not None:
-            self._result = result
-
-    def get_training_set(self):
-        """ Get the training set """
-        if not isinstance(self._training_set, Dataset):
-            if self._trainig_set_interface is None:
-                self._trainig_set_interface = Dataset(
-                    data=self._training_set.get_data(),
-                    meta=self._training_set.get_meta()
-                )
-            return self._trainig_set_interface
-        else:
-            return self._training_set
-
-    def get_result(self):
-        """ Get the result """
-        return self._result
-
+from gws_core import (Resource, ResourceRField, ResourceSet, RField,
+                      resource_decorator)
 
 @resource_decorator("BaseResourceSet", hide=True)
 class BaseResourceSet(ResourceSet):
@@ -48,7 +15,6 @@ class BaseResourceSet(ResourceSet):
     _result: Any = RField(default_value=None)
     _training_set: Resource = ResourceRField()
     _training_design: Dict = RField()
-    _trainig_set_interface = None
 
     def __init__(self, training_set=None, training_design=None, result=None):
         super().__init__()
@@ -61,15 +27,7 @@ class BaseResourceSet(ResourceSet):
 
     def get_training_set(self):
         """ Get the training set """
-        if not isinstance(self._training_set, Dataset):
-            if self._trainig_set_interface is None:
-                self._trainig_set_interface = Dataset(
-                    data=self._training_set.get_data(),
-                    meta=self._training_set.get_meta()
-                )
-            return self._trainig_set_interface
-        else:
-            return self._training_set
+        return self._training_set
 
     def get_training_design(self):
         return self._training_design

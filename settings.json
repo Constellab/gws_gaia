@@ -1,38 +1,44 @@
 {
-    "name"          : "gws_gaia",
-    "author"        : "Gencovery",
-    "author_email"  : "admin@gencovery.com",
-    "description"   : "Gencovery Artificial Intelligence and Analytics (GAIA)",
-    "version"       : "0.5.0-beta.1",
-    "variables"     :{
-        "gws_gaia:testdata_dir" : "${CURRENT_DIR}/tests/testdata"
-    },
-    "environment":{
-        "pip":[
-            {
-                "source": "https://pypi.python.org/simple",
-                "packages":[
-                    {"name": "scikit-bio", "version": "0.5.8"},
-                    {"name": "gpboost", "version": "0.7.10"}
-                ]
-            },
-            {
-                "source": "https://$GWS_PIP_PACKAGE_TOKEN@gitlab.com/api/v4/projects/27171024/packages/pypi",
-                "packages":[]
-            }
-        ],
-        "git":[
-            {
-                "source": "https://$GWS_GIT_LOGIN:$GWS_GIT_PWD@gitlab.com/gencovery/core",
-                "packages":[
-                    {"name": "gws_core", "version": "0.5.0-beta.1", "is_brick": true}
-                ]
-            }
-        ],
-        "variables":{
-            "GWS_GIT_LOGIN": "",
-            "GWS_GIT_PWD": "",
-            "GWS_PIP_PACKAGE_TOKEN": ""
-        }
+  "name": "gws_gaia",
+  "author": "Gencovery",
+  "author_email": "admin@gencovery.com",
+  "description": "Gencovery Artificial Intelligence and Analytics (GAIA)",
+  "version": "0.5.0",
+  "variables": {
+    "gws_gaia:testdata_dir": "${CURRENT_DIR}/tests/testdata"
+  },
+  "environment": {
+    "bricks": [
+      {
+        "name": "gws_core",
+        "version": "0.5.0"
+      }
+    ],
+    "pip": [
+      {
+        "source": "https://pypi.python.org/simple",
+        "packages": [
+          {
+            "name": "scikit-bio",
+            "version": "0.5.8"
+          },
+          {
+            "name": "gpboost",
+            "version": "0.7.10"
+          }
+        ]
+      },
+      {
+        "source": "https://$GWS_PIP_PACKAGE_TOKEN@gitlab.com/api/v4/projects/27171024/packages/pypi",
+        "packages": []
+      }
+    ],
+    "git": [
+    ],
+    "variables": {
+      "GWS_GIT_LOGIN": "",
+      "GWS_GIT_PWD": "",
+      "GWS_PIP_PACKAGE_TOKEN": ""
     }
+  }
 }

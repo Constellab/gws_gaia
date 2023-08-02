@@ -6,7 +6,7 @@
 from typing import Any, Type
 
 from gws_core import (FloatParam, InputSpec, OutputSpec, StrParam, Table,
-                      resource_decorator, task_decorator)
+                      resource_decorator, task_decorator, InputSpecs, OutputSpecs)
 from sklearn.kernel_ridge import KernelRidge
 
 from ...base.helper.training_design_helper import TrainingDesignHelper
@@ -39,8 +39,8 @@ class KernelRidgeTrainer(BaseSupervisedTrainer):
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.kernel_ridge.KernelRidge.html for more details.
     """
-    input_specs = {'table': InputSpec(Table, human_name="Table", short_description="The input table")}
-    output_specs = {'result': OutputSpec(KernelRidgeResult, human_name="result", short_description="The output result")}
+    input_specs = InputSpecs({'table': InputSpec(Table, human_name="Table", short_description="The input table")})
+    output_specs = OutputSpecs({'result': OutputSpec(KernelRidgeResult, human_name="result", short_description="The output result")})
     config_specs = {
         'training_design': TrainingDesignHelper.create_training_design_param_set(),
         'gamma': FloatParam(default_value=None),
@@ -70,7 +70,7 @@ class KernelRidgePredictor(BaseSupervisedPredictor):
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.kernel_ridge.KernelRidge.html for more details.
     """
-    input_specs = {'table': InputSpec(Table, human_name="Table", short_description="The input table"), 'learned_model': InputSpec(
-        KernelRidgeResult, human_name="Learned model", short_description="The input model")}
-    output_specs = {'result': OutputSpec(Table, human_name="result", short_description="The output result")}
+    input_specs = InputSpecs({'table': InputSpec(Table, human_name="Table", short_description="The input table"), 'learned_model': InputSpec(
+        KernelRidgeResult, human_name="Learned model", short_description="The input model")})
+    output_specs = OutputSpecs({'result': OutputSpec(Table, human_name="result", short_description="The output result")})
     config_specs = {}

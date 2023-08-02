@@ -8,7 +8,7 @@ from typing import Any, Dict, Type
 
 from gws_core import (ConfigParams, FloatRField, Table, Task, TaskInputs,
                       TaskOutputs, TechnicalInfo, resource_decorator,
-                      task_decorator)
+                      task_decorator, InputSpecs, OutputSpecs)
 from pandas import DataFrame
 from sklearn.metrics import accuracy_score, balanced_accuracy_score
 

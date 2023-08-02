@@ -6,7 +6,7 @@
 from typing import Any, Type
 
 from gws_core import (InputSpec, IntParam, OutputSpec, Table,
-                      resource_decorator, task_decorator)
+                      resource_decorator, task_decorator, InputSpecs, OutputSpecs)
 from sklearn.gaussian_process import GaussianProcessClassifier
 
 from ...base.helper.training_design_helper import TrainingDesignHelper
@@ -39,9 +39,9 @@ class GaussianProcessClassifierTrainer(BaseSupervisedTrainer):
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.gaussian_process.GaussianProcessClassifier.html#sklearn.gaussian_process.GaussianProcessClassifier.fit for more details
     """
-    input_specs = {'table': InputSpec(Table, human_name="Table", short_description="The input table")}
-    output_specs = {'result': OutputSpec(GaussianProcessClassifierResult,
-                                         human_name="result", short_description="The output result")}
+    input_specs = InputSpecs({'table': InputSpec(Table, human_name="Table", short_description="The input table")})
+    output_specs = OutputSpecs({'result': OutputSpec(GaussianProcessClassifierResult,
+                                         human_name="result", short_description="The output result")})
     config_specs = {
         'training_design': TrainingDesignHelper.create_training_design_param_set(),
         'random_state': IntParam(default_value=None, min_value=0)
@@ -70,7 +70,7 @@ class GaussianProcessClassifierPredictor(BaseSupervisedPredictor):
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.gaussian_process.GaussianProcessClassifier.html#sklearn.gaussian_process.GaussianProcessClassifier.fit for more details
     """
-    input_specs = {'table': InputSpec(Table, human_name="Table", short_description="The input table"), 'learned_model': InputSpec(
-        GaussianProcessClassifierResult, human_name="Learned model", short_description="The input model")}
-    output_specs = {'result': OutputSpec(Table, human_name="result", short_description="The output result")}
+    input_specs = InputSpecs({'table': InputSpec(Table, human_name="Table", short_description="The input table"), 'learned_model': InputSpec(
+        GaussianProcessClassifierResult, human_name="Learned model", short_description="The input model")})
+    output_specs = OutputSpecs({'result': OutputSpec(Table, human_name="result", short_description="The output result")})
     config_specs = {}

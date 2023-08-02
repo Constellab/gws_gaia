@@ -7,7 +7,7 @@ from typing import Any, List, Type
 
 from gws_core import (ConfigParams, InputSpec, IntParam, OutputSpec,
                       ScatterPlot2DView, Table, TechnicalInfo,
-                      resource_decorator, task_decorator, view)
+                      resource_decorator, task_decorator, view, InputSpecs, OutputSpecs)
 from pandas import DataFrame
 from sklearn.cross_decomposition import PLSRegression
 
@@ -122,9 +122,9 @@ class PLSDATrainer(BaseSupervisedTrainer):
 
     _dummy_target = True
 
-    input_specs = {'table': InputSpec(Table, human_name="Table", short_description="The input table")}
-    output_specs = {'result': OutputSpec(PLSDATrainerResult, human_name="result",
-                                         short_description="The output result")}
+    input_specs = InputSpecs({'table': InputSpec(Table, human_name="Table", short_description="The input table")})
+    output_specs = OutputSpecs({'result': OutputSpec(PLSDATrainerResult, human_name="result",
+                                         short_description="The output result")})
     config_specs = {
         'training_design': TrainingDesignHelper.create_training_design_param_set(),
         'nb_components': IntParam(default_value=2, min_value=0),
@@ -156,8 +156,8 @@ class PLSDAPredictor(BaseSupervisedPredictor):
 
     _dummy_target = True
 
-    input_specs = {
+    input_specs = InputSpecs({
         'table': InputSpec(Table, human_name="Table", short_description="The input table"),
-        'learned_model': InputSpec(PLSDATrainerResult, human_name="Learned model", short_description="The input model")}
-    output_specs = {'result': OutputSpec(Table, human_name="result", short_description="The output result")}
+        'learned_model': InputSpec(PLSDATrainerResult, human_name="Learned model", short_description="The input model")})
+    output_specs = OutputSpecs({'result': OutputSpec(Table, human_name="result", short_description="The output result")})
     config_specs = {}

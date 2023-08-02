@@ -6,7 +6,7 @@
 from typing import Any, Dict, Type
 
 from gws_core import (ConfigParams, IntParam, Table, Task, TaskInputs,
-                      TaskOutputs, resource_decorator, task_decorator)
+                      TaskOutputs, resource_decorator, task_decorator, InputSpecs, OutputSpecs)
 
 from ...base.base_resource import BaseResourceSet
 

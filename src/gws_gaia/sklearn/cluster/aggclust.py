@@ -6,7 +6,7 @@
 from typing import Any, Type
 
 from gws_core import (InputSpec, IntParam, OutputSpec, StrParam, Table,
-                      resource_decorator, task_decorator)
+                      resource_decorator, task_decorator, InputSpecs, OutputSpecs)
 from sklearn.cluster import AgglomerativeClustering
 
 from ..base.base_unsup import BaseUnsupervisedTrainer
@@ -37,9 +37,9 @@ class AgglomerativeClusteringTrainer(BaseUnsupervisedTrainer):
 @
     See https://scikit-learn.org/stable/modules/generated/sklearn.cluster.AgglomerativeClustering.html for more details
     """
-    input_specs = {'table': InputSpec(Table, human_name="Table", short_description="The input table")}
-    output_specs = {'result': OutputSpec(AgglomerativeClusteringResult,
-                                         human_name="result", short_description="The output result")}
+    input_specs = InputSpecs({'table': InputSpec(Table, human_name="Table", short_description="The input table")})
+    output_specs = OutputSpecs({'result': OutputSpec(AgglomerativeClusteringResult,
+                                         human_name="result", short_description="The output result")})
     config_specs = {
         "nb_clusters": IntParam(default_value=2, min_value=0),
         "linkage": StrParam(default_value="ward", allowed_values=["ward", "complete", "average", "single"]),

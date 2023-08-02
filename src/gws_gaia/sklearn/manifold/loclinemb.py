@@ -6,7 +6,7 @@
 from typing import Any, Type
 
 from gws_core import (InputSpec, IntParam, OutputSpec, Table,
-                      resource_decorator, task_decorator)
+                      resource_decorator, task_decorator, InputSpecs, OutputSpecs)
 from sklearn.manifold import LocallyLinearEmbedding
 
 from ..base.base_unsup import BaseUnsupervisedResult, BaseUnsupervisedTrainer
@@ -37,9 +37,9 @@ class LocallyLinearEmbeddingTrainer(BaseUnsupervisedTrainer):
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.manifold.LocallyLinearEmbedding.html for more details.
     """
-    input_specs = {'table': InputSpec(Table, human_name="Table", short_description="The input table")}
-    output_specs = {'result': OutputSpec(LocallyLinearEmbeddingResult,
-                                         human_name="result", short_description="The output result")}
+    input_specs = InputSpecs({'table': InputSpec(Table, human_name="Table", short_description="The input table")})
+    output_specs = OutputSpecs({'result': OutputSpec(LocallyLinearEmbeddingResult,
+                                         human_name="result", short_description="The output result")})
     config_specs = {
         'nb_components': IntParam(default_value=2, min_value=0)
     }

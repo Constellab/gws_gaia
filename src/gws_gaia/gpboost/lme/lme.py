@@ -10,10 +10,10 @@ import numpy as np
 import pandas as pd
 import sklearn
 from gws_core import (BoolParam, ConfigParams, FloatRField, InputSpec,
-                      ListParam, OutputSpec, ParamSet, RField, StrParam, Table,
-                      TableConcatHelper, Task, TaskInputs, TaskOutputs,
-                      TechnicalInfo, TextView, resource_decorator,
-                      task_decorator, view)
+                      InputSpecs, ListParam, OutputSpec, OutputSpecs, ParamSet,
+                      RField, StrParam, Table, TableConcatHelper, Task,
+                      TaskInputs, TaskOutputs, TechnicalInfo, TextView,
+                      resource_decorator, task_decorator, view)
 from pandas import DataFrame
 
 from ...base.base_resource import BaseResourceSet
@@ -147,10 +147,11 @@ class LMETrainer(Task):
 
     See https://gpboost.readthedocs.io/en/latest for more details
     """
-    input_specs = {
+    input_specs = InputSpecs({
         'table': InputSpec(Table, human_name="Table", short_description="Experimental table")
-    }
-    output_specs = {'result': OutputSpec(LMETrainerResult, human_name="result", short_description="The output result")}
+    })
+    output_specs = OutputSpecs({'result': OutputSpec(
+        LMETrainerResult, human_name="result", short_description="The output result")})
     config_specs = {
         'likelihood': StrParam(default_value="gaussian", allowed_values=["gaussian", "bernoulli_probit", "bernoulli_logit", "poisson", "gamma"]),
         'design': ParamSet({

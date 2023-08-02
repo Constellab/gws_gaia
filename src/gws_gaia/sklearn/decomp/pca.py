@@ -7,7 +7,7 @@ from typing import Any, Type
 
 from gws_core import (ConfigParams, FloatRField, InputSpec, IntParam,
                       OutputSpec, ScatterPlot2DView, Table, TechnicalInfo,
-                      resource_decorator, task_decorator, view)
+                      resource_decorator, task_decorator, view, InputSpecs, OutputSpecs)
 from pandas import DataFrame
 from sklearn.decomposition import PCA
 
@@ -125,8 +125,8 @@ class PCATrainer(BaseUnsupervisedTrainer):
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.PCA.html for more details
     """
-    input_specs = {'table': InputSpec(Table, human_name="Table", short_description="The input table")}
-    output_specs = {'result': OutputSpec(PCATrainerResult, human_name="result", short_description="The output result")}
+    input_specs = InputSpecs({'table': InputSpec(Table, human_name="Table", short_description="The input table")})
+    output_specs = OutputSpecs({'result': OutputSpec(PCATrainerResult, human_name="result", short_description="The output result")})
     config_specs = {
         'nb_components': IntParam(default_value=2, min_value=2)
     }

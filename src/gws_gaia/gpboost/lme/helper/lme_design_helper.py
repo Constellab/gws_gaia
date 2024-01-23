@@ -5,7 +5,7 @@
 
 import pandas as pd
 from gws_core import (BadRequestException, BoolParam, ListParam, ParamSet,
-                      StrParam, TableTagExtractorHelper)
+                      StrParam, Table)
 
 
 class LMEDesignHelper:
@@ -19,7 +19,7 @@ class LMEDesignHelper:
         }, human_name="Model design", short_description="The design of the model", max_number_of_occurrences=1)
 
     @classmethod
-    def create_training_matrix(cls, training_set, training_design):
+    def create_training_matrix(cls, training_set: Table, training_design):
         # add covariates
         all_groups = []
         intercept = training_design[0].get("intercept", True)
@@ -40,7 +40,7 @@ class LMEDesignHelper:
         row_tags = training_set.get_row_tags()
         for key in all_groups:
             if key in row_tags[0]:
-                training_set = TableTagExtractorHelper.extract_row_tags(training_set, key, "char")
+                training_set.extract_row_tags_to_new_column(key, "char")
             else:
                 raise BadRequestException(f"The covariate {key} does not exist in the row tags")
 

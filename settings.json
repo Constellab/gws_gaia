@@ -3,7 +3,7 @@
   "author": "Gencovery",
   "author_email": "admin@gencovery.com",
   "description": "Gencovery Artificial Intelligence and Analytics (GAIA)",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "variables": {
     "gws_gaia:testdata_dir": "${CURRENT_DIR}/tests/testdata"
   },
@@ -11,7 +11,7 @@
     "bricks": [
       {
         "name": "gws_core",
-        "version": "0.7.1"
+        "version": "0.8.1"
       }
     ],
     "pip": [
@@ -20,11 +20,11 @@
         "packages": [
           {
             "name": "scikit-bio",
-            "version": "0.5.8"
+            "version": "0.6.1"
           },
           {
             "name": "gpboost",
-            "version": "0.7.10"
+            "version": "1.4.0"
           }
         ]
       },

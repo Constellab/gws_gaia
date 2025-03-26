@@ -2,7 +2,7 @@
 
 import numpy as np
 import pandas
-from gws_core import BoolParam, ParamSet, StrParam, Table
+from gws_core import BoolParam, ParamSet, StrParam, Table, ConfigSpecs
 from pandas import DataFrame
 from pandas.api.types import is_string_dtype
 
@@ -13,7 +13,7 @@ class SimpleDesignHelper:
 
     @classmethod
     def create_training_design_param_set(cls):
-        return ParamSet({
+        return ParamSet(ConfigSpecs({
             'target_name':
             StrParam(
                 human_name="Target name",
@@ -27,7 +27,7 @@ class SimpleDesignHelper:
             StrParam(
                 default_value="auto", allowed_values=["auto", cls.CATEGROICAL_TYPE, cls.NUMERICAL_TYPE],
                 human_name="Target type",
-                short_description="The type of the target (categorical or numerical). Set 'auto' to infer the correct type. Notice: targets comming from row_tags are allways considered as categorical")},
+                short_description="The type of the target (categorical or numerical). Set 'auto' to infer the correct type. Notice: targets comming from row_tags are allways considered as categorical")}),
             human_name="Training design",
             short_description="Define the training design, i.e. the target Y to use for the model.")
 
@@ -42,10 +42,12 @@ class SimpleDesignHelper:
                 targets = [tag[key] for tag in tags]
                 # labels = sorted(list(set(targets)))
                 if dummy:
-                    y_temp: DataFrame = cls.convert_labels_to_dummy_matrix(targets, index=training_set.row_names)
+                    y_temp: DataFrame = cls.convert_labels_to_dummy_matrix(
+                        targets, index=training_set.row_names)
                 else:
                     # y_temp: DataFrame = DataFrame(data=targets, index=training_set.row_names, columns=key)
-                    y_temp = cls.convert_labels_to_numeric_matrix(targets, index=training_set.row_names, columns=key)
+                    y_temp = cls.convert_labels_to_numeric_matrix(
+                        targets, index=training_set.row_names, columns=key)
             else:
                 colname = design_target["target_name"]
                 y_temp: DataFrame = training_set.select_by_column_names(
@@ -62,7 +64,8 @@ class SimpleDesignHelper:
                 if target_type == cls.CATEGROICAL_TYPE:
                     y_temp = [str(k) for k in y_temp.squeeze().values]
                     if dummy:
-                        y_temp = cls.convert_labels_to_dummy_matrix(labels=y_temp, index=training_set.row_names)
+                        y_temp = cls.convert_labels_to_dummy_matrix(
+                            labels=y_temp, index=training_set.row_names)
                     else:
                         y_temp = cls.convert_labels_to_numeric_matrix(
                             labels=y_temp, index=training_set.row_names, columns=colname)
@@ -104,7 +107,8 @@ class SimpleDesignHelper:
 
     @classmethod
     def predict(cls, engine, training_set, training_design, dummy=False):
-        x_true, y_true = SimpleDesignHelper.create_training_matrices(training_set, training_design, dummy=dummy)
+        x_true, y_true = SimpleDesignHelper.create_training_matrices(
+            training_set, training_design, dummy=dummy)
 
         y_pred: DataFrame = engine.predict(x_true)
         y_pred.shape = y_true.shape

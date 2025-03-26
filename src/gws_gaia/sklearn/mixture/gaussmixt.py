@@ -2,7 +2,7 @@
 
 from typing import Any, Type
 
-from gws_core import (InputSpec, IntParam, OutputSpec, StrParam, Table,
+from gws_core import (InputSpec, IntParam, OutputSpec, StrParam, Table, ConfigSpecs,
                       resource_decorator, task_decorator, InputSpecs, OutputSpecs)
 from sklearn.mixture import GaussianMixture
 
@@ -32,15 +32,17 @@ class GaussianMixtureTrainer(BaseUnsupervisedTrainer):
     """
     Trainer of a Gaussian mixture model. Estimate model parameters with a training set.
 
-    See https://scikit-learn.org/stable/modules/generated/sklearn.mixture.GaussianMixture.html#sklearn.mixture.GaussianMixture.fit for more details
+    #sklearn.mixture.GaussianMixture.fit for more details
+    See https://scikit-learn.org/stable/modules/generated/sklearn.mixture.GaussianMixture.html
     """
-    input_specs = InputSpecs({'table': InputSpec(Table, human_name="Table", short_description="The input table")})
+    input_specs = InputSpecs({'table': InputSpec(
+        Table, human_name="Table", short_description="The input table")})
     output_specs = OutputSpecs({'result': OutputSpec(GaussianMixtureResult, human_name="result",
-                                         short_description="The output result")})
-    config_specs = {
+                                                     short_description="The output result")})
+    config_specs = ConfigSpecs({
         'nb_components': IntParam(default_value=1, min_value=0),
         'covariance_type': StrParam(default_value='full')
-    }
+    })
 
     @classmethod
     def create_sklearn_trainer_class(cls, params) -> Any:

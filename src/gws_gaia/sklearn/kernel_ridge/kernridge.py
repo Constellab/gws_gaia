@@ -2,7 +2,7 @@
 
 from typing import Any, Type
 
-from gws_core import (FloatParam, InputSpec, OutputSpec, StrParam, Table,
+from gws_core import (FloatParam, InputSpec, OutputSpec, StrParam, Table, ConfigSpecs,
                       resource_decorator, task_decorator, InputSpecs, OutputSpecs)
 from sklearn.kernel_ridge import KernelRidge
 
@@ -36,13 +36,15 @@ class KernelRidgeTrainer(BaseSupervisedTrainer):
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.kernel_ridge.KernelRidge.html for more details.
     """
-    input_specs = InputSpecs({'table': InputSpec(Table, human_name="Table", short_description="The input table")})
-    output_specs = OutputSpecs({'result': OutputSpec(KernelRidgeResult, human_name="result", short_description="The output result")})
-    config_specs = {
+    input_specs = InputSpecs({'table': InputSpec(
+        Table, human_name="Table", short_description="The input table")})
+    output_specs = OutputSpecs({'result': OutputSpec(
+        KernelRidgeResult, human_name="result", short_description="The output result")})
+    config_specs = ConfigSpecs({
         'training_design': TrainingDesignHelper.create_training_design_param_set(),
         'gamma': FloatParam(default_value=None),
         'kernel': StrParam(default_value='linear')
-    }
+    })
 
     @classmethod
     def create_sklearn_trainer_class(cls, params) -> Any:
@@ -69,5 +71,6 @@ class KernelRidgePredictor(BaseSupervisedPredictor):
     """
     input_specs = InputSpecs({'table': InputSpec(Table, human_name="Table", short_description="The input table"), 'learned_model': InputSpec(
         KernelRidgeResult, human_name="Learned model", short_description="The input model")})
-    output_specs = OutputSpecs({'result': OutputSpec(Table, human_name="result", short_description="The output result")})
-    config_specs = {}
+    output_specs = OutputSpecs({'result': OutputSpec(
+        Table, human_name="result", short_description="The output result")})
+    config_specs = ConfigSpecs({})

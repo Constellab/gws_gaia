@@ -2,7 +2,7 @@
 
 from typing import Any, Type
 
-from gws_core import (ConfigParams, FloatRField, InputSpec, IntParam,
+from gws_core import (ConfigParams, FloatRField, InputSpec, IntParam, ConfigSpecs,
                       OutputSpec, ScatterPlot2DView, Table, TechnicalInfo,
                       resource_decorator, task_decorator, view, InputSpecs, OutputSpecs)
 from pandas import DataFrame
@@ -27,7 +27,8 @@ class PCATrainerResult(BaseUnsupervisedResult):
     _log_likelihood: int = FloatRField()
 
     def __init__(self, training_set=None, training_design=None, result=None):
-        super().__init__(training_set=training_set, training_design=training_design, result=result)
+        super().__init__(training_set=training_set,
+                         training_design=training_design, result=result)
         if training_set is not None:
             self._create_transformed_table()
             self._create_variance_table()
@@ -38,7 +39,8 @@ class PCATrainerResult(BaseUnsupervisedResult):
         ncomp = pca.n_components_
         data: DataFrame = pca.transform(self.get_training_set().get_data())
         columns = [f"PC{n+1}" for n in range(0, ncomp)]
-        data = DataFrame(data=data, columns=columns, index=self.get_training_set().row_names)
+        data = DataFrame(data=data, columns=columns,
+                         index=self.get_training_set().row_names)
         table = Table(data=data)
         row_tags = self.get_training_set().get_row_tags()
         table.name = self.TRANSFORMED_TABLE_NAME
@@ -49,24 +51,29 @@ class PCATrainerResult(BaseUnsupervisedResult):
         pca = self.get_result()
         index = [f"PC{n+1}" for n in range(0, pca.n_components_)]
         columns = ["ExplainedVariance"]
-        data = DataFrame(pca.explained_variance_ratio_, columns=columns, index=index)
+        data = DataFrame(pca.explained_variance_ratio_,
+                         columns=columns, index=index)
         table = Table(data=data)
         table.name = self.VARIANCE_TABLE_NAME
         self.add_resource(table)
-        self.add_technical_info(TechnicalInfo(key='PC1', value=f'{data.iat[0,0]:.3f}'))
-        self.add_technical_info(TechnicalInfo(key='PC2', value=f'{data.iat[1,0]:.3f}'))
+        self.add_technical_info(TechnicalInfo(
+            key='PC1', value=f'{data.iat[0,0]:.3f}'))
+        self.add_technical_info(TechnicalInfo(
+            key='PC2', value=f'{data.iat[1,0]:.3f}'))
 
     def _create_log_likelihood(self) -> float:
         if not self._log_likelihood:
             mdl = self.get_result()
             training_set = self.get_training_set()
             training_design = self.get_training_design()
-            x_true, y_true = TrainingDesignHelper.create_training_matrices(training_set, training_design)
+            x_true, y_true = TrainingDesignHelper.create_training_matrices(
+                training_set, training_design)
             self._log_likelihood = mdl.score(
                 X=x_true,
                 y=y_true
             )
-        technical_info = TechnicalInfo(key='Log likelihood', value=self._log_likelihood)
+        technical_info = TechnicalInfo(
+            key='Log likelihood', value=self._log_likelihood)
         self.add_technical_info(technical_info)
 
     def get_transformed_table(self):
@@ -114,19 +121,21 @@ class PCATrainerResult(BaseUnsupervisedResult):
 # *****************************************************************************
 
 
-@ task_decorator("PCATrainer", human_name="PCA trainer",
-                 short_description="Train a Principal Component Analysis (PCA) model")
+@task_decorator("PCATrainer", human_name="PCA trainer",
+                short_description="Train a Principal Component Analysis (PCA) model")
 class PCATrainer(BaseUnsupervisedTrainer):
     """
     Trainer of a Principal Component Analysis (PCA) model. Fit a PCA model with a training table.
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.PCA.html for more details
     """
-    input_specs = InputSpecs({'table': InputSpec(Table, human_name="Table", short_description="The input table")})
-    output_specs = OutputSpecs({'result': OutputSpec(PCATrainerResult, human_name="result", short_description="The output result")})
-    config_specs = {
+    input_specs = InputSpecs({'table': InputSpec(
+        Table, human_name="Table", short_description="The input table")})
+    output_specs = OutputSpecs({'result': OutputSpec(
+        PCATrainerResult, human_name="result", short_description="The output result")})
+    config_specs = ConfigSpecs({
         'nb_components': IntParam(default_value=2, min_value=2)
-    }
+    })
 
     @classmethod
     def create_sklearn_trainer_class(cls, params) -> Type[Any]:

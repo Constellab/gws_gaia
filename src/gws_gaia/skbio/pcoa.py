@@ -2,7 +2,7 @@
 
 from gws_core import (BadRequestException, ConfigParams, InputSpec, IntParam,
                       OutputSpec, ScatterPlot2DView, StrParam, Table, Task,
-                      TaskInputs, TaskOutputs, TechnicalInfo,
+                      TaskInputs, TaskOutputs, TechnicalInfo, ConfigSpecs,
                       resource_decorator, task_decorator, view, InputSpecs, OutputSpecs)
 from pandas import DataFrame
 from skbio.stats.distance import DistanceMatrix
@@ -40,7 +40,8 @@ class PCoATrainerResult(BaseResourceSet):
         x_transformed = pcoa.samples
         ncomp = x_transformed.shape[1]
         columns = [f"PC{n+1}" for n in range(0, ncomp)]
-        data = DataFrame(data=x_transformed, columns=columns, index=self.get_training_set().row_names)
+        data = DataFrame(data=x_transformed, columns=columns,
+                         index=self.get_training_set().row_names)
         table = Table(data=data)
         row_tags = self.get_training_set().get_row_tags()
         table.name = self.TRANSFORMED_TABLE_NAME
@@ -55,12 +56,15 @@ class PCoATrainerResult(BaseResourceSet):
 
         index = [f"PC{n+1}" for n in range(0, ncomp)]
         columns = ["ExplainedVariance"]
-        data = DataFrame(explained_variance_ratio, columns=columns, index=index)
+        data = DataFrame(explained_variance_ratio,
+                         columns=columns, index=index)
         table = Table(data=data)
         table.name = self.VARIANCE_TABLE_NAME
         self.add_resource(table)
-        self.add_technical_info(TechnicalInfo(key='PC1', value=f'{data.iat[0,0]:.3f}'))
-        self.add_technical_info(TechnicalInfo(key='PC2', value=f'{data.iat[1,0]:.3f}'))
+        self.add_technical_info(TechnicalInfo(
+            key='PC1', value=f'{data.iat[0,0]:.3f}'))
+        self.add_technical_info(TechnicalInfo(
+            key='PC2', value=f'{data.iat[1,0]:.3f}'))
 
     def get_transformed_table(self):
         if self.resource_exists(self.TRANSFORMED_TABLE_NAME):
@@ -105,20 +109,22 @@ class PCoATrainerResult(BaseResourceSet):
 # *****************************************************************************
 
 
-@ task_decorator("PCoATrainer", human_name="PCoA trainer",
-                 short_description="Train a Principal Coordinate Analysis (PCoA) model")
+@task_decorator("PCoATrainer", human_name="PCoA trainer",
+                short_description="Train a Principal Coordinate Analysis (PCoA) model")
 class PCoATrainer(Task):
     """
     Trainer of a Principal Coordinate Analysis (PCoA) model. Fit a PCoA model with a training table.
 
     See http://scikit-bio.org/docs/0.5.7/generated/skbio.stats.ordination.pcoa.html for more details
     """
-    input_specs = InputSpecs({'distance_table': InputSpec(Table, human_name="Table", short_description="The input distance table")})
-    output_specs = OutputSpecs({'result': OutputSpec(PCoATrainerResult, human_name="result", short_description="The output result")})
-    config_specs = {
+    input_specs = InputSpecs({'distance_table': InputSpec(
+        Table, human_name="Table", short_description="The input distance table")})
+    output_specs = OutputSpecs({'result': OutputSpec(
+        PCoATrainerResult, human_name="result", short_description="The output result")})
+    config_specs = ConfigSpecs({
         'nb_components': IntParam(default_value=2, min_value=2),
         'method': StrParam(default_value='eigh', allowed_values=['eigh', 'fsvd'])
-    }
+    })
 
     def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         distance_table = inputs['distance_table']
@@ -134,6 +140,7 @@ class PCoATrainer(Task):
             ids=distance_matrix.index,
             validate=True
         )
-        pcoa: PCoA = PCoA(distance_matrix, method=method, number_of_dimensions=ncomp, inplace=True)
+        pcoa: PCoA = PCoA(distance_matrix, method=method,
+                          number_of_dimensions=ncomp, inplace=True)
         result = PCoATrainerResult(training_set=distance_table, result=pcoa)
         return {'result': result}

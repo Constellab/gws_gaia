@@ -2,7 +2,7 @@
 
 from typing import Any, Type
 
-from gws_core import (InputSpec, InputSpecs, IntParam, OutputSpec, OutputSpecs,
+from gws_core import (InputSpec, InputSpecs, IntParam, OutputSpec, OutputSpecs, ConfigSpecs,
                       Table, resource_decorator, task_decorator)
 from sklearn.tree import DecisionTreeRegressor
 
@@ -35,13 +35,14 @@ class DecisionTreeRegressorTrainer(BaseSupervisedTrainer):
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeRegressor.html for more details
     """
-    input_specs = InputSpecs({'table': InputSpec(Table, human_name="Table", short_description="The input table")})
+    input_specs = InputSpecs({'table': InputSpec(
+        Table, human_name="Table", short_description="The input table")})
     output_specs = OutputSpecs({'result': OutputSpec(DecisionTreeRegressorResult,
                                                      human_name="result", short_description="The output result")})
-    config_specs = {
+    config_specs = ConfigSpecs({
         'training_design': TrainingDesignHelper.create_training_design_param_set(),
         'max_depth': IntParam(default_value=None, min_value=0)
-    }
+    })
 
     @classmethod
     def create_sklearn_trainer_class(cls, params) -> Any:
@@ -70,4 +71,4 @@ class DecisionTreeRegressorPredictor(BaseSupervisedPredictor):
         DecisionTreeRegressorResult, human_name="Learned model", short_description="The input model")})
     output_specs = OutputSpecs({'result': OutputSpec(
         Table, human_name="result", short_description="The output result")})
-    config_specs = {}
+    config_specs = ConfigSpecs({})

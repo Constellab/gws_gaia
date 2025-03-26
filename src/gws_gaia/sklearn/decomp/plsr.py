@@ -2,7 +2,7 @@
 
 from typing import Any, List, Type
 
-from gws_core import (ConfigParams, InputSpec, IntParam, OutputSpec,
+from gws_core import (ConfigParams, InputSpec, IntParam, OutputSpec, ConfigSpecs,
                       ScatterPlot2DView, Table, TechnicalInfo,
                       resource_decorator, task_decorator, view, InputSpecs, OutputSpecs)
 from pandas import DataFrame
@@ -27,7 +27,8 @@ class PLSTrainerResult(BaseSupervisedRegResult):
     VARIANCE_TABLE_NAME = "Variance table"
 
     def __init__(self, training_set=None, training_design=None, result=None):
-        super().__init__(training_set=training_set, training_design=training_design, result=result)
+        super().__init__(training_set=training_set,
+                         training_design=training_design, result=result)
         if training_set is not None:
             self._create_transformed_table()
             self._create_variance_table()
@@ -38,11 +39,13 @@ class PLSTrainerResult(BaseSupervisedRegResult):
 
         training_set = self.get_training_set()
         training_design = self.get_training_design()
-        x_true, _ = TrainingDesignHelper.create_training_matrices(training_set, training_design)
+        x_true, _ = TrainingDesignHelper.create_training_matrices(
+            training_set, training_design)
 
         data: DataFrame = pls.transform(x_true.values)
         columns = [f"PC{i+1}" for i in range(0, ncomp)]
-        data = DataFrame(data=data, columns=columns, index=self.get_training_set().row_names)
+        data = DataFrame(data=data, columns=columns,
+                         index=self.get_training_set().row_names)
         table = Table(data=data)
         row_tags = self.get_training_set().get_row_tags()
         table.name = self.TRANSFORMED_TABLE_NAME
@@ -53,13 +56,16 @@ class PLSTrainerResult(BaseSupervisedRegResult):
         pls: PLSRegression = self.get_result()
         training_set = self.get_training_set()
         training_design = self.get_training_design()
-        table = PLSHelper.create_variance_table(pls, training_set, training_design)
+        table = PLSHelper.create_variance_table(
+            pls, training_set, training_design)
 
         table.name = self.VARIANCE_TABLE_NAME
         self.add_resource(table)
         data = table.get_data()
-        self.add_technical_info(TechnicalInfo(key='PC1', value=f'{data.iat[0,0]:.3f}'))
-        self.add_technical_info(TechnicalInfo(key='PC2', value=f'{data.iat[1,0]:.3f}'))
+        self.add_technical_info(TechnicalInfo(
+            key='PC1', value=f'{data.iat[0,0]:.3f}'))
+        self.add_technical_info(TechnicalInfo(
+            key='PC2', value=f'{data.iat[1,0]:.3f}'))
 
     def get_transformed_table(self):
         """ Get transformed table """
@@ -76,7 +82,7 @@ class PLSTrainerResult(BaseSupervisedRegResult):
         else:
             return None
 
-    @ view(view_type=ScatterPlot2DView, human_name='2D-score plot', short_description='2D-score plot')
+    @view(view_type=ScatterPlot2DView, human_name='2D-score plot', short_description='2D-score plot')
     def view_scores_as_2d_plot(self, params: ConfigParams) -> dict:
         """
         View 2D score plot
@@ -103,8 +109,8 @@ class PLSTrainerResult(BaseSupervisedRegResult):
 # *****************************************************************************
 
 
-@ task_decorator("PLSTrainer", human_name="PLS regression trainer",
-                 short_description="Train a Partial Least Squares (PLS) regression model")
+@task_decorator("PLSTrainer", human_name="PLS regression trainer",
+                short_description="Train a Partial Least Squares (PLS) regression model")
 class PLSTrainer(BaseSupervisedTrainer):
     """
     Trainer of a Partial Least Squares (PLS) regression model. Fit a PLS regression model to a training table.
@@ -112,12 +118,14 @@ class PLSTrainer(BaseSupervisedTrainer):
     See https://scikit-learn.org/stable/modules/generated/sklearn.cross_decomposition.PLSRegression.html for more details.
     """
 
-    input_specs = InputSpecs({'table': InputSpec(Table, human_name="Table", short_description="The input table")})
-    output_specs = OutputSpecs({'result': OutputSpec(PLSTrainerResult, human_name="result", short_description="The output result")})
-    config_specs = {
+    input_specs = InputSpecs({'table': InputSpec(
+        Table, human_name="Table", short_description="The input table")})
+    output_specs = OutputSpecs({'result': OutputSpec(
+        PLSTrainerResult, human_name="result", short_description="The output result")})
+    config_specs = ConfigSpecs({
         'training_design': TrainingDesignHelper.create_training_design_param_set(),
         'nb_components': IntParam(default_value=2, min_value=0),
-    }
+    })
 
     @classmethod
     def create_sklearn_trainer_class(cls, params) -> Type[Any]:
@@ -134,8 +142,8 @@ class PLSTrainer(BaseSupervisedTrainer):
 # *****************************************************************************
 
 
-@ task_decorator("PLSPredictor", human_name="PLS regression predictor",
-                 short_description="Predict table targets using a trained PLS regression model")
+@task_decorator("PLSPredictor", human_name="PLS regression predictor",
+                short_description="Predict table targets using a trained PLS regression model")
 class PLSPredictor(BaseSupervisedPredictor):
     """
     Predictor of a Partial Least Squares (PLS) regression model. Predict targets of a table with a trained PLS regression model.
@@ -144,6 +152,7 @@ class PLSPredictor(BaseSupervisedPredictor):
     """
 
     input_specs = InputSpecs({'table': InputSpec(Table, human_name="Table", short_description="The input table"),
-                   'learned_model': InputSpec(PLSTrainerResult, human_name="Learned model", short_description="The input model")})
-    output_specs = OutputSpecs({'result': OutputSpec(Table, human_name="result", short_description="The output result")})
-    config_specs = {}
+                              'learned_model': InputSpec(PLSTrainerResult, human_name="Learned model", short_description="The input model")})
+    output_specs = OutputSpecs({'result': OutputSpec(
+        Table, human_name="result", short_description="The output result")})
+    config_specs = ConfigSpecs({})

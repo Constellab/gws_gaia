@@ -2,7 +2,7 @@
 
 from typing import Any, Type
 
-from gws_core import (ConfigParams, InputSpec, IntParam, OutputSpec,
+from gws_core import (ConfigParams, InputSpec, IntParam, OutputSpec, ConfigSpecs,
                       ScatterPlot2DView, StrParam, Table, resource_decorator,
                       task_decorator, view, InputSpecs, OutputSpecs)
 from pandas import DataFrame
@@ -19,10 +19,10 @@ from ..base.base_sup import (BaseSupervisedClassResult,
 # *****************************************************************************
 
 
-@ resource_decorator("LDATrainerResult",
-                     human_name="LDA trainer result",
-                     short_description="Linear Discriminant Analysis result",
-                     hide=True)
+@resource_decorator("LDATrainerResult",
+                    human_name="LDA trainer result",
+                    short_description="Linear Discriminant Analysis result",
+                    hide=True)
 class LDATrainerResult(BaseSupervisedClassResult):
     """ LDATrainerResult """
 
@@ -30,7 +30,8 @@ class LDATrainerResult(BaseSupervisedClassResult):
     VARIANCE_TABLE_NAME = "Variance table"
 
     def __init__(self, training_set=None, training_design=None, result=None):
-        super().__init__(training_set=training_set, training_design=training_design, result=result)
+        super().__init__(training_set=training_set,
+                         training_design=training_design, result=result)
         if training_set is not None:
             self._create_transformed_table()
             self._create_variance_table()
@@ -41,7 +42,8 @@ class LDATrainerResult(BaseSupervisedClassResult):
 
         training_set = self.get_training_set()
         training_design = self.get_training_design()
-        x_true, _ = TrainingDesignHelper.create_training_matrices(training_set, training_design)
+        x_true, _ = TrainingDesignHelper.create_training_matrices(
+            training_set, training_design)
 
         data: DataFrame = mdl.transform(x_true.values)
         columns = [f"PC{i+1}" for i in range(0, ncomp)]
@@ -61,7 +63,8 @@ class LDATrainerResult(BaseSupervisedClassResult):
         ncomp = mdl.explained_variance_ratio_.shape[0]
         index = [f"PC{i+1}" for i in range(0, ncomp)]
         columns = ["ExplainedVariance"]
-        data = DataFrame(mdl.explained_variance_ratio_, index=index, columns=columns)
+        data = DataFrame(mdl.explained_variance_ratio_,
+                         index=index, columns=columns)
         table = Table(data=data)
         table.name = self.VARIANCE_TABLE_NAME
         self.add_resource(table)
@@ -81,7 +84,7 @@ class LDATrainerResult(BaseSupervisedClassResult):
         else:
             return None
 
-    @ view(view_type=ScatterPlot2DView, human_name='2D-score plot', short_description='2D-score plot')
+    @view(view_type=ScatterPlot2DView, human_name='2D-score plot', short_description='2D-score plot')
     def view_scores_as_2d_plot(self, params: ConfigParams) -> dict:
         """
         View 2D score plot
@@ -111,21 +114,23 @@ class LDATrainerResult(BaseSupervisedClassResult):
 # *****************************************************************************
 
 
-@ task_decorator("LDATrainer", human_name="LDA trainer",
-                 short_description="Train a linear discriminant analysis classifier")
+@task_decorator("LDATrainer", human_name="LDA trainer",
+                short_description="Train a linear discriminant analysis classifier")
 class LDATrainer(BaseSupervisedTrainer):
     """
     Trainer of a linear discriminant analysis classifier. Fit Linear Discriminant Analysis model according to a training table.
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.discriminant_analysis.LinearDiscriminantAnalysis.html for more details.
     """
-    input_specs = InputSpecs({'table': InputSpec(Table, human_name="Table", short_description="The input table")})
-    output_specs = OutputSpecs({'result': OutputSpec(LDATrainerResult, human_name="result", short_description="The output result")})
-    config_specs = {
+    input_specs = InputSpecs({'table': InputSpec(
+        Table, human_name="Table", short_description="The input table")})
+    output_specs = OutputSpecs({'result': OutputSpec(
+        LDATrainerResult, human_name="result", short_description="The output result")})
+    config_specs = ConfigSpecs({
         'training_design': TrainingDesignHelper.create_training_design_param_set(),
         'solver': StrParam(default_value='svd'),
         'nb_components': IntParam(default_value=None, min_value=0)
-    }
+    })
 
     @classmethod
     def create_sklearn_trainer_class(cls, params) -> Type[Any]:
@@ -142,8 +147,8 @@ class LDATrainer(BaseSupervisedTrainer):
 # *****************************************************************************
 
 
-@ task_decorator("LDAPredictor", human_name="LDA predictor",
-                 short_description="Predict class labels using a Linear Discriminant Analysis (LDA) classifier")
+@task_decorator("LDAPredictor", human_name="LDA predictor",
+                short_description="Predict class labels using a Linear Discriminant Analysis (LDA) classifier")
 class LDAPredictor(BaseSupervisedPredictor):
     """
     Predictor of a linear discriminant analysis classifier. Predict class labels for samples in a table.
@@ -153,5 +158,6 @@ class LDAPredictor(BaseSupervisedPredictor):
     input_specs = InputSpecs({
         'table': InputSpec(Table, human_name="Table", short_description="The input table"),
         'learned_model': InputSpec(LDATrainerResult, human_name="Learned model", short_description="The input model")})
-    output_specs = OutputSpecs({'result': OutputSpec(Table, human_name="result", short_description="The output result")})
-    config_specs = {}
+    output_specs = OutputSpecs({'result': OutputSpec(
+        Table, human_name="result", short_description="The output result")})
+    config_specs = ConfigSpecs({})

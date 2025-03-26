@@ -2,7 +2,7 @@
 
 from typing import Any, Type
 
-from gws_core import (FloatParam, InputSpec, IntParam, OutputSpec, StrParam,
+from gws_core import (FloatParam, InputSpec, IntParam, OutputSpec, StrParam, ConfigSpecs,
                       Table, resource_decorator, task_decorator, InputSpecs, OutputSpecs)
 from sklearn.linear_model import SGDClassifier
 
@@ -36,10 +36,11 @@ class SGDClassifierTrainer(BaseSupervisedTrainer):
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.SGDClassifier.html for more details.
     """
-    input_specs = InputSpecs({'table': InputSpec(Table, human_name="Table", short_description="The input table")})
+    input_specs = InputSpecs({'table': InputSpec(
+        Table, human_name="Table", short_description="The input table")})
     output_specs = OutputSpecs({'result': OutputSpec(SGDClassifierResult, human_name="result",
-                                         short_description="The output result")})
-    config_specs = {
+                                                     short_description="The output result")})
+    config_specs = ConfigSpecs({
         'training_design': TrainingDesignHelper.create_training_design_param_set(),
         'loss':
         StrParam(
@@ -47,7 +48,7 @@ class SGDClassifierTrainer(BaseSupervisedTrainer):
             allowed_values=['hinge', 'log_loss', 'log', 'modified_huber', 'squared_hinge', 'perceptron',
                             'squared_error', 'huber', 'epsilon_insensitive', 'squared_epsilon_insensitive']),
         'alpha': FloatParam(default_value=0.0001, min_value=0),
-        'max_iter': IntParam(default_value=1000, min_value=0), }
+        'max_iter': IntParam(default_value=1000, min_value=0), })
 
     @classmethod
     def create_sklearn_trainer_class(cls, params) -> Any:
@@ -74,5 +75,6 @@ class SGDClassifierPredictor(BaseSupervisedPredictor):
     """
     input_specs = InputSpecs({'table': InputSpec(Table, human_name="Table", short_description="The input table"), 'learned_model': InputSpec(
         SGDClassifierResult, human_name="Learned model", short_description="The input model")})
-    output_specs = OutputSpecs({'result': OutputSpec(Table, human_name="result", short_description="The output result")})
-    config_specs = {}
+    output_specs = OutputSpecs({'result': OutputSpec(
+        Table, human_name="result", short_description="The output result")})
+    config_specs = ConfigSpecs({})

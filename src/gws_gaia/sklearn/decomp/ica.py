@@ -2,7 +2,7 @@
 
 from typing import Any, Type
 
-from gws_core import (InputSpec, IntParam, OutputSpec, Table,
+from gws_core import (InputSpec, IntParam, OutputSpec, Table, ConfigSpecs,
                       resource_decorator, task_decorator, InputSpecs, OutputSpecs)
 from sklearn.decomposition import FastICA
 
@@ -32,13 +32,16 @@ class ICATrainer(BaseUnsupervisedTrainer):
     """
     Trainer of an Independant Component Analysis (ICA) model. Fit a model of ICA to a training table.
 
-    See https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.ICA.html#sklearn.decomposition.ICA.fit for more details.
+    #sklearn.decomposition.ICA.fit for more details.
+    See https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.ICA.html
     """
-    input_specs = InputSpecs({'table': InputSpec(Table, human_name="Table", short_description="The input table")})
-    output_specs = OutputSpecs({'result': OutputSpec(ICAResult, human_name="result", short_description="The output result")})
-    config_specs = {
+    input_specs = InputSpecs({'table': InputSpec(
+        Table, human_name="Table", short_description="The input table")})
+    output_specs = OutputSpecs({'result': OutputSpec(
+        ICAResult, human_name="result", short_description="The output result")})
+    config_specs = ConfigSpecs({
         'nb_components': IntParam(default_value=2, min_value=0)
-    }
+    })
 
     @classmethod
     def create_sklearn_trainer_class(cls, params) -> Type[Any]:

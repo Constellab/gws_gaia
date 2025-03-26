@@ -3,7 +3,7 @@
 from typing import Any, Type
 
 from gws_core import (ConfigParams, InputSpec, IntParam, OutputSpec, Table,
-                      TaskInputs, TaskOutputs, resource_decorator,
+                      TaskInputs, TaskOutputs, resource_decorator, ConfigSpecs,
                       task_decorator, InputSpecs, OutputSpecs)
 from pandas import DataFrame
 from sklearn.cluster import KMeans
@@ -37,11 +37,13 @@ class KMeansTrainer(BaseUnsupervisedTrainer):
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html for more details.
     """
-    input_specs = InputSpecs({'table': InputSpec(Table, human_name="Table", short_description="The input table")})
-    output_specs = OutputSpecs({'result': OutputSpec(KMeansResult, human_name="result", short_description="The output result")})
-    config_specs = {
+    input_specs = InputSpecs({'table': InputSpec(
+        Table, human_name="Table", short_description="The input table")})
+    output_specs = OutputSpecs({'result': OutputSpec(
+        KMeansResult, human_name="result", short_description="The output result")})
+    config_specs = ConfigSpecs({
         'nb_clusters': IntParam(default_value=2, min_value=0)
-    }
+    })
 
     @classmethod
     def create_sklearn_trainer_class(cls, params) -> Type[Any]:
@@ -69,8 +71,9 @@ class KMeansPredictor(BaseUnsupervisedPredictor):
     input_specs = InputSpecs({
         'table': InputSpec(Table, human_name="Table", short_description="The input table"),
         'learned_model': InputSpec(KMeansResult, human_name="Learned model", short_description="The input model")})
-    output_specs = OutputSpecs({'result': OutputSpec(Table, human_name="result", short_description="The output result")})
-    config_specs = {}
+    output_specs = OutputSpecs({'result': OutputSpec(
+        Table, human_name="result", short_description="The output result")})
+    config_specs = ConfigSpecs({})
 
     def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         table = inputs['table']

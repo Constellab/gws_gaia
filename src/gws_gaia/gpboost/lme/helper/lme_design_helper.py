@@ -1,7 +1,7 @@
 
 
 import pandas as pd
-from gws_core import (BadRequestException, BoolParam, ListParam, ParamSet,
+from gws_core import (BadRequestException, BoolParam, ListParam, ParamSet, ConfigSpecs,
                       StrParam, Table)
 
 
@@ -9,11 +9,11 @@ class LMEDesignHelper:
 
     @classmethod
     def create_target_param_set(cls):
-        return ParamSet({
+        return ParamSet(ConfigSpecs({
             'intercept': BoolParam(default_value=True, human_name='Intercept', short_description='Use intercept?'),
             'individual': StrParam(human_name='Individual', short_description='The name of the individual observations'),
             'random_effect_structure': ListParam(human_name='Structure of random effects', short_description="The structure of the (nested-)random effects"),
-        }, human_name="Model design", short_description="The design of the model", max_number_of_occurrences=1)
+        }), human_name="Model design", short_description="The design of the model", max_number_of_occurrences=1)
 
     @classmethod
     def create_training_matrix(cls, training_set: Table, training_design):
@@ -30,7 +30,8 @@ class LMEDesignHelper:
 
         all_groups = list(set(all_groups))
         if individual not in all_groups:
-            raise BadRequestException("The individual is not found in found in the randomn effect structure")
+            raise BadRequestException(
+                "The individual is not found in found in the randomn effect structure")
 
         all_groups.remove(individual)
 
@@ -39,7 +40,8 @@ class LMEDesignHelper:
             if key in row_tags[0]:
                 training_set.extract_row_tags_to_new_column(key, "char")
             else:
-                raise BadRequestException(f"The covariate {key} does not exist in the row tags")
+                raise BadRequestException(
+                    f"The covariate {key} does not exist in the row tags")
 
         return pd.melt(training_set.get_data(), id_vars=all_groups, var_name=individual, value_name='target')
 
@@ -54,6 +56,7 @@ class LMEDesignHelper:
                 if i == 0:
                     design_matrix[formula] = design_matrix[colname].map(str)
                 else:
-                    design_matrix[formula] = design_matrix[formula] + "_" + design_matrix[colname].map(str)
+                    design_matrix[formula] = design_matrix[formula] + \
+                        "_" + design_matrix[colname].map(str)
 
         return design_matrix[effect_structure]

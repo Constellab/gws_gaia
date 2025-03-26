@@ -2,7 +2,7 @@
 
 from typing import Any, Type
 
-from gws_core import (InputSpec, IntParam, OutputSpec, StrParam, Table,
+from gws_core import (InputSpec, IntParam, OutputSpec, StrParam, Table, ConfigSpecs,
                       resource_decorator, task_decorator, InputSpecs, OutputSpecs)
 from sklearn.cluster import AgglomerativeClustering
 
@@ -34,16 +34,17 @@ class AgglomerativeClusteringTrainer(BaseUnsupervisedTrainer):
 @
     See https://scikit-learn.org/stable/modules/generated/sklearn.cluster.AgglomerativeClustering.html for more details
     """
-    input_specs = InputSpecs({'table': InputSpec(Table, human_name="Table", short_description="The input table")})
+    input_specs = InputSpecs({'table': InputSpec(
+        Table, human_name="Table", short_description="The input table")})
     output_specs = OutputSpecs({'result': OutputSpec(AgglomerativeClusteringResult,
-                                         human_name="result", short_description="The output result")})
-    config_specs = {
+                                                     human_name="result", short_description="The output result")})
+    config_specs = ConfigSpecs({
         "nb_clusters": IntParam(default_value=2, min_value=0),
         "linkage": StrParam(default_value="ward", allowed_values=["ward", "complete", "average", "single"]),
         "affinity":
         StrParam(
             default_value="euclidean", allowed_values=["euclidean", "l1", "l2", "manhattan", "cosine", "precomputed"],
-            short_description="Metric used to compute the linkage."), }
+            short_description="Metric used to compute the linkage."), })
 
     @classmethod
     def create_sklearn_trainer_class(cls, params) -> Type[Any]:

@@ -2,7 +2,7 @@
 
 from typing import Any, Type
 
-from gws_core import (InputSpec, OutputSpec, Table, resource_decorator,
+from gws_core import (InputSpec, OutputSpec, Table, resource_decorator, ConfigSpecs,
                       task_decorator, InputSpecs, OutputSpecs)
 from sklearn.naive_bayes import GaussianNB
 
@@ -36,12 +36,13 @@ class GaussianNaiveBayesTrainer(BaseSupervisedTrainer):
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.GaussianNB.html for more details
     """
-    input_specs = InputSpecs({'table': InputSpec(Table, human_name="Table", short_description="The input table")})
+    input_specs = InputSpecs({'table': InputSpec(
+        Table, human_name="Table", short_description="The input table")})
     output_specs = OutputSpecs({'result': OutputSpec(GaussianNaiveBayesResult, human_name="result",
-                                         short_description="The output result")})
-    config_specs = {
+                                                     short_description="The output result")})
+    config_specs = ConfigSpecs({
         'training_design': TrainingDesignHelper.create_training_design_param_set(),
-    }
+    })
 
     @classmethod
     def create_sklearn_trainer_class(cls, params) -> Any:
@@ -68,5 +69,6 @@ class GaussianNaiveBayesPredictor(BaseSupervisedPredictor):
     """
     input_specs = InputSpecs({'table': InputSpec(Table, human_name="Table", short_description="The input table"), 'learned_model': InputSpec(
         GaussianNaiveBayesResult, human_name="Learned model", short_description="The input model")})
-    output_specs = OutputSpecs({'result': OutputSpec(Table, human_name="result", short_description="The output result")})
-    config_specs = {}
+    output_specs = OutputSpecs({'result': OutputSpec(
+        Table, human_name="result", short_description="The output result")})
+    config_specs = ConfigSpecs({})

@@ -8,7 +8,7 @@ import pandas as pd
 import sklearn
 from gws_core import (BoolParam, ConfigParams, FloatRField, InputSpec,
                       InputSpecs, ListParam, OutputSpec, OutputSpecs, ParamSet,
-                      RField, StrParam, Table, TableConcatHelper, Task,
+                      RField, StrParam, Table, TableConcatHelper, Task, ConfigSpecs,
                       TaskInputs, TaskOutputs, TechnicalInfo, TextView,
                       resource_decorator, task_decorator, view)
 from pandas import DataFrame
@@ -56,7 +56,8 @@ class LMETrainerResult(BaseResourceSet):
     _prediction_score: int = FloatRField()
 
     def __init__(self, training_set=None, training_design=None, result=None):
-        super().__init__(training_set=training_set, training_design=training_design, result=result)
+        super().__init__(training_set=training_set,
+                         training_design=training_design, result=result)
         if training_set is not None:
             self._create_prediction_table()
             self._create_training_data_random_effects()
@@ -67,10 +68,12 @@ class LMETrainerResult(BaseResourceSet):
 
         training_set = self.get_training_set()
         training_design = self.get_training_design()
-        t_mat = LMEDesignHelper.create_training_matrix(training_set=training_set, training_design=training_design)
+        t_mat = LMEDesignHelper.create_training_matrix(
+            training_set=training_set, training_design=training_design)
         n = t_mat.shape[0]
         X_test = np.ones(n)
-        Z = LMEDesignHelper.create_design_matrix(training_matrix=t_mat, training_design=training_design)
+        Z = LMEDesignHelper.create_design_matrix(
+            training_matrix=t_mat, training_design=training_design)
         df_pred = gp_model.predict(X_pred=X_test, group_data_pred=Z)
         target_pred = pd.DataFrame(df_pred['mu'], columns=['Prediction'])
         df = pd.concat([t_mat, target_pred], axis=1)
@@ -83,7 +86,8 @@ class LMETrainerResult(BaseResourceSet):
         training_set = self.get_training_set()
         df = gp_model.predict_training_data_random_effects()
         training_design = self.get_training_design()
-        t_mat = LMEDesignHelper.create_training_matrix(training_set=training_set, training_design=training_design)
+        t_mat = LMEDesignHelper.create_training_matrix(
+            training_set=training_set, training_design=training_design)
         t_mat.index = df.index
         df = gp_model.predict_training_data_random_effects()
         # df = df.rename(columns={'Metabolites': 'newName1'})
@@ -97,13 +101,15 @@ class LMETrainerResult(BaseResourceSet):
         if not self._prediction_score:
             training_set = self.get_training_set()
             training_design = self.get_training_design()
-            t_mat = LMEDesignHelper.create_training_matrix(training_set=training_set, training_design=training_design)
+            t_mat = LMEDesignHelper.create_training_matrix(
+                training_set=training_set, training_design=training_design)
             y_true = t_mat["target"]
             y_pred = t_mat["target"]
 
             self._prediction_score = sklearn.metrics.r2_score(y_true, y_pred)
 
-        technical_info = TechnicalInfo(key=self.PREDICTION_SCORE_NAME, value=self._prediction_score)
+        technical_info = TechnicalInfo(
+            key=self.PREDICTION_SCORE_NAME, value=self._prediction_score)
         self.add_technical_info(technical_info)
 
     def get_prediction_table(self):
@@ -116,7 +122,7 @@ class LMETrainerResult(BaseResourceSet):
     def get_prediction_score(self):
         return self._prediction_score
 
-    @ view(view_type=TextView, human_name='Summary', short_description='Summary text')
+    @view(view_type=TextView, human_name='Summary', short_description='Summary text')
     def view_as_summary(self, params: ConfigParams) -> dict:
         """
         View as summary
@@ -136,8 +142,8 @@ class LMETrainerResult(BaseResourceSet):
 # *****************************************************************************
 
 
-@ task_decorator("LMETrainer", human_name="LMETrainer",
-                 short_description="Train a linear mixted effects model")
+@task_decorator("LMETrainer", human_name="LMETrainer",
+                short_description="Train a linear mixted effects model")
 class LMETrainer(Task):
     """
     Trainer of a linear mixted effects model.
@@ -149,14 +155,14 @@ class LMETrainer(Task):
     })
     output_specs = OutputSpecs({'result': OutputSpec(
         LMETrainerResult, human_name="result", short_description="The output result")})
-    config_specs = {
+    config_specs = ConfigSpecs({
         'likelihood': StrParam(default_value="gaussian", allowed_values=["gaussian", "bernoulli_probit", "bernoulli_logit", "poisson", "gamma"]),
-        'design': ParamSet({
+        'design': ParamSet(ConfigSpecs({
             'intercept': BoolParam(default_value=True, human_name='Intercept', short_description='Use intercept?'),
             'individual': StrParam(default_value='', human_name='Individual', short_description='The name of the individual observations'),
             'random_effect_structure': ListParam(default_value=[], human_name='Structure of random effects', short_description="The structure of the (nested-)random effects")
-        }, human_name="Model design", short_description="The design of the model", max_number_of_occurrences=1),
-    }
+        }), human_name="Model design", short_description="The design of the model", max_number_of_occurrences=1),
+    })
 
     def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:
         training_design = params["design"]
@@ -181,7 +187,8 @@ class LMETrainer(Task):
             params={"std_dev": True}
         )
 
-        result = LMETrainerResult(training_set=training_set, training_design=training_design, result=gp_model)
+        result = LMETrainerResult(training_set=training_set,
+                                  training_design=training_design, result=gp_model)
 
         print(gp_model.summary())
         return {'result': result}

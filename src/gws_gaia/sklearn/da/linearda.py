@@ -1,16 +1,31 @@
 
 
-from typing import Any, Type
+from typing import Any
 
-from gws_core import (ConfigParams, InputSpec, IntParam, OutputSpec, ConfigSpecs,
-                      ScatterPlot2DView, StrParam, Table, resource_decorator,
-                      task_decorator, view, InputSpecs, OutputSpecs)
+from gws_core import (
+    ConfigParams,
+    ConfigSpecs,
+    InputSpec,
+    InputSpecs,
+    IntParam,
+    OutputSpec,
+    OutputSpecs,
+    ScatterPlot2DView,
+    StrParam,
+    Table,
+    resource_decorator,
+    task_decorator,
+    view,
+)
 from pandas import DataFrame
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 
 from ...base.helper.training_design_helper import TrainingDesignHelper
-from ..base.base_sup import (BaseSupervisedClassResult,
-                             BaseSupervisedPredictor, BaseSupervisedTrainer)
+from ..base.base_sup import (
+    BaseSupervisedClassResult,
+    BaseSupervisedPredictor,
+    BaseSupervisedTrainer,
+)
 
 # *****************************************************************************
 #
@@ -133,11 +148,11 @@ class LDATrainer(BaseSupervisedTrainer):
     })
 
     @classmethod
-    def create_sklearn_trainer_class(cls, params) -> Type[Any]:
+    def create_sklearn_trainer_class(cls, params) -> type[Any]:
         return LinearDiscriminantAnalysis(solver=params["solver"], n_components=params["nb_components"])
 
     @classmethod
-    def create_result_class(cls) -> Type[LDATrainerResult]:
+    def create_result_class(cls) -> type[LDATrainerResult]:
         return LDATrainerResult
 
 # *****************************************************************************

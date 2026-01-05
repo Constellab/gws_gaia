@@ -1,14 +1,24 @@
 
 
-from typing import Any, Type
+from typing import Any
 
-from gws_core import (FloatParam, InputSpec, IntParam, OutputSpec, StrParam, ConfigSpecs,
-                      Table, resource_decorator, task_decorator, InputSpecs, OutputSpecs)
+from gws_core import (
+    ConfigSpecs,
+    FloatParam,
+    InputSpec,
+    InputSpecs,
+    IntParam,
+    OutputSpec,
+    OutputSpecs,
+    StrParam,
+    Table,
+    resource_decorator,
+    task_decorator,
+)
 from sklearn.linear_model import SGDRegressor
 
 from ...base.helper.training_design_helper import TrainingDesignHelper
-from ..base.base_sup import (BaseSupervisedPredictor, BaseSupervisedRegResult,
-                             BaseSupervisedTrainer)
+from ..base.base_sup import BaseSupervisedPredictor, BaseSupervisedRegResult, BaseSupervisedTrainer
 
 # *****************************************************************************
 #
@@ -54,7 +64,7 @@ class SGDRegressorTrainer(BaseSupervisedTrainer):
         return SGDRegressor(max_iter=params["max_iter"], alpha=params["alpha"], loss=params["loss"])
 
     @classmethod
-    def create_result_class(cls) -> Type[SGDRegressorResult]:
+    def create_result_class(cls) -> type[SGDRegressorResult]:
         return SGDRegressorResult
 
 # *****************************************************************************

@@ -1,13 +1,20 @@
 
 
 from abc import abstractmethod
-from typing import Any, Dict, Type
+from typing import Any
 
-from gws_core import (ConfigParams, FloatRField, Table, Task, TaskInputs,
-                      TaskOutputs, TechnicalInfo, resource_decorator,
-                      task_decorator, InputSpecs, OutputSpecs)
+from gws_core import (
+    ConfigParams,
+    FloatRField,
+    Table,
+    Task,
+    TaskInputs,
+    TaskOutputs,
+    TechnicalInfo,
+    resource_decorator,
+    task_decorator,
+)
 from pandas import DataFrame
-from sklearn.metrics import accuracy_score, balanced_accuracy_score
 
 from ...base.base_resource import BaseResourceSet
 from ...base.helper.training_design_helper import TrainingDesignHelper
@@ -115,10 +122,10 @@ class BaseSupervisedTrainer(Task):
 
     @classmethod
     @abstractmethod
-    def create_result_class(cls) -> Type[BaseSupervisedResult]:
+    def create_result_class(cls) -> type[BaseSupervisedResult]:
         pass
 
-    def fit(self, table: Table, params: Dict) -> BaseSupervisedResult:
+    def fit(self, table: Table, params: dict) -> BaseSupervisedResult:
         training_design = params["training_design"]
         sklearn_trainer = self.create_sklearn_trainer_class(params)
         x_true, y_true = TrainingDesignHelper.create_training_matrices(table, training_design, dummy=self._dummy_target)
@@ -127,10 +134,10 @@ class BaseSupervisedTrainer(Task):
         sklearn_trainer.fit(x_true, y_true)
         return sklearn_trainer
 
-    def fit_cv(self, table: Table, params: Dict) -> BaseSupervisedResult:
+    def fit_cv(self, table: Table, params: dict) -> BaseSupervisedResult:
         pass
 
-    def fit_cv_search(self, table: Table, params: Dict) -> BaseSupervisedResult:
+    def fit_cv_search(self, table: Table, params: dict) -> BaseSupervisedResult:
         pass
 
     def run(self, params: ConfigParams, inputs: TaskInputs) -> TaskOutputs:

@@ -1,14 +1,26 @@
 
 
-from typing import Any, Type
+from typing import Any
 
-from gws_core import (FloatParam, InputSpec, OutputSpec, Table, ConfigSpecs,
-                      resource_decorator, task_decorator, InputSpecs, OutputSpecs)
+from gws_core import (
+    ConfigSpecs,
+    FloatParam,
+    InputSpec,
+    InputSpecs,
+    OutputSpec,
+    OutputSpecs,
+    Table,
+    resource_decorator,
+    task_decorator,
+)
 from sklearn.linear_model import RidgeClassifier
 
 from ...base.helper.training_design_helper import TrainingDesignHelper
-from ..base.base_sup import (BaseSupervisedClassResult,
-                             BaseSupervisedPredictor, BaseSupervisedTrainer)
+from ..base.base_sup import (
+    BaseSupervisedClassResult,
+    BaseSupervisedPredictor,
+    BaseSupervisedTrainer,
+)
 
 # *****************************************************************************
 #
@@ -50,7 +62,7 @@ class RidgeClassifierTrainer(BaseSupervisedTrainer):
         return RidgeClassifier(alpha=params["alpha"])
 
     @classmethod
-    def create_result_class(cls) -> Type[RidgeClassifierResult]:
+    def create_result_class(cls) -> type[RidgeClassifierResult]:
         return RidgeClassifierResult
 
 # *****************************************************************************

@@ -1,15 +1,25 @@
 
 
-from typing import Any, Type
+from typing import Any
 
-from gws_core import (ConfigParams, InputSpec, IntParam, OutputSpec, Table,
-                      TaskInputs, TaskOutputs, resource_decorator, ConfigSpecs,
-                      task_decorator, InputSpecs, OutputSpecs)
+from gws_core import (
+    ConfigParams,
+    ConfigSpecs,
+    InputSpec,
+    InputSpecs,
+    IntParam,
+    OutputSpec,
+    OutputSpecs,
+    Table,
+    TaskInputs,
+    TaskOutputs,
+    resource_decorator,
+    task_decorator,
+)
 from pandas import DataFrame
 from sklearn.cluster import KMeans
 
-from ..base.base_unsup import (BaseUnsupervisedPredictor,
-                               BaseUnsupervisedTrainer)
+from ..base.base_unsup import BaseUnsupervisedPredictor, BaseUnsupervisedTrainer
 from .base_clust_result import BaseClusteringResult
 
 # *****************************************************************************
@@ -46,11 +56,11 @@ class KMeansTrainer(BaseUnsupervisedTrainer):
     })
 
     @classmethod
-    def create_sklearn_trainer_class(cls, params) -> Type[Any]:
+    def create_sklearn_trainer_class(cls, params) -> type[Any]:
         return KMeans(n_clusters=params["nb_clusters"])
 
     @classmethod
-    def create_result_class(cls) -> Type[KMeansResult]:
+    def create_result_class(cls) -> type[KMeansResult]:
         return KMeansResult
 
 # *****************************************************************************

@@ -2,7 +2,7 @@
 
 import numpy as np
 import pandas
-from gws_core import BoolParam, ParamSet, StrParam, Table, ConfigSpecs
+from gws_core import ConfigSpecs, ParamSet, StrParam, Table
 from pandas import DataFrame
 from pandas.api.types import is_string_dtype
 

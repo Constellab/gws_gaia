@@ -1,16 +1,27 @@
 
 
-from typing import Any, List, Type
+from typing import Any
 
-from gws_core import (ConfigParams, InputSpec, IntParam, OutputSpec, ConfigSpecs,
-                      ScatterPlot2DView, Table, TechnicalInfo,
-                      resource_decorator, task_decorator, view, InputSpecs, OutputSpecs)
+from gws_core import (
+    ConfigParams,
+    ConfigSpecs,
+    InputSpec,
+    InputSpecs,
+    IntParam,
+    OutputSpec,
+    OutputSpecs,
+    ScatterPlot2DView,
+    Table,
+    TechnicalInfo,
+    resource_decorator,
+    task_decorator,
+    view,
+)
 from pandas import DataFrame
 from sklearn.cross_decomposition import PLSRegression
 
 from ...base.helper.training_design_helper import TrainingDesignHelper
-from ..base.base_sup import (BaseSupervisedPredictor, BaseSupervisedRegResult,
-                             BaseSupervisedTrainer)
+from ..base.base_sup import BaseSupervisedPredictor, BaseSupervisedRegResult, BaseSupervisedTrainer
 from .helper.pls_helper import PLSHelper
 
 # *****************************************************************************
@@ -52,7 +63,7 @@ class PLSTrainerResult(BaseSupervisedRegResult):
         table.set_all_row_tags(row_tags)
         self.add_resource(table)
 
-    def _create_variance_table(self) -> List[float]:
+    def _create_variance_table(self) -> list[float]:
         pls: PLSRegression = self.get_result()
         training_set = self.get_training_set()
         training_design = self.get_training_design()
@@ -128,11 +139,11 @@ class PLSTrainer(BaseSupervisedTrainer):
     })
 
     @classmethod
-    def create_sklearn_trainer_class(cls, params) -> Type[Any]:
+    def create_sklearn_trainer_class(cls, params) -> type[Any]:
         return PLSRegression(n_components=params["nb_components"])
 
     @classmethod
-    def create_result_class(cls) -> Type[PLSTrainerResult]:
+    def create_result_class(cls) -> type[PLSTrainerResult]:
         return PLSTrainerResult
 
 # *****************************************************************************

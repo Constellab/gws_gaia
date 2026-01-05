@@ -1,7 +1,6 @@
 from gws_core import BaseTestCase, TaskRunner
 from gws_core.extra import DataProvider
-from gws_gaia import (GaussianProcessClassifierPredictor,
-                      GaussianProcessClassifierTrainer)
+from gws_gaia import GaussianProcessClassifierPredictor, GaussianProcessClassifierTrainer
 
 
 class TestTrainer(BaseTestCase):

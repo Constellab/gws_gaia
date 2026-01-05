@@ -1,9 +1,18 @@
 
 
-from typing import Any, Type
+from typing import Any
 
-from gws_core import (InputSpec, IntParam, OutputSpec, Table, ConfigSpecs,
-                      resource_decorator, task_decorator, InputSpecs, OutputSpecs)
+from gws_core import (
+    ConfigSpecs,
+    InputSpec,
+    InputSpecs,
+    IntParam,
+    OutputSpec,
+    OutputSpecs,
+    Table,
+    resource_decorator,
+    task_decorator,
+)
 from sklearn.decomposition import FastICA
 
 from ..base.base_unsup import BaseUnsupervisedResult, BaseUnsupervisedTrainer
@@ -44,9 +53,9 @@ class ICATrainer(BaseUnsupervisedTrainer):
     })
 
     @classmethod
-    def create_sklearn_trainer_class(cls, params) -> Type[Any]:
+    def create_sklearn_trainer_class(cls, params) -> type[Any]:
         return FastICA(n_components=params["nb_components"])
 
     @classmethod
-    def create_result_class(cls) -> Type[ICAResult]:
+    def create_result_class(cls) -> type[ICAResult]:
         return ICAResult

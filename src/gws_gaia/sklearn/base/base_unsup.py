@@ -1,9 +1,16 @@
 
 
-from typing import Any, Dict, Type
+from typing import Any
 
-from gws_core import (ConfigParams, IntParam, Table, Task, TaskInputs,
-                      TaskOutputs, resource_decorator, task_decorator, InputSpecs, OutputSpecs)
+from gws_core import (
+    ConfigParams,
+    Table,
+    Task,
+    TaskInputs,
+    TaskOutputs,
+    resource_decorator,
+    task_decorator,
+)
 
 from ...base.base_resource import BaseResourceSet
 
@@ -34,11 +41,11 @@ class BaseUnsupervisedTrainer(Task):
         return None
 
     @classmethod
-    def create_result_class(cls) -> Type[None]:
+    def create_result_class(cls) -> type[None]:
         return None
 
     @classmethod
-    def fit(cls, table: Table, params: Dict) -> BaseUnsupervisedResult:
+    def fit(cls, table: Table, params: dict) -> BaseUnsupervisedResult:
         sklearn_trainer = cls.create_sklearn_trainer_class(params)
         sklearn_trainer.fit(table.get_data())
         return sklearn_trainer

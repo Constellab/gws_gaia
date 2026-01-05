@@ -1,9 +1,9 @@
 
 
-from typing import Any, Dict
+from typing import Any
 
-from gws_core import (Resource, ResourceRField, ResourceSet, RField,
-                      resource_decorator)
+from gws_core import Resource, ResourceRField, ResourceSet, RField, resource_decorator
+
 
 @resource_decorator("BaseResourceSet", hide=True)
 class BaseResourceSet(ResourceSet):
@@ -11,7 +11,7 @@ class BaseResourceSet(ResourceSet):
 
     _result: Any = RField(default_value=None)
     _training_set: Resource = ResourceRField()
-    _training_design: Dict = RField()
+    _training_design: dict = RField()
 
     def __init__(self, training_set=None, training_design=None, result=None):
         super().__init__()

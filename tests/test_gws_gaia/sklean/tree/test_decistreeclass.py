@@ -1,7 +1,6 @@
 from gws_core import BaseTestCase, TaskRunner
 from gws_core.extra import DataProvider
-from gws_gaia import (DecisionTreeClassifierPredictor,
-                      DecisionTreeClassifierTrainer)
+from gws_gaia import DecisionTreeClassifierPredictor, DecisionTreeClassifierTrainer
 
 
 class TestTrainer(BaseTestCase):

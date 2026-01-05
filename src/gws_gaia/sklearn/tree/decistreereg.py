@@ -1,14 +1,22 @@
 
 
-from typing import Any, Type
+from typing import Any
 
-from gws_core import (InputSpec, InputSpecs, IntParam, OutputSpec, OutputSpecs, ConfigSpecs,
-                      Table, resource_decorator, task_decorator)
+from gws_core import (
+    ConfigSpecs,
+    InputSpec,
+    InputSpecs,
+    IntParam,
+    OutputSpec,
+    OutputSpecs,
+    Table,
+    resource_decorator,
+    task_decorator,
+)
 from sklearn.tree import DecisionTreeRegressor
 
 from ...base.helper.training_design_helper import TrainingDesignHelper
-from ..base.base_sup import (BaseSupervisedPredictor, BaseSupervisedRegResult,
-                             BaseSupervisedTrainer)
+from ..base.base_sup import BaseSupervisedPredictor, BaseSupervisedRegResult, BaseSupervisedTrainer
 
 # *****************************************************************************
 #
@@ -49,7 +57,7 @@ class DecisionTreeRegressorTrainer(BaseSupervisedTrainer):
         return DecisionTreeRegressor(max_depth=params["max_depth"])
 
     @classmethod
-    def create_result_class(cls) -> Type[DecisionTreeRegressorResult]:
+    def create_result_class(cls) -> type[DecisionTreeRegressorResult]:
         return DecisionTreeRegressorResult
 
 # *****************************************************************************

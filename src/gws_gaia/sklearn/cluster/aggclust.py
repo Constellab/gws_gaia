@@ -1,9 +1,19 @@
 
 
-from typing import Any, Type
+from typing import Any
 
-from gws_core import (InputSpec, IntParam, OutputSpec, StrParam, Table, ConfigSpecs,
-                      resource_decorator, task_decorator, InputSpecs, OutputSpecs)
+from gws_core import (
+    ConfigSpecs,
+    InputSpec,
+    InputSpecs,
+    IntParam,
+    OutputSpec,
+    OutputSpecs,
+    StrParam,
+    Table,
+    resource_decorator,
+    task_decorator,
+)
 from sklearn.cluster import AgglomerativeClustering
 
 from ..base.base_unsup import BaseUnsupervisedTrainer
@@ -47,9 +57,9 @@ class AgglomerativeClusteringTrainer(BaseUnsupervisedTrainer):
             short_description="Metric used to compute the linkage."), })
 
     @classmethod
-    def create_sklearn_trainer_class(cls, params) -> Type[Any]:
+    def create_sklearn_trainer_class(cls, params) -> type[Any]:
         return AgglomerativeClustering(n_clusters=params["nb_clusters"], linkage=params["linkage"])
 
     @classmethod
-    def create_result_class(cls) -> Type[AgglomerativeClusteringResult]:
+    def create_result_class(cls) -> type[AgglomerativeClusteringResult]:
         return AgglomerativeClusteringResult

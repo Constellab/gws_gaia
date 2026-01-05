@@ -1,10 +1,23 @@
 
 
-from typing import Any, Type
+from typing import Any
 
-from gws_core import (ConfigParams, FloatRField, InputSpec, IntParam, ConfigSpecs,
-                      OutputSpec, ScatterPlot2DView, Table, TechnicalInfo,
-                      resource_decorator, task_decorator, view, InputSpecs, OutputSpecs)
+from gws_core import (
+    ConfigParams,
+    ConfigSpecs,
+    FloatRField,
+    InputSpec,
+    InputSpecs,
+    IntParam,
+    OutputSpec,
+    OutputSpecs,
+    ScatterPlot2DView,
+    Table,
+    TechnicalInfo,
+    resource_decorator,
+    task_decorator,
+    view,
+)
 from pandas import DataFrame
 from sklearn.decomposition import PCA
 
@@ -138,9 +151,9 @@ class PCATrainer(BaseUnsupervisedTrainer):
     })
 
     @classmethod
-    def create_sklearn_trainer_class(cls, params) -> Type[Any]:
+    def create_sklearn_trainer_class(cls, params) -> type[Any]:
         return PCA(n_components=params["nb_components"])
 
     @classmethod
-    def create_result_class(cls) -> Type[PCATrainerResult]:
+    def create_result_class(cls) -> type[PCATrainerResult]:
         return PCATrainerResult

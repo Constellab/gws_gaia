@@ -1,7 +1,6 @@
 
 
-from gws_core import (ConfigParams, ScatterPlot2DView, Table, TechnicalInfo,
-                      resource_decorator, view)
+from gws_core import ConfigParams, ScatterPlot2DView, Table, resource_decorator, view
 from pandas import DataFrame
 
 from ...base.helper.training_design_helper import TrainingDesignHelper

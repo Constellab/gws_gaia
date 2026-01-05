@@ -1,9 +1,25 @@
 
 
-from gws_core import (BadRequestException, ConfigParams, InputSpec, IntParam,
-                      OutputSpec, ScatterPlot2DView, StrParam, Table, Task,
-                      TaskInputs, TaskOutputs, TechnicalInfo, ConfigSpecs,
-                      resource_decorator, task_decorator, view, InputSpecs, OutputSpecs)
+from gws_core import (
+    BadRequestException,
+    ConfigParams,
+    ConfigSpecs,
+    InputSpec,
+    InputSpecs,
+    IntParam,
+    OutputSpec,
+    OutputSpecs,
+    ScatterPlot2DView,
+    StrParam,
+    Table,
+    Task,
+    TaskInputs,
+    TaskOutputs,
+    TechnicalInfo,
+    resource_decorator,
+    task_decorator,
+    view,
+)
 from pandas import DataFrame
 from skbio.stats.distance import DistanceMatrix
 from skbio.stats.ordination import OrdinationResults

@@ -1,14 +1,26 @@
 
 
-from typing import Any, Type
+from typing import Any
 
-from gws_core import (InputSpec, IntParam, OutputSpec, Table, ConfigSpecs,
-                      resource_decorator, task_decorator, InputSpecs, OutputSpecs)
+from gws_core import (
+    ConfigSpecs,
+    InputSpec,
+    InputSpecs,
+    IntParam,
+    OutputSpec,
+    OutputSpecs,
+    Table,
+    resource_decorator,
+    task_decorator,
+)
 from sklearn.neighbors import KNeighborsClassifier
 
 from ...base.helper.training_design_helper import TrainingDesignHelper
-from ..base.base_sup import (BaseSupervisedClassResult,
-                             BaseSupervisedPredictor, BaseSupervisedTrainer)
+from ..base.base_sup import (
+    BaseSupervisedClassResult,
+    BaseSupervisedPredictor,
+    BaseSupervisedTrainer,
+)
 
 # *****************************************************************************
 #
@@ -50,7 +62,7 @@ class KNNClassifierTrainer(BaseSupervisedTrainer):
         return KNeighborsClassifier(n_neighbors=params["nb_neighbors"])
 
     @classmethod
-    def create_result_class(cls) -> Type[KNNClassifierResult]:
+    def create_result_class(cls) -> type[KNNClassifierResult]:
         return KNNClassifierResult
 
 # *****************************************************************************

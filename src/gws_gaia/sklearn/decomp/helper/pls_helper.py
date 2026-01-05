@@ -1,7 +1,6 @@
 
 
 
-from typing import List
 
 import numpy as np
 from gws_core import Table
@@ -11,10 +10,10 @@ from sklearn.metrics import r2_score
 from ....base.helper.training_design_helper import TrainingDesignHelper
 
 
-class PLSHelper():
+class PLSHelper:
 
     @classmethod
-    def create_variance_table(cls, pls, training_set, training_design, dummy=False) -> List[float]:
+    def create_variance_table(cls, pls, training_set, training_design, dummy=False) -> list[float]:
         _, y_true = TrainingDesignHelper.create_training_matrices(training_set, training_design, dummy=dummy)
         y_std = y_true.std(axis=0, ddof=1)
         y_mean = y_true.mean(axis=0)

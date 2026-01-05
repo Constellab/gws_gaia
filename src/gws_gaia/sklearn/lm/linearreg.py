@@ -1,14 +1,21 @@
 
 
-from typing import Any, Type
+from typing import Any
 
-from gws_core import (InputSpec, OutputSpec, Table, resource_decorator, ConfigSpecs,
-                      task_decorator, InputSpecs, OutputSpecs)
+from gws_core import (
+    ConfigSpecs,
+    InputSpec,
+    InputSpecs,
+    OutputSpec,
+    OutputSpecs,
+    Table,
+    resource_decorator,
+    task_decorator,
+)
 from sklearn.linear_model import LinearRegression
 
 from ...base.helper.training_design_helper import TrainingDesignHelper
-from ..base.base_sup import (BaseSupervisedPredictor, BaseSupervisedRegResult,
-                             BaseSupervisedTrainer)
+from ..base.base_sup import BaseSupervisedPredictor, BaseSupervisedRegResult, BaseSupervisedTrainer
 
 # *****************************************************************************
 #
@@ -49,7 +56,7 @@ class LinearRegressionTrainer(BaseSupervisedTrainer):
         return LinearRegression()
 
     @classmethod
-    def create_result_class(cls) -> Type[LinearRegressionResult]:
+    def create_result_class(cls) -> type[LinearRegressionResult]:
         return LinearRegressionResult
 
 # *****************************************************************************

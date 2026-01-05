@@ -1,8 +1,15 @@
 
 
 import pandas as pd
-from gws_core import (BadRequestException, BoolParam, ListParam, ParamSet, ConfigSpecs,
-                      StrParam, Table)
+from gws_core import (
+    BadRequestException,
+    BoolParam,
+    ConfigSpecs,
+    ListParam,
+    ParamSet,
+    StrParam,
+    Table,
+)
 
 
 class LMEDesignHelper:

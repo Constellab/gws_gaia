@@ -1,14 +1,23 @@
 
 
-from typing import Any, Type
+from typing import Any
 
-from gws_core import (FloatParam, InputSpec, OutputSpec, StrParam, Table, ConfigSpecs,
-                      resource_decorator, task_decorator, InputSpecs, OutputSpecs)
+from gws_core import (
+    ConfigSpecs,
+    FloatParam,
+    InputSpec,
+    InputSpecs,
+    OutputSpec,
+    OutputSpecs,
+    StrParam,
+    Table,
+    resource_decorator,
+    task_decorator,
+)
 from sklearn.kernel_ridge import KernelRidge
 
 from ...base.helper.training_design_helper import TrainingDesignHelper
-from ..base.base_sup import (BaseSupervisedPredictor, BaseSupervisedRegResult,
-                             BaseSupervisedTrainer)
+from ..base.base_sup import BaseSupervisedPredictor, BaseSupervisedRegResult, BaseSupervisedTrainer
 
 # *****************************************************************************
 #
@@ -51,7 +60,7 @@ class KernelRidgeTrainer(BaseSupervisedTrainer):
         return KernelRidge(gamma=params["gamma"], kernel=params["kernel"])
 
     @classmethod
-    def create_result_class(cls) -> Type[KernelRidgeResult]:
+    def create_result_class(cls) -> type[KernelRidgeResult]:
         return KernelRidgeResult
 
 # *****************************************************************************

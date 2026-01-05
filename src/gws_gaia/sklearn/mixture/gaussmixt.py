@@ -1,9 +1,19 @@
 
 
-from typing import Any, Type
+from typing import Any
 
-from gws_core import (InputSpec, IntParam, OutputSpec, StrParam, Table, ConfigSpecs,
-                      resource_decorator, task_decorator, InputSpecs, OutputSpecs)
+from gws_core import (
+    ConfigSpecs,
+    InputSpec,
+    InputSpecs,
+    IntParam,
+    OutputSpec,
+    OutputSpecs,
+    StrParam,
+    Table,
+    resource_decorator,
+    task_decorator,
+)
 from sklearn.mixture import GaussianMixture
 
 from ..base.base_unsup import BaseUnsupervisedResult, BaseUnsupervisedTrainer
@@ -49,5 +59,5 @@ class GaussianMixtureTrainer(BaseUnsupervisedTrainer):
         return GaussianMixture(n_components=params["nb_components"], covariance_type=params["covariance_type"])
 
     @classmethod
-    def create_result_class(cls) -> Type[GaussianMixtureResult]:
+    def create_result_class(cls) -> type[GaussianMixtureResult]:
         return GaussianMixtureResult

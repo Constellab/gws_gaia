@@ -1,6 +1,9 @@
 from gws_core import BaseTestCase, TaskRunner
-from gws_gaia import (MultinomialNaiveBayesClassifierPredictor,
-                      MultinomialNaiveBayesClassifierTrainer)
+from gws_gaia import (
+    MultinomialNaiveBayesClassifierPredictor,
+    MultinomialNaiveBayesClassifierTrainer,
+)
+
 from tests.gws_gaia_test_helper import GWSGaiaTestHelper
 
 

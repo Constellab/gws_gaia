@@ -1,14 +1,25 @@
 
 
-from typing import Any, Type
+from typing import Any
 
-from gws_core import (InputSpec, OutputSpec, Table, resource_decorator, ConfigSpecs,
-                      task_decorator, InputSpecs, OutputSpecs)
+from gws_core import (
+    ConfigSpecs,
+    InputSpec,
+    InputSpecs,
+    OutputSpec,
+    OutputSpecs,
+    Table,
+    resource_decorator,
+    task_decorator,
+)
 from sklearn.naive_bayes import GaussianNB
 
 from ...base.helper.training_design_helper import TrainingDesignHelper
-from ..base.base_sup import (BaseSupervisedClassResult,
-                             BaseSupervisedPredictor, BaseSupervisedTrainer)
+from ..base.base_sup import (
+    BaseSupervisedClassResult,
+    BaseSupervisedPredictor,
+    BaseSupervisedTrainer,
+)
 
 # *****************************************************************************
 #
@@ -49,7 +60,7 @@ class GaussianNaiveBayesTrainer(BaseSupervisedTrainer):
         return GaussianNB()
 
     @classmethod
-    def create_result_class(cls) -> Type[GaussianNaiveBayesResult]:
+    def create_result_class(cls) -> type[GaussianNaiveBayesResult]:
         return GaussianNaiveBayesResult
 
 # *****************************************************************************

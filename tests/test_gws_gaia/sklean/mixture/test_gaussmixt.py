@@ -1,5 +1,6 @@
 from gws_core import BaseTestCase, TaskRunner
 from gws_gaia import GaussianMixtureTrainer
+
 from tests.gws_gaia_test_helper import GWSGaiaTestHelper
 
 

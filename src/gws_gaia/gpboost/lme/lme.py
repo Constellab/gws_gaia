@@ -6,11 +6,30 @@ import gpboost as gpb
 import numpy as np
 import pandas as pd
 import sklearn
-from gws_core import (BoolParam, ConfigParams, FloatRField, InputSpec,
-                      InputSpecs, ListParam, OutputSpec, OutputSpecs, ParamSet,
-                      RField, StrParam, Table, TableConcatHelper, Task, ConfigSpecs,
-                      TaskInputs, TaskOutputs, TechnicalInfo, TextView,
-                      resource_decorator, task_decorator, view)
+from gws_core import (
+    BoolParam,
+    ConfigParams,
+    ConfigSpecs,
+    FloatRField,
+    InputSpec,
+    InputSpecs,
+    ListParam,
+    OutputSpec,
+    OutputSpecs,
+    ParamSet,
+    RField,
+    StrParam,
+    Table,
+    TableConcatHelper,
+    Task,
+    TaskInputs,
+    TaskOutputs,
+    TechnicalInfo,
+    TextView,
+    resource_decorator,
+    task_decorator,
+    view,
+)
 from pandas import DataFrame
 
 from ...base.base_resource import BaseResourceSet

@@ -1,5 +1,4 @@
-from gws_core import (BaseTestCase, ConfigParams, File, GTest, Settings, Table,
-                      TaskRunner, ViewTester)
+from gws_core import BaseTestCase, TaskRunner
 from gws_core.extra import DataProvider
 from gws_gaia import LDAPredictor, LDATrainer
 

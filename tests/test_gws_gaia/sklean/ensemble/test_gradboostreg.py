@@ -1,6 +1,5 @@
 from gws_core import BaseTestCase, TaskRunner
-from gws_gaia import (GradientBoostingRegressorPredictor,
-                      GradientBoostingRegressorTrainer)
+from gws_gaia import GradientBoostingRegressorPredictor, GradientBoostingRegressorTrainer
 from gws_gaia.extra import DataProvider
 
 
